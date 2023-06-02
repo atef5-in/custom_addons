@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access.agreement.fees.amortization.line,access_agreement_fees_amortization_line,project_custom.model_agreement_fees_amortization_line,base.group_user,1,1,1,1
+access.hr.academic,access_hr_academic,project_custom.model_hr_academic,base.group_user,1,1,1,1
+access.project.type.custom,access_project_type_custom,project_custom.model_project_type_custom,base.group_user,1,1,1,1
