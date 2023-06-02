@@ -8,9 +8,7 @@ class TaskWork(models.Model):
     _name = 'project.task.work'
     _description = 'Project Task Work'
 
-    def _compute_default_done(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
-        ##
+    def _default_done(self):
 
         for rec in self:
             if self.env.cr.dbname == 'TEST95':
@@ -53,103 +51,75 @@ class TaskWork(models.Model):
 
                 for kk in rec.line_ids.ids:
                     # do we keep browse here ?
-                    rec_line = self.env['project.task.work.line'].browse(cr, uid, kk, context=context)
+                    rec_line = self.env['project.task.work.line']
                     if rec_line.done is True:
-                        result[rec.id] = 1
+                        rec.done = 1
                         break
                     else:
-                        result[rec.id] = 0
-            ##                        exit
-            ##                    else:
-            ##                        result[rec.id] =0
+                        rec.done = 0
             else:
-                result[rec.id] = 0
+                rec.done = 0
 
-        return result
 
-    def _compute_default_done1(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
+    def _default_done1(self):
 
         for rec in self:
             if rec.line_ids:
 
                 for kk in rec.line_ids.ids:
 
-                    rec_line = self.env['project.task.work.line'].browse(cr, uid, kk, context=context)
+                    rec_line = self.env['project.task.work.line']
                     if rec_line.done1 is True:
-                        result[rec.id] = 1
+                        rec.done1 = 1
                         break
                     else:
-                        result[rec.id] = 0
-            ##                        exit
-            ##                    else:
-            ##                        result[rec.id] =0
+                        rec.done1 = 0
             else:
-                result[rec.id] = 0
+                rec.done1 = 0
 
-        return result
-
-    def _compute_default_done2(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
+    def _default_done2(self):
 
         for rec in self:
             if rec.line_ids:
 
                 for kk in rec.line_ids.ids:
 
-                    rec_line = self.env['project.task.work.line'].browse(cr, uid, kk, context=context)
+                    rec_line = self.env['project.task.work.line']
                     if rec_line.group_id:
-                        result[rec.id] = 1
+                        rec.done2 = 1
                         break
 
                     else:
-                        result[rec.id] = 0
-
-            ##                        exit
-            ##                    else:
-            ##                        result[rec.id] =0
+                        rec.done2 = 0
             else:
-                result[rec.id] = 0
+                rec.done2 = 0
 
-        return result
-
-    def _compute_default_done3(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
+    def _default_done3(self):
 
         for rec in self:
             if rec.line_ids:
 
                 for kk in rec.line_ids.ids:
 
-                    rec_line = self.env['project.task.work.line'].browse(cr, uid, kk, context=context)
+                    rec_line = self.env['project.task.work.line']
                     if rec_line.group_id2:
-                        result[rec.id] = 1
+                        rec.done3 = 1
                         break
 
                     else:
-                        result[rec.id] = 0
-
-            ##                        exit
-            ##                    else:
-            ##                        result[rec.id] =0
+                        rec.done3 = 0
             else:
-                result[rec.id] = 0
+                rec.done3 = 0
 
-        return result
+    def _default_flow(self):
 
-    def _compute_default_flow(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
-        current = ids[0]
-        list = []
         for rec in self:
             self.env.cr.execute('select id from base_flow_merge_line where work_id= %s', (rec.id,))
             work_ids = self.env.cr.fetchone()
             if work_ids:
-                result[rec.id] = 1
+                rec.done4 = 1
             else:
-                result[rec.id] = 0
-
-        return result
+                rec.done4 = 0
 
     # _check_color
     def _compute_kanban_color(self, cr, uid, ids, field_name, arg, context):
@@ -177,31 +147,23 @@ class TaskWork(models.Model):
             res[record.id] = color
         return res
 
-    # _get_planned
-    # def _compute_hours_r(self, cr, uid, ids, field_name, arg, context=None):
-    #     result = {}
-    #     self.env.cr.execute(
-    #         "SELECT work_id, COALESCE(SUM(hours_r), 0.0) FROM project_task_work_line WHERE project_task_work_line.work_id IN %s GROUP BY work_id",
-    #         (tuple(ids),))
-    #     hours = dict(self.env.cr.fetchall())
-    # ,COALESCE(SUM(total_hours), 0.0), COALESCE(SUM(effective_hours), 0.0)
-    # for rec in self:
-    #     result[rec.id] = hours.get(rec.id, 0.0)
-    # return result
+    def _get_planned(self):
 
-    # _get_sum
-    def _compute_total_r(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
-        ##cr.execute("SELECT work_id, COALESCE(SUM(total_r), 0.0) FROM project_task_work_line WHERE state in %s and project_task_work_line.work_id IN %s GROUP BY work_id",(('valid','paid'),tuple(ids),))
+        self.env.cr.execute(
+            "SELECT work_id, COALESCE(SUM(hours_r), 0.0) FROM project_task_work_line WHERE project_task_work_line.work_id IN %s GROUP BY work_id",
+            (tuple(self.ids),))
+        hours = dict(self.env.cr.fetchall())
+        for rec in self:
+            rec.hours_r = hours.get(rec.id, 0.0)
+
+    def _get_sum(self):
+
         self.env.cr.execute(
             "SELECT work_id, COALESCE(SUM(total_r), 0.0) FROM project_task_work_line WHERE project_task_work_line.work_id IN %s GROUP BY work_id",
-            (tuple(ids),))
-
+            (tuple(self.ids),))
         hours = dict(self.env.cr.fetchall())
-        ##,COALESCE(SUM(total_hours), 0.0), COALESCE(SUM(effective_hours), 0.0)
         for rec in self:
-            result[rec.id] = hours.get(rec.id, 0.0)
-        return result
+            rec.total_r = hours.get(rec.id, 0.0)
 
     def _get_qty(self):
         result = {}
@@ -212,53 +174,42 @@ class TaskWork(models.Model):
         for rec in self:
             rec.poteau_r = hours.get(rec.id, 0.0)
 
+    def _get_qty_r_affect(self):
 
-    # _get_qty_r_affect
-    def _compute_poteau_ra(self, cr, uid, ids, field_name, arg, context=None):
-
-        x = {}
         for record in self:
             self.env.cr.execute(
                 "select COALESCE(SUM(poteau_t), 0.0) from project_task_work where task_id=%s and cast(zone as varchar) =%s and cast(secteur as varchar) =%s and state in ('affect','tovalid','valid')",
                 (record.task_id.id, str(record.zone), str(record.secteur)))
             q3 = self.env.cr.fetchone()
-            ##raise osv.except_osv(_('Error !'), _('No period defined for this date: %s !\nPlease create one.')%record.zone)
             if q3:
-                x[record.id] = record.poteau_i - q3[0]
+                record.poteau_ra = record.poteau_i - q3[0]
             else:
-                x[record.id] = record.poteau_i
-        return x
+                record.poteau_ra = record.poteau_i
 
-    # _get_qty_affect
-    # def _compute_poteau_da(self, cr, uid, ids, field_name, arg, context=None):
-    #
-    #     x = {}
-    #     for record in self:
-    #         self.env.cr.execute(
-    #             "select COALESCE(SUM(poteau_t), 0.0) from project_task_work where task_id=%s and cast(zone as varchar) =%s and cast(secteur as varchar) =%s and state in ('affect','tovalid','valid')",
-    #             (record.task_id.id, str(record.zone), str(record.secteur)))
-    #         q3 = self.env.cr.fetchone()
-    ### raise osv.except_osv(_('Error !'), _('No period defined for this date: %s !\nPlease create one.')%record.zone)
-    # if q3:
-    #     x[record.id] = q3[0]
-    # else:
-    #     x[record.id] = 0
-    # return x
+    def _get_qty_affect(self):
 
-    def _disponible(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
+        for record in self:
+            self.env.cr.execute(
+                "select COALESCE(SUM(poteau_t), 0.0) from project_task_work where task_id=%s and cast(zone as varchar) =%s and cast(secteur as varchar) =%s and state in ('affect','tovalid','valid')",
+                (record.task_id.id, str(record.zone), str(record.secteur)))
+            q3 = self.env.cr.fetchone()
+            if q3:
+                record.poteau_da = q3[0]
+            else:
+                record.poteau_da = 0
+
+    def _disponible(self):
+
         for book in self:
             if book.gest_id and book.gest_id.user_id:
-                if book.gest_id.user_id.id == uid or uid == 1 or 100 in book.gest_id.user_id.groups_id.ids:  ##or book..user_id.id==uid:
-                    result[book.id] = True
+                if book.gest_id.user_id.id == self.uid or self.uid == 1 or 100 in book.gest_id.user_id.groups_id.ids:  ##or book..user_id.id==uid:
+                    book.done33 = True
                 else:
-                    result[book.id] = False
+                    book.done33 = False
             else:
-                result[book.id] = False
-        return result
+                book.done33 = False
 
-    # _isinter
-    def _compute_is_inter(self, cr, uid, ids, field_name, arg, context=None):
+    def _isinter(self, cr, uid, ids, field_name, arg, context=None):
         result = {}
         current = self
         for book in current:
@@ -281,8 +232,7 @@ class TaskWork(models.Model):
                         result[book.id] = True
         return result
 
-    # iscontrol
-    def _compute_is_control(self, cr, uid, ids, field_name, arg, context=None):
+    def _iscontrol(self, cr, uid, ids, field_name, arg, context=None):
         result = {}
         current = self
         for book in current:
@@ -315,8 +265,7 @@ class TaskWork(models.Model):
 
         return result
 
-    # _iscorr
-    def _compute_is_corr(self, cr, uid, ids, field_name, arg, context=None):
+    def _iscorr(self, cr, uid, ids, field_name, arg, context=None):
         result = {}
         current = self
         for book in current:
@@ -348,77 +297,60 @@ class TaskWork(models.Model):
                         result[book.id] = True
         return result
 
-    def _compute_get_progress(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
+    def _get_progress(self):
+
         self.env.cr.execute(
             "SELECT work_id, COALESCE(SUM(hours_r), 0.0) FROM project_task_work_line WHERE project_task_work_line.work_id IN %s and state in ('valid','paid') GROUP BY work_id",
-            (tuple(ids),))
+            (tuple(self.ids),))
         hours = dict(self.env.cr.fetchall())
 
-        ##,COALESCE(SUM(total_hours), 0.0), COALESCE(SUM(effective_hours), 0.0)
         for rec in self:
-            ##result[rec.id] = hours.get(rec.id, 0.0)
-            ## raise osv.exc
             if rec.hours > 0:
                 ratio = hours.get(rec.id, 0.0) / rec.hours
             else:
                 ratio = hours.get(rec.id, 0.0)
-            result[rec.id] = round(min(100.0 * ratio, 100), 2)
-        return result
+            rec.progress_me = round(min(100.0 * ratio, 100), 2)
 
-    # def _compute_progress_qty(self, cr, uid, ids, field_name, arg, context=None):
-    #     result = {}
-    #
-    #     self.env.cr.execute(
-    #         "SELECT work_id, COALESCE(SUM(poteau_r), 0.0) FROM project_task_work_line WHERE project_task_work_line.work_id IN %s and state in ('valid','paid') GROUP BY work_id",
-    #         (tuple(ids),))
-    #     hours = dict(self.env.cr.fetchall())
-    #
-    # ,COALESCE(SUM(total_hours), 0.0), COALESCE(SUM(effective_hours), 0.0)
-    # for rec in self:
-    # result[rec.id] = hours.get(rec.id, 0.0)
-    # raise osv.exc
-    # if rec.poteau_t > 0:
-    #     ratio = hours.get(rec.id, 0.0) / rec.poteau_t
-    # else:
-    #     ratio = hours.get(rec.id, 0.0)
-    # result[rec.id] = round(min(100.0 * ratio, 100), 2)
-    # return result
+    def _get_progress_qty(self):
 
-    def _compute_progress_amount(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
+        self.env.cr.execute(
+            "SELECT work_id, COALESCE(SUM(poteau_r), 0.0) FROM project_task_work_line WHERE project_task_work_line.work_id IN %s and state in ('valid','paid') GROUP BY work_id",
+            (tuple(self.ids),))
+        hours = dict(self.env.cr.fetchall())
+
+        for rec in self:
+            if rec.poteau_t > 0:
+                ratio = hours.get(rec.id, 0.0) / rec.poteau_t
+            else:
+                ratio = hours.get(rec.id, 0.0)
+            rec.progress_qty = round(min(100.0 * ratio, 100), 2)
+
+    def _get_progress_amount(self):
 
         self.env.cr.execute(
             "SELECT work_id, COALESCE(SUM(total_r), 0.0) FROM project_task_work_line WHERE project_task_work_line.work_id IN %s and state in ('valid','paid') GROUP BY work_id",
-            (tuple(ids),))
+            (tuple(self.ids),))
         hours = dict(self.env.cr.fetchall())
-        ##raise osv.except_osv(_('Error !'), _('No period defined for this date: %s ')%hours)
-        ##,COALESCE(SUM(total_hours), 0.0), COALESCE(SUM(effective_hours), 0.0)
+
         for rec in self:
-            ##result[rec.id] = hours.get(rec.id, 0.0)
-            ## raise osv.exc
             if rec.total_t > 0:
                 ratio = hours.get(rec.id, 0.0) / rec.total_t
             else:
                 ratio = hours.get(rec.id, 0.0)
-            result[rec.id] = round(min(100.0 * ratio, 100), 2)
-        return result
+            rec.progress_amount = round(min(100.0 * ratio, 100), 2)
 
-    def _compute_get_risk(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
+    def _get_risk(self):
+
         self.env.cr.execute(
             "SELECT work_id, COALESCE(SUM(poteau_r), 0.0) FROM project_task_work_line WHERE project_task_work_line.work_id IN %s and state in ('valid','paid') GROUP BY work_id",
-            (tuple(ids),))
+            (tuple(self.ids),))
         amount = dict(self.env.cr.fetchall())
-        ##res = super(project_task_work, self).default_get(cr, uid, fields, context=context)
         self.env.cr.execute(
             "SELECT work_id, COALESCE(SUM(hours_r), 0.0) FROM project_task_work_line WHERE project_task_work_line.work_id IN %s and state in ('valid','paid') GROUP BY work_id",
-            (tuple(ids),))
+            (tuple(self.ids),))
         hours = dict(self.env.cr.fetchall())
         ratio = 'N.D'
         for rec in self:
-            ##result[rec.id] = hours.get(rec.id, 0.0)
-            ## raise osv.exc
             if rec.hours > 0 and rec.poteau_t > 0:
                 if ((hours.get(rec.id, 0.0) / rec.hours) - (amount.get(rec.id, 0.0) / rec.poteau_t)) * 100 > 50:
                     ratio = 'Très Critique'
@@ -433,8 +365,7 @@ class TaskWork(models.Model):
                 else:
                     ratio = 'Très en Avance'
 
-            result[rec.id] = ratio
-        return result
+            rec.risk = ratio
 
     name = fields.Char(string='Nom Service', )
     ftp = fields.Char(string='Ftp', )
@@ -456,21 +387,21 @@ class TaskWork(models.Model):
     ## hours_r = fields.Float(string='Hours r', )
     etape = fields.Char(string='Etape', )
     categ_id = fields.Many2one('product.category', string='Département', )
-    # hours_r = fields.Float(compute='_compute_hours_r', string='Company Currency', readonly=True,
-    #                        states={'draft': [('readonly', False)]}, )
+    hours_r = fields.Float(compute='_get_planned', string='Company Currency', readonly=True,
+                           states={'draft': [('readonly', False)]}, )
     partner_id = fields.Many2one('res.partner', string='Clients', )
     kit_id = fields.Many2one('product.kit', string='Kit ID', ondelete='cascade', select="1", )
     total_t = fields.Float(string='Total à Facturer T', )
-    # total_r = fields.Float(compute='_compute_total_r', string='Company Currency', readonly=True,
-    #                        states={'draft': [('readonly', False)]}, )
+    total_r = fields.Float(compute='_get_sum', string='Company Currency', readonly=True,
+                           states={'draft': [('readonly', False)]}, )
     poteau_t = fields.Float(string='Qté demamdée', )
     poteau_i = fields.Float(string='N.U', )
     poteau_r = fields.Float(compute='_get_qty', string='Company Currency', readonly=True,
                             states={'draft': [('readonly', False)]}, )
-    # poteau_da = fields.Float(compute='_compute_poteau_da', string='Company Currency', readonly=True,
-    #                          states={'draft': [('readonly', False)]}, )
-    # poteau_ra = fields.Float(compute='_compute_poteau_ra', string='Company Currency', readonly=True,
-    #                          states={'draft': [('readonly', False)]}, )
+    poteau_da = fields.Float(compute='_get_qty_affect', string='Company Currency', readonly=True,
+                             states={'draft': [('readonly', False)]}, )
+    poteau_ra = fields.Float(compute='_get_qty_r_affect', string='Company Currency', readonly=True,
+                             states={'draft': [('readonly', False)]}, )
     poteau_reste = fields.Integer(string='N.U', )
     total_part = fields.Selection([
         ('partiel', 'Partiel'),
@@ -571,16 +502,16 @@ class TaskWork(models.Model):
                              string='Status', copy=False)
     p_done = fields.Float(string='Qté Réalisée', )
     note = fields.Text(string='N.U')
-    # done = fields.Boolean(compute='_compute_default_done', string='Company Currency', readonly=True,
-    #                       states={'draft': [('readonly', False)]}, )
-    # done1 = fields.Boolean(compute='_compute_default_done1', string='Company Currency', readonly=True,
-    #                        states={'draft': [('readonly', False)]}, )
-    # done2 = fields.Boolean(compute='_compute_default_done2', string='Company Currency', readonly=True,
-    #                        states={'draft': [('readonly', False)]}, )
-    # done3 = fields.Boolean(compute='_compute_default_done3', string='Company Currency', readonly=True,
-    #                        states={'draft': [('readonly', False)]}, )
-    # done4 = fields.Boolean(compute='_compute_default_flow', string='Company Currency', readonly=True,
-    #                        states={'draft': [('readonly', False)]}, )
+    done = fields.Boolean(compute='_default_done', string='Company Currency', readonly=True,
+                          states={'draft': [('readonly', False)]}, )
+    done1 = fields.Boolean(compute='_default_done1', string='Company Currency', readonly=True,
+                           states={'draft': [('readonly', False)]}, )
+    done2 = fields.Boolean(compute='_default_done2', string='Company Currency', readonly=True,
+                           states={'draft': [('readonly', False)]}, )
+    done3 = fields.Boolean(compute='_default_done3', string='Company Currency', readonly=True,
+                           states={'draft': [('readonly', False)]}, )
+    done4 = fields.Boolean(compute='_default_flow', string='Company Currency', readonly=True,
+                           states={'draft': [('readonly', False)]}, )
     color = fields.Integer(string='Nbdays', )
     color1 = fields.Integer('Nbdays', )
     uom_id = fields.Many2one('product.uom', string='Unité Prévue', required=True, )
@@ -590,7 +521,7 @@ class TaskWork(models.Model):
     rank = fields.Char('Rank', )
     display = fields.Boolean(string='Réalisable')
     is_copy = fields.Boolean(string='Dupliqué')
-    # done33 = fields.Boolean(compute='_disponible', string='done')
+    done33 = fields.Boolean(compute='_disponible', string='done')
     current_emp = fields.Many2one('hr.employee', string='Employé Encours', readonly=True,
                                   states={'draft': [('readonly', False)]}, )
     current_gest = fields.Many2one('hr.employee', string='Coordinateur En cours', readonly=True,
@@ -608,15 +539,15 @@ class TaskWork(models.Model):
     affect_cor = fields.Char(string='corrdinateur')
     affect_con_list = fields.Char(string='controle id')
     affect_cor_list = fields.Char(string='corrdinateur id')
-    # is_intervenant = fields.Boolean(compute='_compute_is_inter', string='intervenant')
-    # is_control = fields.Boolean(compute='_compute_is_control', string='controle')
-    # is_correction = fields.Boolean(compute='_compute_is_corr', string='correction')
+    # is_intervenant = fields.Boolean(compute='_isinter', string='intervenant')
+    # is_control = fields.Boolean(compute='_iscontrol', string='controle')
+    # is_correction = fields.Boolean(compute='_iscorr', string='correction')
     ## 'event_id'   : fields.many2one('event.event','Event')
     line_ids = fields.One2many('project.task.work.line', 'work_id', string='Work done')
-    # progress_me = fields.Float(compute='_compute_get_progress', string='Company Currency')
-    # progress_qty = fields.Float(compute='_compute_progress_qty', string='Company Currency')
-    # progress_amount = fields.Float(compute='_compute_progress_amount', string='Company Currency')
-    # risk = fields.Char(compute='_compute_get_risk', string='Risk')
+    progress_me = fields.Float(compute='_get_progress', string='Company Currency')
+    progress_qty = fields.Float(compute='_get_progress_qty', string='Company Currency')
+    progress_amount = fields.Float(compute='_get_progress_amount', string='Company Currency')
+    risk = fields.Char(compute='_get_risk', string='Risk')
 
 
 class TaskWorkLine(models.Model):

@@ -165,6 +165,7 @@ class TaskCustom(models.Model):
                     res[task.id] = False
         return res
 
+    # id = fields.Integer('ID', readonly=True)
     is_super_admin = fields.Boolean(string='Is Admin', compute='_compute_is_super_admin')
     # active = fields.Boolean(compute='_compute_is_template', store=True, string='Not a Template Task', type='boolean',
     #                         help="This field is computed automatically and have the same behavior than the boolean "

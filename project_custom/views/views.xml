@@ -53,6 +53,7 @@
 <!--                            <page string="Taches Planifiées" name="project_stages">-->
 <!--                                <field name="task_ids">-->
 <!--                                    <tree name="task_ids" editable="bottom">-->
+<!--                                        <field name="id"/>-->
 <!--                                        <field name="sequence" string="N°"/>-->
 <!--                                        <field name="is_super_admin" string="Date" invisible="1"/>-->
 <!--                                        <field name="categ_id" string="Département"/>-->

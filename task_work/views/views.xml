@@ -28,7 +28,6 @@
                     <field name="gest_id"
                            string="Super" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
                            readonly="1"/>
-
                     <field name="reviewer_id1"
                            string="Super" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
                            readonly="1"/>
@@ -54,9 +53,25 @@
                     <field name="r_id" string="Libellé " invisible="1"/>
                     <field name="paylist_id" string="Facture"
                            options="{'no_create': True, 'no_create_edit':True,'no_open':True}" invisible="1"/>
+                    <field name="done" string="Libellé " readonly="1" invisible="1"/>
+                    <field name="done1" string="Libellé " readonly="1" invisible="1"/>
+                    <field name="done2" string="Libellé " readonly="1" invisible="1"/>
+                    <field name="done3" string="Libellé " readonly="1" invisible="1"/>
+                    <!--                    base_flow_merge_line doesn't exist-->
+                    <!--                    <field name="done4" string="Libellé " readonly="1" invisible="1"/>-->
+                    <!--                    <field name="is_intervenant" string="Libellé " readonly="1" invisible="1"/>-->
+                    <!--                    <field name="is_control" string="Libellé " readonly="1" invisible="1"/>-->
+                    <!--                    <field name="is_correction" string="Libellé " readonly="1" invisible="1"/>-->
+                    <field name="done33" string="Libellé " readonly="1" invisible="1"/>
                     <field name="poteau_i" string="Qté T. Prévue" readonly="1"/>
+                    <!--                    <field name="poteau_da" string="Qté Déja Affect." readonly="1"/>-->
+                    <!--                    <field name="poteau_ra" string="Qté Non Affect." readonly="1"/>-->
+                    <field name="poteau_t" string="Qté Ddée" readonly="1"/>
                     <field name="uom_id" string="Unité" required="1"/>
+                    <field name="risk" string="risk" required="1" invisible="1"/>
+                    <field name="hours_r" string="Nb Hrs Réal." required="1"/>
                     <field name="poteau_r" string="Qté Réal." required="1"/>
+                    <field name="total_r" string="Cout Réal" required="1"/>
                     <field name="state" string="Etat"/>
                     <field name="display" string="display" invisible="1"/>
                     <field name="group_id" invisible="1"/>
@@ -100,18 +115,17 @@
                             </group>
                             <group readonly="1">
                                 <field name="poteau_r" string="Qté/Unité Réalisée" readonly="1"/>
-                                <!--                                <field name="progress_qty" string="% Qté" widget="progressbar"/>-->
+                                <field name="progress_qty" string="% Qté" widget="progressbar"/>
                                 <field name="hours" sum="Prev Hours" string="Total Hrs Prévues" invisible="0"
                                        readonly="1"/>
-                                <!--                                <field name="hours_r" widget="float_time" sum="Spent Hours" string="Total Hrs Réalisées"-->
-                                <!--                                       invisible="0"-->
-                                <!--                                       readonly="1"/>-->
-                                <!--                                <field name="progress_me" string="% Délai" widget="progressbar"/>-->
+                                <field name="hours_r" widget="float_time" sum="Spent Hours" string="Total Hrs Réalisées"
+                                       invisible="0" readonly="1"/>
+                                <field name="progress_me" string="% Délai" widget="progressbar"/>
                                 <field name="total_t" sum="Spent Hours" string="Total à Facturer T" invisible="0"
                                        readonly="1"/>
-                                <!--                                <field name="total_r" sum="Spent Hours" string="Total à Facturer R" invisible="0"-->
-                                <!--                                       readonly="1"/>-->
-                                <!--                                <field name="progress_amount" string="% Montant" widget="progressbar"/>-->
+                                <field name="total_r" sum="Spent Hours" string="Total à Facturer R" invisible="0"
+                                       readonly="1"/>
+                                <field name="progress_amount" string="% Montant" widget="progressbar"/>
                                 <field name="user_id" string="USER" invisible="1"/>
                                 <field name="categ_id" string="categ" placeholder="Description..." invisible="1"/>
                                 <field name="note" string="Note" placeholder="Description..."/>
