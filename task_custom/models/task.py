@@ -285,13 +285,12 @@ class TaskCustom(models.Model):
     #                                     string='Delegated To', readonly=True,
     #                                   , )
     partner_id = fields.Many2one('res.partner', string='Customer', readonly=True, )
-    # work_ids = fields.One2many('project.task.work', 'task_id', string='Work done', domain=[('done', '=', False)],
-    #                            copy=False, readonly=True, )
-    ## task_ids = fields.One2many('project.task', 'project_id', domain=[('done', '=' , False)])
-    # work_ids2 = fields.One2many('project.task.work', 'task_id', domain=[('done', '=', True)], copy=False,
-    #                             readonly=True, )
-    ### 'manager_id': fields.related('project_id', 'analytic_account_id', 'user_id', type='many2one',
-    ###                              relation='res.users', string='Project Manager')
+    work_ids = fields.One2many('project.task.work', 'task_id', string='Work done', domain=[('done', '=', False)],
+                               copy=False, readonly=True, )
+    work_ids2 = fields.One2many('project.task.work', 'task_id', domain=[('done', '=', True)], copy=False,
+                                readonly=True, )
+    # 'manager_id': fields.related('project_id', 'analytic_account_id', 'user_id', type='many2one',
+    #                              relation='res.users', string='Project Manager')
     company_id = fields.Many2one('res.company', string='Company', readonly=True, )
     # id is already defined in odoo 15
     # id = fields.Integer(string='ID', readonly=True)
@@ -326,13 +325,6 @@ class TaskCustom(models.Model):
     progress_amount = fields.Float(compute='_compute_progress_amount', string='Company Currency')
     rank = fields.Char(string='Rank', )
     display = fields.Boolean(string='Color Index')
-    ## recursive_dependency_task_ids = fields.Many2many('project.task', string='Dependencies', compute='_compute_recursive_dependency_task_ids', )
-    ## depending_task_ids = fields.Many2many('project.task', string='Depending Tasks', help='Tasks that are dependent on this task.', )
-    ## recursive_depending_task_ids = fields.Many2many(string='Recursive Depending Tasks',
-    ##                                                 comodel_name='project.task',
-    ##                                                 help='Tasks that are dependent on this task (recursive).',
-    ##                                                 compute='_compute_recursive_depending_task_ids'
-    ##                                                 )
 
 
 class ProjectCategory(models.Model):
