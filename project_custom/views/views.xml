@@ -49,36 +49,36 @@
                                 <field name="fact" string="Facturable"/>
                             </group>
                         </group>
-                        <!--                        <notebook>-->
-                        <!--                            <page string="Taches Planifiées" name="project_stages">-->
-                        <!--                                <field name="task_ids">-->
-                        <!--                                    <tree name="Task" editable="bottom">-->
-                        <!--                                        <field name="id"/>-->
-                        <!--                                        <field name="sequence" string="N°"/>-->
-                        <!--                                        <field name="is_super_admin" string="Date" invisible="1"/>-->
-                        <!--                                        <field name="categ_id" string="Département"/>-->
-                        <!--                                        <field name="kit_id"/>-->
-                        <!--                                        <field name="name" string="Nom Kit"/>-->
-                        <!--                                        <field name="date_start" string="Date Début" widget="date"/>-->
-                        <!--                                        <field name="date_end" string="Date Fin" widget="date"/>-->
-                        <!--                                        <field name="color" string="Durée(Jrs)" sum="Total"/>-->
-                        <!--                                        <field name="planned_hours" string="Durée(Hrs)" sum="Total"-->
-                        <!--                                               invisible="1"/>-->
-                        <!--                                        <field name="qte" string="Qté/Unité" sum="Total"/>-->
-                        <!--                                        <field name="uom_id" string="Unité" invisible="1"/>-->
-                        <!--                                        <field name="cout" string="Tarif"/>-->
-                        <!--                                        <field name="total" string="Sous-Total" sum="Total"/>-->
-                        <!--                                        <field name="ftp" widget="url" string="Lien FTP" invisible="1"/>-->
-                        <!--                                        <field name="reviewer_id" string="Superviseur"/>-->
-                        <!--                                        <field name="coordin_id" string="Coordinateur"/>-->
-                        <!--                                        <field name="rank" string="Séq"/>-->
-                        <!--                                        <field name="pourc" string="% Workflow"/>-->
-                        <!--                                        <field name="priority" string="Priorité" required="0" invisible="1"/>-->
-                        <!--                                        <field name="state" string="Statut" readonly="1"/>-->
-                        <!--                                    </tree>-->
-                        <!--                                </field>-->
-                        <!--                            </page>-->
-                        <!--                        </notebook>-->
+                        <notebook>
+                            <page string="Taches Planifiées" name="project_stages">
+                                <field name="task_ids">
+                                    <tree name="Task" editable="bottom">
+                                        <field name="id"/>
+                                        <field name="sequence" string="N°"/>
+                                        <field name="is_super_admin" string="Date" invisible="1"/>
+                                        <field name="categ_id" string="Département"/>
+                                        <field name="kit_id"/>
+                                        <field name="name" string="Nom Kit"/>
+                                        <field name="date_start" string="Date Début" widget="date"/>
+                                        <field name="date_end" string="Date Fin" widget="date"/>
+                                        <field name="color" string="Durée(Jrs)" sum="Total"/>
+                                        <field name="planned_hours" string="Durée(Hrs)" sum="Total"
+                                               invisible="1"/>
+                                        <field name="qte" string="Qté/Unité" sum="Total"/>
+                                        <field name="uom_id" string="Unité" invisible="1"/>
+                                        <field name="cout" string="Tarif"/>
+                                        <field name="total" string="Sous-Total" sum="Total"/>
+                                        <field name="ftp" widget="url" string="Lien FTP" invisible="1"/>
+                                        <field name="reviewer_id" string="Superviseur"/>
+                                        <field name="coordin_id" string="Coordinateur"/>
+                                        <field name="rank" string="Séq"/>
+                                        <field name="pourc" string="% Workflow"/>
+                                        <field name="priority" string="Priorité" required="0" invisible="1"/>
+                                        <field name="state" string="Statut" readonly="1"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
                     </sheet>
                 </form>
             </field>
@@ -91,12 +91,12 @@
                 <tree decoration-info="state == 'draft'" decoration-success="state == 'close'"
                       decoration-danger="state == 'cancelled'" string="Projects">
                     <field name="id" string="ID"/>
+                    <field name="task_count"/>
                     <field name="bord" string="Num BC"/>
                     <field name="npc" string="Num Project Client"/>
                     <field name="date" string="Date"/>
                     <!--                    <field name="date_start" string="Date de Début"/>-->
                     <!--                    <field name="date_end" string="Date de Livraison"/>-->
-                    <!--                    <field name="number" string="Nom du Project"/>-->
                     <field name="partner_id" string="Client"/>
                     <field name="progress_amount" string="% Dépense" widget="progressbar"/>
                     <field name="hours_r" string="% Hrs" widget="percentpie"/>

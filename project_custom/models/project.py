@@ -25,6 +25,79 @@ class ProjectCustom(models.Model):
         'mail.alias': 'alias_id',
     }
 
+    # def _auto_init(self, cr, context=None):
+    #     """ Installation hook: aliases, project.project """
+    #     # create aliases for all projects and avoid constraint errors
+    #     alias_context = dict(context, alias_model_name='project.task')
+    #     return self.pool.get('mail.alias').migrate_to_alias(cr, self._name, self._table,
+    #                                                         super(project, self)._auto_init,
+    #                                                         'project.task', self._columns['alias_id'], 'id',
+    #                                                         alias_prefix='project+',
+    #                                                         alias_defaults={'project_id': 'id'}, context=alias_context)
+    #
+    # def search(self, cr, user, args, offset=0, limit=None, order=None, context=None, count=False):
+    #     if user == 1:
+    #         return super(project, self).search(cr, user, args, offset=offset, limit=limit, order=order, context=context,
+    #                                            count=count)
+    #     if context and context.get('user_preference'):
+    #         cr.execute("""SELECT project.id FROM project_project project
+    #                        LEFT JOIN account_analytic_account account ON account.id = project.analytic_account_id
+    #                        LEFT JOIN project_user_rel rel ON rel.project_id = project.id
+    #                        WHERE (account.user_id = %s or rel.uid = %s)""" % (user, user))
+    #         return [(r[0]) for r in cr.fetchall()]
+    #     return super(project, self).search(cr, user, args, offset=offset, limit=limit, order=order,
+    #                                        context=context, count=count)
+    #
+    # def onchange_partner_id(self, cr, uid, ids, part=False, context=None):
+    #     partner_obj = self.pool.get('res.partner')
+    #     val = {}
+    #     if not part:
+    #         return {'value': val}
+    #     if 'pricelist_id' in self.fields_get(cr, uid, context=context):
+    #         pricelist = partner_obj.read(cr, uid, part, ['property_product_pricelist'], context=context)
+    #         pricelist_id = pricelist.get('property_product_pricelist', False) and \
+    #                        pricelist.get('property_product_pricelist')[0] or False
+    #         val['pricelist_id'] = pricelist_id
+    #     return {'value': val}
+    #
+    # def _get_projects_from_tasks(self, cr, uid, task_ids, context=None):
+    #     tasks = self.pool.get('project.task').browse(cr, uid, task_ids, context=context)
+    #     project_ids = [task.project_id.id for task in tasks if task.project_id]
+    #     return self.pool.get('project.project')._get_project_and_parents(cr, uid, project_ids, context)
+    #
+    # def _get_project_and_parents(self, cr, uid, ids, context=None):
+    #     """ return the project ids and all their parent projects """
+    #     res = set(ids)
+    #     while ids:
+    #         cr.execute("""
+    #             SELECT DISTINCT parent.id
+    #             FROM project_project project, project_project parent, account_analytic_account account
+    #             WHERE project.analytic_account_id = account.id
+    #             AND parent.analytic_account_id = account.parent_id
+    #             AND project.id IN %s
+    #             """, (tuple(ids),))
+    #         ids = [t[0] for t in cr.fetchall()]
+    #         res.update(ids)
+    #     return list(res)
+    #
+    # def _get_project_and_children(self, cr, uid, ids, context=None):
+    #     """ retrieve all children projects of project ids;
+    #         return a dictionary mapping each project to its parent project (or None)
+    #     """
+    #     res = dict.fromkeys(ids, None)
+    #     while ids:
+    #         cr.execute("""
+    #             SELECT project.id, parent.id
+    #             FROM project_project project, project_project parent, account_analytic_account account
+    #             WHERE project.analytic_account_id = account.id
+    #             AND parent.analytic_account_id = account.parent_id
+    #             AND parent.id IN %s
+    #             """, (tuple(ids),))
+    #         dic = dict(cr.fetchall())
+    #         res.update(dic)
+    #         ids = dic.keys()
+    #     return res
+
     def _get_progress_hr(self):
 
         self.env.cr.execute(
@@ -81,17 +154,16 @@ class ProjectCustom(models.Model):
         for rec in self:
             rec.total_remaining = hours.get(rec.id, 0.0)
 
-    def _get_sum(self, cr, uid, ids, field_name, arg, context=None):
+    def _get_sum(self):
 
         self.env.cr.execute(
             "SELECT project_id, COALESCE(SUM(total_r), 0.0) FROM project_task_work_line WHERE state in %s and project_task_work_line.project_id IN %s GROUP BY project_id",
-            (('valid', 'paid'), tuple(ids),))
+            (('valid', 'paid'), tuple(self.ids),))
         hours = dict(self.env.cr.fetchall())
         for rec in self:
             rec.total_r = hours.get(rec.id, 0.0)
 
-    # _get_attached_docs
-    def _compute_attached_docs(self, cr, uid, ids, field_name, arg, context):
+    def _get_attached_docs(self, cr, uid, ids, field_name, arg, context):
         res = {}
         attachment = self.env['ir.attachment']
         task = self.env['project.task']
@@ -106,19 +178,16 @@ class ProjectCustom(models.Model):
             res[id] = (project_attachments or 0) + (task_attachments or 0)
         return res
 
-    # _task_count
-    # def _compute_task_count(self):
-    #     res = {}
-    #     for tasks in self:
-    #         res[tasks.id] = len(tasks.task_ids)
-    #     return res
+    def _task_count(self):
 
-    # _get_progress
-    def _get_progress(self, cr, uid, ids, field_name, arg, context=None):
+        for tasks in self:
+            tasks.task_count = len(tasks.task_ids)
+
+    def _get_progress(self):
 
         self.env.cr.execute(
             "SELECT project_id, CASE WHEN SUM(total_planned) >0 Then COALESCE(SUM(total_effective)/SUM(total_planned), 0.0)  else COALESCE(SUM(total_effective), 0.0) end FROM project_task WHERE project_task.project_id IN %s GROUP BY project_id",
-            (tuple(ids),))
+            (tuple(self.ids),))
         hours = dict(self.env.cr.fetchall())
         if hours:
             for rec in self:
@@ -222,7 +291,7 @@ class ProjectCustom(models.Model):
                                            states={'close': [('readonly', True)]})
     type_ids = fields.Many2many('project.task', 'project_task_type_rel', 'project_id', 'type_id', 'Tasks Stages',
                                 readonly=True, states={'draft': [('readonly', False)]}, )
-    # task_count = fields.Integer(string="Number of Tasks", compute='_compute_task_count')
+    task_count = fields.Integer(string="Number of Tasks", compute='_task_count')
     task_ids = fields.One2many('project.task', 'project_id', readonly=True,
                                states={'draft': [('readonly', False)]}, )
     task_ids2 = fields.One2many('project.task', 'project_id')
@@ -300,7 +369,7 @@ class ProjectCustom(models.Model):
     parent_id1 = fields.Many2one('project.project', string='Parent Category', select=True, ondelete='cascade')
     child_id = fields.One2many('project.project', 'parent_id1', string='Child Categories')
     # need to check whether we can have the same ID or not
-    # doc_count = fields.Integer(compute='_compute_attached_docs', string='Number of documents attached')
+    # doc_count = fields.Integer(compute='_get_attached_docs', string='Number of documents attached')
 
 
 class AgreementFeesAmortizationLine(models.Model):

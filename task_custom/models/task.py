@@ -13,164 +13,116 @@ class TaskCustom(models.Model):
         for record in self:
             record.is_super_admin = self.env.user.has_group('om_hospital.group_super_admin')
 
-    # _get_planned
-    def _compute_total_planned(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
+    def _get_planned(self):
+
         self.env.cr.execute(
             "SELECT task_id, COALESCE(SUM(hours), 0.0) FROM project_task_work WHERE project_task_work.task_id IN %s GROUP BY task_id",
-            (tuple(ids),))
+            (tuple(self.ids),))
         hours = dict(self.env.cr.fetchall())
-        ##,COALESCE(SUM(total_hours), 0.0), COALESCE(SUM(effective_hours), 0.0)
         for rec in self:
-            result[rec.id] = hours.get(rec.id, 0.0)
-        return result
+            rec.total_planned = hours.get(rec.id, 0.0)
 
-    # _get_progress_qty
-    def _compute_progress_qty(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
+    def _get_progress_qty(self):
 
         self.env.cr.execute(
             "SELECT task_id, COALESCE(SUM(poteau_r), 0.0) FROM project_task_work_line WHERE state in %s and project_task_work_line.state='valid' and project_task_work_line.task_id IN %s GROUP BY task_id",
-            (('valid', 'paid'), tuple(ids),))
+            (('valid', 'paid'), tuple(self.ids),))
         hours = dict(self.env.cr.fetchall())
-
-        ##,COALESCE(SUM(total_hours), 0.0), COALESCE(SUM(effective_hours), 0.0)
         for rec in self:
-            ##result[rec.id] = hours.get(rec.id, 0.0)
-            ## raise osv.exc
-
             if rec.qte > 0:
                 ratio = hours.get(rec.id, 0.0) / rec.qte
-
             else:
                 ratio = hours.get(rec.id, 0.0)
-            ## raise osv.except_osv(_('Error !'), _('No period defined for this date: %s ')%hours)
-            result[rec.id] = ratio
+            rec.progress_qty = ratio
 
-    # _get_progress_amount
-    def _compute_progress_amount(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
+    def _get_progress_amount(self):
 
         self.env.cr.execute(
             "SELECT task_id, COALESCE(SUM(poteau_r), 0.0) FROM project_task_work_line WHERE state in %s and project_task_work_line.task_id IN %s GROUP BY task_id",
-            (('valid', 'paid'), tuple(ids),))
+            (('valid', 'paid'), tuple(self.ids),))
         hours = dict(self.env.cr.fetchall())
-
-        ##,COALESCE(SUM(total_hours), 0.0), COALESCE(SUM(effective_hours), 0.0)
         for rec in self:
-            ##result[rec.id] = hours.get(rec.id, 0.0)
-            ## raise osv.exc
             if rec.total > 0:
                 ratio = hours.get(rec.id, 0.0) * rec.cout / rec.total
             else:
                 ratio = hours.get(rec.id, 0.0)
-            result[rec.id] = round(min(100.0 * ratio, 100), 2)
-        return result
+            rec.progress_amount = round(min(100.0 * ratio, 100), 2)
 
-    # _get_sum
-    def _compute_total_r(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
+    def _get_sum(self):
+
         self.env.cr.execute(
             "SELECT task_id, COALESCE(SUM(poteau_r), 0.0) FROM project_task_work_line WHERE state in %s and project_task_work_line.task_id IN %s GROUP BY task_id",
-            (('valid', 'paid'), tuple(ids),))
+            (('valid', 'paid'), tuple(self.ids),))
         hours = dict(self.env.cr.fetchall())
-
-        ##,COALESCE(SUM(total_hours), 0.0), COALESCE(SUM(effective_hours), 0.0)
         for rec in self:
-            ##result[rec.id] = hours.get(rec.id, 0.0)
-            ## raise osv.exc
             if rec.total > 0:
                 ratio = hours.get(rec.id, 0.0) * rec.cout
             else:
                 ratio = hours.get(rec.id, 0.0)
-            result[rec.id] = ratio
-        return result
+            rec.total_r = ratio
 
-    # _get_qty
-    def _compute_poteau_r(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
+    def _get_qty(self):
 
         self.env.cr.execute(
             "SELECT task_id, COALESCE(SUM(poteau_r), 0.0) FROM project_task_work_line WHERE state in %s and project_task_work_line.task_id IN %s GROUP BY task_id",
-            (('valid', 'paid'), tuple(ids),))
+            (('valid', 'paid'), tuple(self.ids),))
         hours = dict(self.env.cr.fetchall())
-        ##,COALESCE(SUM(total_hours), 0.0), COALESCE(SUM(effective_hours), 0.0)
         for rec in self:
-            result[rec.id] = hours.get(rec.id, 0.0)
-        return result
+            rec.poteau_r = hours.get(rec.id, 0.0)
 
-    # _get_effective
-    def _compute_total_effective(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
+    def _get_effective(self):
+
         self.env.cr.execute(
             "SELECT task_id, COALESCE(SUM(hours),0) FROM project_task_work WHERE task_id IN %s GROUP BY task_id",
-            (tuple(ids),))
+            (tuple(self.ids),))
         hours = dict(self.env.cr.fetchall())
-        ##,COALESCE(SUM(total_hours), 0.0), COALESCE(SUM(effective_hours), 0.0)
         for rec in self:
-            result[rec.id] = hours.get(rec.id, 0.0)
-        return result
+            rec.total_effective = hours.get(rec.id, 0.0)
 
-    # _get_remaining
-    def _compute_total_remaining(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}  ##-SUM(hours_r),0
+    def _get_remaining(self):
+
         self.env.cr.execute(
             "SELECT task_id, COALESCE(SUM(hours)) FROM project_task_work WHERE task_id IN %s GROUP BY task_id",
-            (tuple(ids),))
+            (tuple(self.ids),))
         hours = dict(self.env.cr.fetchall())
-        ##,COALESCE(SUM(total_hours), 0.0), COALESCE(SUM(effective_hours), 0.0)
-        ## raise osv.except_osv(_('Error !'), _('No period defined for this date: %s ')%hours)
         for rec in self:
-            result[rec.id] = hours.get(rec.id, 0.0)
-        return result
+            rec.total_remaining = hours.get(rec.id, 0.0)
 
-    # _get_hours
-    def _compute_hours_r(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
+    def _get_hours(self):
 
         self.env.cr.execute(
             "SELECT task_id, COALESCE(SUM(hours_r), 0.0) FROM project_task_work_line WHERE state in %s and  project_task_work_line.task_id IN %s GROUP BY task_id",
-            (('valid', 'paid'), tuple(ids),))
+            (('valid', 'paid'), tuple(self.ids),))
         hours = dict(self.env.cr.fetchall())
-
         for rec in self:
-            result[rec.id] = hours.get(rec.id, 0.0)
-        return result
+            rec.hours_r = hours.get(rec.id, 0.0)
 
-    # _get_progress
-    def _get_progress(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
+    def _get_progress(self):
 
         self.env.cr.execute(
             "SELECT task_id, COALESCE(SUM(hours_r), 0.0) FROM project_task_work_line WHERE state in %s and project_task_work_line.task_id IN %s GROUP BY task_id",
-            (('valid', 'paid'), tuple(ids),))
+            (('valid', 'paid'), tuple(self.ids),))
         hours = dict(self.env.cr.fetchall())
-
         for rec in self:
-            ##result[rec.id] = hours.get(rec.id, 0.0)
-            ## raise osv.exc
             if rec.planned_hours > 0:
                 ratio = hours.get(rec.id, 0.0) / rec.planned_hours
             else:
                 ratio = hours.get(rec.id, 0.0)
-            result[rec.id] = round(min(100.0 * ratio, 100), 2)
-        return result
+            rec.progress_me = round(min(100.0 * ratio, 100), 2)
 
-    def _compute_is_template(self, cr, uid, ids, field_name, arg, context=None):
-        res = {}
+    def _is_template(self):
+
         for task in self:
-            res[task.id] = True
+            task.active = True
             if task.project_id:
                 if task.project_id.active == False or task.project_id.state == 'template':
-                    res[task.id] = False
-        return res
+                    task.active = False
 
-    # id = fields.Integer('ID', readonly=True)
     is_super_admin = fields.Boolean(string='Is Admin', compute='_compute_is_super_admin')
-    # active = fields.Boolean(compute='_compute_is_template', store=True, string='Not a Template Task', type='boolean',
-    #                         help="This field is computed automatically and have the same behavior than the boolean "
-    #                              "'active' field: if the task is linked to a template or unactivated project, "
-    #                              "it will be hidden unless specifically asked.")
+    active = fields.Boolean(compute='_is_template', store=True, string='Not a Template Task', type='boolean',
+                            help="This field is computed automatically and have the same behavior than the boolean "
+                                 "'active' field: if the task is linked to a template or unactivated project, "
+                                 "it will be hidden unless specifically asked.")
     name = fields.Char(string='Task Summary', track_visibility='onchange', size=128, required=True, select=True, )
     dc = fields.Char(string='Task Summary', track_visibility='onchange', size=128, required=True, select=True,
                      readonly=True, )
@@ -202,22 +154,26 @@ class TaskCustom(models.Model):
     child_ids = fields.Many2many('project.task', 'project_task_parent_rel', 'parent_id', 'task_id',
                                  string='Delegated Tasks')
     notes = fields.Text('Notes', readonly=True, )
-    hours_r = fields.Float(compute='_compute_hours_r', string='Company Currency', readonly=True, )
-    total_r = fields.Float(compute='_compute_total_r', string='Company Currency', readonly=True, )
-    poteau_r = fields.Float(compute='_compute_poteau_r', string='poteau_r', readonly=True, )
-    total_planned = fields.Float(compute='_compute_total_planned', string='Company Currency',
+    hours_r = fields.Float(compute='_get_hours', string='Company Currency', readonly=True, )
+    total_r = fields.Float(compute='_get_sum', string='Company Currency', readonly=True, )
+    poteau_r = fields.Float(compute='_get_qty', string='poteau_r', readonly=True, )
+    total_planned = fields.Float(compute='_get_planned', string='Company Currency',
                                  readonly=True, )
-    total_effective = fields.Float(compute='_compute_total_effective', string='Company Currency',
+    total_effective = fields.Float(compute='_get_effective', string='Company Currency',
                                    readonly=True, )
-    total_remaining = fields.Float(compute='_compute_total_remaining', string='Company Currency',
+    total_remaining = fields.Float(compute='_get_remaining', string='Company Currency',
                                    readonly=True, )
-    progress_me = fields.Float(compute='compute_progress_me', string='Company Currency', readonly=True, )
+    progress_me = fields.Float(compute='_get_progress', string='Company Currency', readonly=True, )
     product_id = fields.Many2one('product.product', string='Product', ondelete='cascade', select="1",
                                  readonly=True, )
     kit_id = fields.Many2one('product.kit', 'Kit ID', ondelete='cascade', select="1", )
     planned_hours = fields.Float(string='Initially Planned Hours',
                                  help='Estimated time to do the task, usually set by the project manager when the '
                                       'task is in draft state.', )
+    remaining_hours = fields.Float(string='Remaining Hours', digits=(16, 2),
+                                   help="Total remaining time, can be re-estimated periodically by the assignee of "
+                                        "the task.",
+                                   readonly=True, )
     # 'effective_hours': fields.function(_hours_get, string='Hours Spent', multi='hours',
     #                                    help="Computed using the sum of the task work done.",
     #                                    store={
@@ -225,10 +181,6 @@ class TaskCustom(models.Model):
     #                                                         ['work_ids', 'remaining_hours', 'planned_hours'], 10),
     #                                        'project.task.work': (_get_task, ['hours'], 10),
     #                                    }),
-    remaining_hours = fields.Float(string='Remaining Hours', digits=(16, 2),
-                                   help="Total remaining time, can be re-estimated periodically by the assignee of "
-                                        "the task.",
-                                   readonly=True, )
     # total_hours = fields.function(_hours_get, string='Total', multi='hours',
     #                                help="Computed as: Time Spent + Remaining Time.",
     #                                store={
@@ -281,26 +233,17 @@ class TaskCustom(models.Model):
     pourc_f = fields.Float(string='% Dépense', readonly=True, )
     user_id = fields.Many2one('res.users', string='Assigned to', select=True, track_visibility='onchange',
                               readonly=True, )
-    # 'delegated_user_id': fields.related('child_ids', 'user_id', type='many2one', relation='res.users',
-    #                                     string='Delegated To', readonly=True,
-    #                                   , )
     partner_id = fields.Many2one('res.partner', string='Customer', readonly=True, )
     work_ids = fields.One2many('project.task.work', 'task_id', string='Work done', domain=[('done', '=', False)],
                                copy=False, readonly=True, )
     work_ids2 = fields.One2many('project.task.work', 'task_id', domain=[('done', '=', True)], copy=False,
                                 readonly=True, )
-    # 'manager_id': fields.related('project_id', 'analytic_account_id', 'user_id', type='many2one',
-    #                              relation='res.users', string='Project Manager')
     company_id = fields.Many2one('res.company', string='Company', readonly=True, )
-    # id is already defined in odoo 15
-    # id = fields.Integer(string='ID', readonly=True)
     zone = fields.Integer(string='Zone', readonly=True, )
     secteur = fields.Integer(string='Secteur', readonly=True, )
     categ_id = fields.Many2one('product.category', string='Tags', )
     color = fields.Integer(string='Color Index', )
     done = fields.Boolean(string='Color Index', readonly=True, )
-    # 'user_email': fields.related('user_id', 'email', type='char', string='User Email', readonly=True,
-    #                            , )
     ct = fields.Float(string='CT', readonly=True, )
     cp = fields.Float(string='CP', readonly=True, )
     dependency_task_ids = fields.Many2many('project.task', 'project_task_dependency_task_rel',
@@ -321,10 +264,17 @@ class TaskCustom(models.Model):
                               ],
                              string='Status', copy=False)
     etape = fields.Char(string='etap', readonly=True, )
-    progress_qty = fields.Float(compute='_compute_progress_qty', string='Company Currency')
-    progress_amount = fields.Float(compute='_compute_progress_amount', string='Company Currency')
+    progress_qty = fields.Float(compute='_get_progress_qty', string='Company Currency')
+    progress_amount = fields.Float(compute='_get_progress_amount', string='Company Currency')
     rank = fields.Char(string='Rank', )
     display = fields.Boolean(string='Color Index')
+    # 'manager_id': fields.related('project_id', 'analytic_account_id', 'user_id', type='many2one',
+    #                              relation='res.users', string='Project Manager')
+    # 'user_email': fields.related('user_id', 'email', type='char', string='User Email', readonly=True,
+    #                            , )
+    # 'delegated_user_id': fields.related('child_ids', 'user_id', type='many2one', relation='res.users',
+    #                                     string='Delegated To', readonly=True,
+    #                                   , )
 
 
 class ProjectCategory(models.Model):
