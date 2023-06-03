@@ -197,7 +197,6 @@ class TaskCustom(models.Model):
     date_last_stage_update = fields.Datetime(string='Last Stage Update', index=True, copy=False, readonly=True, )
     project_id = fields.Many2one('project.project', string='Project', ondelete='set null', select=True,
                                  track_visibility='onchange', change_default=True, readonly=True, )
-    # need to check 'project_task_parent_rel'
     parent_ids = fields.Many2many('project.task', 'project_task_parent_rel', 'task_id', 'parent_id',
                                   string='Parent Tasks')
     child_ids = fields.Many2many('project.task', 'project_task_parent_rel', 'parent_id', 'task_id',

@@ -25,13 +25,11 @@ class ProjectCustom(models.Model):
         'mail.alias': 'alias_id',
     }
 
-    # _get_progress_hr
-    def _compute_progress_hr(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
+    def _get_progress_hr(self):
 
         self.env.cr.execute(
             "SELECT project_id, COALESCE(SUM(total_r), 0.0) FROM project_task_work_line WHERE project_task_work_line.project_id IN %s and state in ('valid','paid') GROUP BY project_id",
-            (tuple(ids),))
+            (tuple(self.ids),))
         data = dict(self.env.cr.fetchall())
 
         for rec in self:
@@ -39,16 +37,13 @@ class ProjectCustom(models.Model):
                 ratio = data.get(rec.id, 0.0) / rec.hours
             else:
                 ratio = data.get(rec.id, 0.0)
-            result[rec.id] = round(min(100.0 * ratio, 100), 2)
-        return result
+            rec.hours_r = round(min(100.0 * ratio, 100), 2)
 
-    # _get_progress_amount
-    def _compute_progress_amount(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
+    def _get_progress_amount(self):
 
         self.env.cr.execute(
             "SELECT project_id, COALESCE(SUM(total_r), 0.0) FROM project_task_work_line WHERE project_task_work_line.project_id IN %s and state in ('valid','paid') GROUP BY project_id",
-            (tuple(ids),))
+            (tuple(self.ids),))
         hours = dict(self.env.cr.fetchall())
 
         for rec in self:
@@ -56,53 +51,44 @@ class ProjectCustom(models.Model):
                 ratio = hours.get(rec.id, 0.0) / rec.ct
             else:
                 ratio = hours.get(rec.id, 0.0)
-            result[rec.id] = round(min(100.0 * ratio, 100), 2)
-        return result
+            rec.progress_amount = round(min(100.0 * ratio, 100), 2)
 
-    # _get_planned
-    def _compute_total_planned(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
+    def _get_planned(self):
+
         self.env.cr.execute(
             "SELECT project_id, COALESCE(SUM(hours_r), 0.0) FROM project_task_work_line WHERE project_task_work_line.project_id IN %s GROUP BY project_id",
-            (tuple(ids),))
+            (tuple(self.ids),))
         hours = dict(self.env.cr.fetchall())
         for rec in self:
-            result[rec.id] = hours.get(rec.id, 0.0)
-        return result
+            rec.total_planned = hours.get(rec.id, 0.0)
 
-    # _get_effective
-    def _compute_total_effective(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
+    def _get_effective(self):
+
         self.env.cr.execute(
             "SELECT project_id, COALESCE(SUM(total_effective), 0.0) FROM project_task WHERE project_task.project_id IN %s GROUP BY project_id",
-            (tuple(ids),))
+            (tuple(self.ids),))
         hours = dict(self.env.cr.fetchall())
 
         for rec in self:
-            result[rec.id] = hours.get(rec.id, 0.0)
-        return result
+            rec.total_effective = hours.get(rec.id, 0.0)
 
-    # _get_remaining
-    def _compute_total_remaining(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
+    def _get_remaining(self):
+
         self.env.cr.execute(
             "SELECT project_id, COALESCE(SUM(total_remaining), 0.0) FROM project_task WHERE project_task.project_id IN %s GROUP BY project_id",
-            (tuple(ids),))
+            (tuple(self.ids),))
         hours = dict(self.env.cr.fetchall())
         for rec in self:
-            result[rec.id] = hours.get(rec.id, 0.0)
-        return result
+            rec.total_remaining = hours.get(rec.id, 0.0)
 
-    # _get_sum
-    def _compute_total_r(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
+    def _get_sum(self, cr, uid, ids, field_name, arg, context=None):
+
         self.env.cr.execute(
             "SELECT project_id, COALESCE(SUM(total_r), 0.0) FROM project_task_work_line WHERE state in %s and project_task_work_line.project_id IN %s GROUP BY project_id",
             (('valid', 'paid'), tuple(ids),))
         hours = dict(self.env.cr.fetchall())
         for rec in self:
-            result[rec.id] = hours.get(rec.id, 0.0)
-        return result
+            rec.total_r = hours.get(rec.id, 0.0)
 
     # _get_attached_docs
     def _compute_attached_docs(self, cr, uid, ids, field_name, arg, context):
@@ -128,8 +114,7 @@ class ProjectCustom(models.Model):
     #     return res
 
     # _get_progress
-    def compute_progress_me(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
+    def _get_progress(self, cr, uid, ids, field_name, arg, context=None):
 
         self.env.cr.execute(
             "SELECT project_id, CASE WHEN SUM(total_planned) >0 Then COALESCE(SUM(total_effective)/SUM(total_planned), 0.0)  else COALESCE(SUM(total_effective), 0.0) end FROM project_task WHERE project_task.project_id IN %s GROUP BY project_id",
@@ -137,8 +122,7 @@ class ProjectCustom(models.Model):
         hours = dict(self.env.cr.fetchall())
         if hours:
             for rec in self:
-                result[rec.id] = round(min(100.0 * hours.get(rec.id, 0.0), 99.99), 2)
-        return result
+                rec.progress_me = round(min(100.0 * hours.get(rec.id, 0.0), 99.99), 2)
 
     @api.depends_context('uid')
     def _compute_is_super_admin(self):
@@ -186,16 +170,16 @@ class ProjectCustom(models.Model):
                                           ondelete="cascade")
     affect_ids = fields.One2many('agreement.fees.amortization.line', 'project_id', string='Alias', readonly=True,
                                  states={'draft': [('readonly', False)]}, copy=True)
-    # progress_amount = fields.Float(string='Progress Amount', compute='_compute_progress_amount')
+    progress_amount = fields.Float(string='Progress Amount', compute='_get_progress_amount')
     members = fields.Many2many('res.users', 'project_user_rel', 'project_id', 'uid', 'Project Members',
                                help="Project's members are users who can have an access to the tasks related to this project.",
                                states={'close': [('readonly', True)], 'cancelled': [('readonly', True)]})
     tasks = fields.One2many('project.task', 'project_id', string='Task Activities', readonly=True,
                             states={'draft': [('readonly', False)]}, copy=True)
-    # hours_r = fields.Float(string='Hours_r', readonly=True, compute='_compute_progress_hr',
-    #                        states={'draft': [('readonly', False)]})
-    # total_r = fields.Float(string='Total_r', compute='_compute_total_r', readonly=True,
-    #                        states={'draft': [('readonly', False)]})
+    hours_r = fields.Float(string='Hours_r', readonly=True, compute='_get_progress_hr',
+                           states={'draft': [('readonly', False)]})
+    total_r = fields.Float(string='Total_r', compute='_get_sum', readonly=True,
+                           states={'draft': [('readonly', False)]})
     # planned_hours = fields.function(_progress_rate, multi="progress", string='Planned Time',
     #                                  help="Sum of planned hours of all tasks related to this project and its child projects.",
     #                                  store={
@@ -273,16 +257,16 @@ class ProjectCustom(models.Model):
     total_p = fields.Float(string='Total P', readonly=True, states={'draft': [('readonly', False)]}, )
     jrs = fields.Float('JRS', readonly=True, states={'draft': [('readonly', False)]}, )
     resp_id = fields.Many2one('hr.employee', string='Resp ID', readonly=True, states={'draft': [('readonly', False)]}, )
-    # total_planned = fields.Float(compute='_compute_total_planned', string='Company Currency',
-    #                              readonly=True,
-    #                              states={'draft': [('readonly', False)]}, )
-    # total_effective = fields.Float(compute='_compute_total_effective', type='float', string='Company Currency',
-    #                                readonly=True,
-    #                                states={'draft': [('readonly', False)]}, )
-    # total_remaining = fields.Float(compute='_compute_total_remaining', string='Company Currency',
-    #                                readonly=True,
-    #                                states={'draft': [('readonly', False)]}, )
-    # progress_me = fields.Float(compute='compute_progress_me', string='Company Currency')
+    total_planned = fields.Float(compute='_get_planned', string='Company Currency',
+                                 readonly=True,
+                                 states={'draft': [('readonly', False)]}, )
+    total_effective = fields.Float(compute='_get_effective', type='float', string='Company Currency',
+                                   readonly=True,
+                                   states={'draft': [('readonly', False)]}, )
+    total_remaining = fields.Float(compute='_get_remaining', string='Company Currency',
+                                   readonly=True,
+                                   states={'draft': [('readonly', False)]}, )
+    progress_me = fields.Float(compute='_get_progress', string='Company Currency')
     # alias_model is to be removed
     # _alias_models = _get_alias_models
     # alias_model = fields.Selection(string="Alias Model", selection=_get_alias_models,
@@ -308,10 +292,10 @@ class ProjectCustom(models.Model):
                               ('close', 'Terminé')],
                              string='Status', required=True, copy=False, default='draft')
     zone = fields.Integer('Zone', readonly=True, states={'draft': [('readonly', False)]}, )
-    # work_ids = fields.One2many('project.task.work', 'project_id', readonly=True,
-    #                            states={'draft': [('readonly', False)]}, )
-    # work_line_ids = fields.One2many('project.task.work.line', 'project_id', readonly=True,
-    #                                 states={'draft': [('readonly', False)]}, )
+    work_ids = fields.One2many('project.task.work', 'project_id', readonly=True,
+                               states={'draft': [('readonly', False)]}, )
+    work_line_ids = fields.One2many('project.task.work.line', 'project_id', readonly=True,
+                                    states={'draft': [('readonly', False)]}, )
     academic_ids = fields.One2many('hr.academic', 'project_id', 'Academic experiences', help="Academic experiences")
     parent_id1 = fields.Many2one('project.project', string='Parent Category', select=True, ondelete='cascade')
     child_id = fields.One2many('project.project', 'parent_id1', string='Child Categories')
