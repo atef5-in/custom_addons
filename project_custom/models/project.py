@@ -24,6 +24,7 @@ class ProjectCustom(models.Model):
     _inherits = {
         'mail.alias': 'alias_id',
     }
+    _rec_name = 'id'
 
     # def _auto_init(self, cr, context=None):
     #     """ Installation hook: aliases, project.project """
@@ -298,15 +299,10 @@ class ProjectCustom(models.Model):
     color = fields.Integer(string='Color Index', readonly=True, states={'draft': [('readonly', False)]}, )
     parent_id = fields.Integer(string='Parent ID', readonly=True, states={'draft': [('readonly', False)]}, )
     date = fields.Date(string='date', readonly=True, states={'draft': [('readonly', False)]}, )
-    # date_start = fields.Date(string='Start Date', readonly=True, states={'draft': [('readonly', False)]}, copy=True)
-    # date_end = fields.Date(string='End Date', readonly=True, states={'draft': [('readonly', False)]}, copy=True)
+    date_start = fields.Date(string='Start Date', readonly=True, states={'draft': [('readonly', False)]}, copy=True)
+    date_end = fields.Date(string='End Date', readonly=True, states={'draft': [('readonly', False)]}, copy=True)
     date_s = fields.Date(string='date', readonly=True, states={'draft': [('readonly', False)]}, )
     date_e = fields.Date(string='date', readonly=True, states={'draft': [('readonly', False)]}, )
-    # alias_id has the same definition in project.project
-    # alias_id = fields.Many2one('mail.alias', string='Alias', ondelete="restrict", required=True,
-    #                            help="Internal email associated with this project. Incoming emails are automatically "
-    #                                 "synchronized"
-    #                                 "with Tasks (or optionally Issues if the Issue Tracker module is installed).")
     country_id = fields.Many2one('res.country', string='Country ID', readonly=True,
                                  states={'draft': [('readonly', False)]}, )
     fees_id = fields.Many2one('agreement.fees', string='Fees ID', readonly=True,
@@ -368,8 +364,8 @@ class ProjectCustom(models.Model):
     academic_ids = fields.One2many('hr.academic', 'project_id', 'Academic experiences', help="Academic experiences")
     parent_id1 = fields.Many2one('project.project', string='Parent Category', select=True, ondelete='cascade')
     child_id = fields.One2many('project.project', 'parent_id1', string='Child Categories')
-    # need to check whether we can have the same ID or not
     # doc_count = fields.Integer(compute='_get_attached_docs', string='Number of documents attached')
+    name = fields.Char(required=False, )
 
 
 class AgreementFeesAmortizationLine(models.Model):

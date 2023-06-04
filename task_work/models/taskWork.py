@@ -7,6 +7,7 @@ from datetime import datetime, date
 class TaskWork(models.Model):
     _name = 'project.task.work'
     _description = 'Project Task Work'
+    _rec_name = 'id'
 
     def _default_done(self):
 

@@ -4,7 +4,7 @@
             <field name="name">task.work.tree</field>
             <field name="model">project.task.work</field>
             <field name="arch" type="xml">
-                <tree string="Task Work">
+                <tree string="Tâches">
                     <field name="sequence" string="Séq " readonly="1"/>
                     <field name="id" string="id" readonly="1"/>
                     <field name="categ_id" string="Département" readonly="1"/>
@@ -192,7 +192,7 @@
         </record>
 
         <record id="action_task_work" model="ir.actions.act_window">
-            <field name="name">Task Work</field>
+            <field name="name">Tâches</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">project.task.work</field>
             <field name="view_mode">tree,form</field>
@@ -204,6 +204,6 @@
             </field>
         </record>
 
-        <menuitem id="menu_work_root" name="Task Work" sequence="0" action="action_task_work"/>
+        <menuitem id="menu_work" name="Tâches" sequence="-100" action="action_task_work"/>
     </data>
 </odoo>
