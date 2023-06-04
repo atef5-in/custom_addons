@@ -64,8 +64,8 @@
                     <!--                    <field name="is_correction" string="Libellé " readonly="1" invisible="1"/>-->
                     <field name="done33" string="Libellé " readonly="1" invisible="1"/>
                     <field name="poteau_i" string="Qté T. Prévue" readonly="1"/>
-                    <!--                    <field name="poteau_da" string="Qté Déja Affect." readonly="1"/>-->
-                    <!--                    <field name="poteau_ra" string="Qté Non Affect." readonly="1"/>-->
+                    <field name="poteau_da" string="Qté Déja Affect." readonly="1"/>
+                    <field name="poteau_ra" string="Qté Non Affect." readonly="1"/>
                     <field name="poteau_t" string="Qté Ddée" readonly="1"/>
                     <field name="uom_id" string="Unité" required="1"/>
                     <field name="risk" string="risk" required="1" invisible="1"/>
@@ -90,7 +90,7 @@
                         <group string="Travaux Prévus">
                             <group>
                                 <field name="sequence" readonly="1"/>
-                                <field name="project_id" widget="selection" string="Projet"/>
+                                <field name="project_id" widget="selection" string="Projet" readonly="1"/>
                                 <field name="task_id" widget="selection" invisible="1"/>
                                 <field name="product_id" string="Tache" readonly="1" invisible="1"/>
                                 <field name="name" string="Decription Tache" readonly="1"/>
@@ -107,8 +107,8 @@
                                 <field name="color" string="Durée(Jours)" readonly="1"/>
                                 <field name="uom_id" string="Unité"/>
                                 <field name="poteau_i" string="Qté T. Prévue" readonly="1"/>
-                                <!--                                <field name="poteau_da" string="Qté Déja Affect." readonly="1"/>-->
-                                <!--                                <field name="poteau_ra" string="Qté N.Affecté" readonly="1"/>-->
+                                <field name="poteau_da" string="Qté Déja Affect." readonly="1"/>
+                                <field name="poteau_ra" string="Qté N.Affecté" readonly="1"/>
                                 <field name="poteau_t" string="Qté Demandée" readonly="0"/>
                                 <field name="zone" string="Zone" readonly="1"/>
                                 <field name="secteur" string="Secteur" readonly="1"/>
