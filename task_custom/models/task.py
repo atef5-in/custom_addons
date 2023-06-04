@@ -134,7 +134,8 @@ class TaskCustom(models.Model):
     sequence = fields.Integer(string='Sequence', readonly=True, states={'draft': [('readonly', False)]}, )
     stage_id = fields.Many2one('project.task.type', 'Stage', track_visibility='onchange', select=True,
                                domain="[('project_ids', '=', project_id)]", copy=False, )
-    categ_ids = fields.Many2many('project.category', string='Tags', )
+    categ_ids = fields.Many2many('project.category', string='Tags', readonly=True,
+                                 states={'draft': [('readonly', False)]}, )
     kanban_state = fields.Selection(
         [('normal', 'In Progress'), ('blocked', 'Blocked'), ('done', 'Ready for next stage')], 'Kanban State',
         track_visibility='onchange',
@@ -143,35 +144,51 @@ class TaskCustom(models.Model):
              " * Blocked indicates something is preventing the progress of this task\n"
              " * Ready for next stage indicates the task is ready to be pulled to the next stage",
         required=False, copy=False)
-    create_date = fields.Datetime('Create Date', index=True, )
-    write_date = fields.Datetime(string='Last Modification Date', index=True, )
+    create_date = fields.Datetime('Create Date', index=True, readonly=True,
+                                  states={'draft': [('readonly', False)]},)
+    write_date = fields.Datetime(string='Last Modification Date', index=True, readonly=True,
+                                 states={'draft': [('readonly', False)]},)
     # not displayed in the view but it might be useful with base_action_rule module (and it needs to be defined first for that)
-    date_start = fields.Date(string='Starting Date', index=True, copy=True, )
-    date_end = fields.Date(string='Ending Date', index=True, copy=True, )
-    date_deadline = fields.Date(string='Deadline', index=True, copy=True, )
-    date_last_stage_update = fields.Datetime(string='Last Stage Update', index=True, copy=False, )
+    date_start = fields.Date(string='Starting Date', index=True, copy=True, readonly=True,
+                             states={'draft': [('readonly', False)]},)
+    date_end = fields.Date(string='Ending Date', index=True, copy=True, readonly=True,
+                           states={'draft': [('readonly', False)]},)
+    date_deadline = fields.Date(string='Deadline', index=True, copy=True, readonly=True,
+                                states={'draft': [('readonly', False)]},)
+    date_last_stage_update = fields.Datetime(string='Last Stage Update', index=True, copy=False, readonly=True,
+                                             states={'draft': [('readonly', False)]},)
     project_id = fields.Many2one('project.project', string='Project', ondelete='set null', select=True,
                                  track_visibility='onchange', change_default=True, )
     parent_ids = fields.Many2many('project.task', 'project_task_parent_rel', 'task_id', 'parent_id',
                                   string='Parent Tasks')
     child_ids = fields.Many2many('project.task', 'project_task_parent_rel', 'parent_id', 'task_id',
                                  string='Delegated Tasks')
-    notes = fields.Text('Notes', )
-    hours_r = fields.Float(compute='_get_hours', string='Company Currency', )
-    total_r = fields.Float(compute='_get_sum', string='Company Currency', )
-    poteau_r = fields.Float(compute='_get_qty', string='poteau_r', )
-    total_planned = fields.Float(compute='_get_planned', string='Company Currency', )
-    total_effective = fields.Float(compute='_get_effective', string='Company Currency', )
-    total_remaining = fields.Float(compute='_get_remaining', string='Company Currency', )
-    progress_me = fields.Float(compute='_get_progress', string='Company Currency', )
-    product_id = fields.Many2one('product.product', string='Product', ondelete='cascade', select="1", )
-    kit_id = fields.Many2one('product.kit', 'Kit ID', ondelete='cascade', select="1", )
+    notes = fields.Text('Notes', readonly=True, states={'draft': [('readonly', False)]}, )
+    hours_r = fields.Float(compute='_get_hours', string='Company Currency', readonly=True,
+                           states={'draft': [('readonly', False)]},)
+    total_r = fields.Float(compute='_get_sum', string='Company Currency', readonly=True,
+                           states={'draft': [('readonly', False)]},)
+    poteau_r = fields.Float(compute='_get_qty', string='poteau_r', readonly=True,
+                            states={'draft': [('readonly', False)]},)
+    total_planned = fields.Float(compute='_get_planned', string='Company Currency', readonly=True,
+                                 states={'draft': [('readonly', False)]}, )
+    total_effective = fields.Float(compute='_get_effective', string='Company Currency', readonly=True,
+                                   states={'draft': [('readonly', False)]}, )
+    total_remaining = fields.Float(compute='_get_remaining', string='Company Currency', readonly=True,
+                                   states={'draft': [('readonly', False)]},)
+    progress_me = fields.Float(compute='_get_progress', string='Company Currency', readonly=True,
+                               states={'draft': [('readonly', False)]},)
+    product_id = fields.Many2one('product.product', string='Product', ondelete='cascade', select="1", readonly=True,
+                                 states={'draft': [('readonly', False)]}, )
+    kit_id = fields.Many2one('product.kit', 'Kit ID', ondelete='cascade', select="1", readonly=True,
+                             states={'draft': [('readonly', False)]}, )
     planned_hours = fields.Float(string='Initially Planned Hours',
                                  help='Estimated time to do the task, usually set by the project manager when the '
-                                      'task is in draft state.', )
+                                      'task is in draft state.', readonly=True,
+                                 states={'draft': [('readonly', False)]}, )
     remaining_hours = fields.Float(string='Remaining Hours', digits=(16, 2),
                                    help="Total remaining time, can be re-estimated periodically by the assignee of "
-                                        "the task.", )
+                                        "the task.", readonly=True, states={'draft': [('readonly', False)]}, )
     # 'effective_hours': fields.function(_hours_get, string='Hours Spent', multi='hours',
     #                                    help="Computed using the sum of the task work done.",
     #                                    store={
@@ -201,46 +218,63 @@ class TaskCustom(models.Model):
     #                                                     ['work_ids', 'remaining_hours', 'planned_hours'], 10),
     #                                    'project.task.work': (_get_task, ['hours'], 10),
     #                                }),
-    reviewer_id = fields.Many2one('hr.employee', string='Reviewer', select=True, track_visibility='onchange', )
-    reviewer_id1 = fields.Many2one('hr.employee', 'Reviewer 2', select=True, track_visibility='onchange', )
-    coordin_id = fields.Many2one('hr.employee', string='Coordinator', select=True, track_visibility='onchange', )
-    coordin_id1 = fields.Many2one('hr.employee', string='Coordinator 2', select=True, track_visibility='onchange', )
-    coordin_id2 = fields.Many2one('hr.employee', string='Coordinator 3', select=True, track_visibility='onchange', )
-    coordin_id3 = fields.Many2one('hr.employee', string='Coordinator 4', select=True, track_visibility='onchange', )
-    coordin_id4 = fields.Many2one('hr.employee', string='Coordinator 5', select=True, track_visibility='onchange', )
-    coordin_id5 = fields.Many2one('hr.employee', string='Coordinator 6', select=True, track_visibility='onchange', )
-    coordin_id6 = fields.Many2one('hr.employee', string='Coordinator 7', select=True, track_visibility='onchange', )
-    coordin_id7 = fields.Many2one('hr.employee', string='Coordinator 8', select=True, track_visibility='onchange',)
-    coordin_id8 = fields.Many2one('hr.employee', string='Coordinator 9', select=True, track_visibility='onchange', )
-    coordin_id9 = fields.Many2one('hr.employee', string='Coordinator 10', select=True, track_visibility='onchange', )
-    coordin_id10 = fields.Many2one('hr.employee', string='Coordinator 11', select=True, track_visibility='onchange', )
-    current_ph = fields.Char(string='Phase En cours', )
-    pourc = fields.Float(string='Time Spent', )
-    pourc_t = fields.Float(string='% Avancement', )
-    pourc_f = fields.Float(string='% Dépense', )
-    user_id = fields.Many2one('res.users', string='Assigned to', select=True, track_visibility='onchange', )
-
+    reviewer_id = fields.Many2one('hr.employee', string='Reviewer', select=True, track_visibility='onchange',
+                                  readonly=True, states={'draft': [('readonly', False)]}, )
+    reviewer_id1 = fields.Many2one('hr.employee', 'Reviewer 2', select=True, track_visibility='onchange',
+                                   readonly=True, states={'draft': [('readonly', False)]}, )
+    coordin_id = fields.Many2one('hr.employee', string='Coordinator', select=True, track_visibility='onchange',
+                                 readonly=True, states={'draft': [('readonly', False)]}, )
+    coordin_id1 = fields.Many2one('hr.employee', string='Coordinator 2', select=True, track_visibility='onchange',
+                                  readonly=True, states={'draft': [('readonly', False)]}, )
+    coordin_id2 = fields.Many2one('hr.employee', string='Coordinator 3', select=True, track_visibility='onchange',
+                                  readonly=True, states={'draft': [('readonly', False)]}, )
+    coordin_id3 = fields.Many2one('hr.employee', string='Coordinator 4', select=True, track_visibility='onchange',
+                                  readonly=True, states={'draft': [('readonly', False)]}, )
+    coordin_id4 = fields.Many2one('hr.employee', string='Coordinator 5', select=True, track_visibility='onchange',
+                                  readonly=True, states={'draft': [('readonly', False)]}, )
+    coordin_id5 = fields.Many2one('hr.employee', string='Coordinator 6', select=True, track_visibility='onchange',
+                                  readonly=True, states={'draft': [('readonly', False)]}, )
+    coordin_id6 = fields.Many2one('hr.employee', string='Coordinator 7', select=True, track_visibility='onchange',
+                                  readonly=True, states={'draft': [('readonly', False)]}, )
+    coordin_id7 = fields.Many2one('hr.employee', string='Coordinator 8', select=True, track_visibility='onchange',
+                                  readonly=True, states={'draft': [('readonly', False)]}, )
+    coordin_id8 = fields.Many2one('hr.employee', string='Coordinator 9', select=True, track_visibility='onchange',
+                                  readonly=True, states={'draft': [('readonly', False)]}, )
+    coordin_id9 = fields.Many2one('hr.employee', string='Coordinator 10', select=True, track_visibility='onchange',
+                                  readonly=True, states={'draft': [('readonly', False)]}, )
+    coordin_id10 = fields.Many2one('hr.employee', string='Coordinator 11', select=True, track_visibility='onchange',
+                                   readonly=True, states={'draft': [('readonly', False)]}, )
+    current_ph = fields.Char(string='Phase En cours', readonly=True, states={'draft': [('readonly', False)]}, )
+    pourc = fields.Float(string='Time Spent', readonly=True, states={'draft': [('readonly', False)]}, )
+    pourc_t = fields.Float(string='% Avancement', readonly=True, states={'draft': [('readonly', False)]}, )
+    pourc_f = fields.Float(string='% Dépense', readonly=True, states={'draft': [('readonly', False)]}, )
+    user_id = fields.Many2one('res.users', string='Assigned to', select=True, track_visibility='onchange',
+                              readonly=True, states={'draft': [('readonly', False)]}, )
     partner_id = fields.Many2one('res.partner', string='Customer', )
     work_ids = fields.One2many('project.task.work', 'task_id', string='Work done',
-                               copy=False, )
-    work_ids2 = fields.One2many('project.task.work', 'task_id', copy=False, )
-    company_id = fields.Many2one('res.company', string='Company', )
-    zone = fields.Integer(string='Zone', )
-    secteur = fields.Integer(string='Secteur', )
-    categ_id = fields.Many2one('product.category', string='Tags', )
-    color = fields.Integer(string='Color Index', )
-    done = fields.Boolean(string='Color Index', )
-    ct = fields.Float(string='CT', )
-    cp = fields.Float(string='CP', )
+                               copy=False, readonly=True, states={'draft': [('readonly', False)]}, )
+    work_ids2 = fields.One2many('project.task.work', 'task_id', copy=False, readonly=True,
+                                states={'draft': [('readonly', False)]}, )
+    company_id = fields.Many2one('res.company', string='Company', readonly=True,
+                                 states={'draft': [('readonly', False)]}, )
+    zone = fields.Integer(string='Zone', readonly=True, states={'draft': [('readonly', False)]}, )
+    secteur = fields.Integer(string='Secteur', readonly=True, states={'draft': [('readonly', False)]}, )
+    categ_id = fields.Many2one('product.category', string='Tags', readonly=True, states={'draft': [('readonly', False)]}, )
+    color = fields.Integer(string='Color Index', readonly=True, states={'draft': [('readonly', False)]}, )
+    done = fields.Boolean(string='Color Index', readonly=True, states={'draft': [('readonly', False)]}, )
+    ct = fields.Float(string='CT', readonly=True, states={'draft': [('readonly', False)]}, )
+    cp = fields.Float(string='CP', readonly=True, states={'draft': [('readonly', False)]}, )
     dependency_task_ids = fields.Many2many('project.task', 'project_task_dependency_task_rel',
                                            'dependency_task_id', 'task_id', string='Dependencies')
-    cout = fields.Float(string='Cout', )
-    qte = fields.Float(string='Quantity', )
-    ftp = fields.Char(string='ftp', )
-    state_id = fields.Many2one('res.country.state', string='State', readonly=True)
-    city = fields.Char('City', )
-    uom_id = fields.Many2one('product.uom', string='Unit of Measure', required=True, )
-    total = fields.Float(string='Total', )
+    cout = fields.Float(string='Cout', readonly=True, states={'draft': [('readonly', False)]}, )
+    qte = fields.Float(string='Quantity', readonly=True, states={'draft': [('readonly', False)]}, )
+    ftp = fields.Char(string='ftp', readonly=True, states={'draft': [('readonly', False)]}, )
+    state_id = fields.Many2one('res.country.state', string='State', readonly=True,
+                               states={'draft': [('readonly', False)]}, )
+    city = fields.Char(string='City', readonly=True, states={'draft': [('readonly', False)]}, )
+    uom_id = fields.Many2one('product.uom', string='Unit of Measure', readonly=True,
+                             states={'draft': [('readonly', False)]}, )
+    total = fields.Float(string='Total', readonly=True, states={'draft': [('readonly', False)]}, )
     state = fields.Selection([('template', 'Template'),
                               ('draft', 'Brouillon'),
                               ('open', 'Confirmé'),
@@ -249,10 +283,10 @@ class TaskCustom(models.Model):
                               ('pending', 'Suspendu'),
                               ],
                              string='Status', copy=False)
-    etape = fields.Char(string='etap', )
+    etape = fields.Char(string='etap', readonly=True, states={'draft': [('readonly', False)]}, )
     progress_qty = fields.Float(compute='_get_progress_qty', string='Company Currency')
     progress_amount = fields.Float(compute='_get_progress_amount', string='Company Currency')
-    rank = fields.Char(string='Rank', )
+    rank = fields.Char(string='Rank', readonly=True, states={'draft': [('readonly', False)]}, )
     display = fields.Boolean(string='Color Index')
     # 'manager_id': fields.related('project_id', 'analytic_account_id', 'user_id', type='many2one',
     #                              relation='res.users', string='Project Manager')
