@@ -5,7 +5,7 @@
             <field name="model">project.task.work</field>
             <field name="arch" type="xml">
                 <tree string="Tâches">
-                    <field name="sequence" string="Séq " readonly="1"/>
+                    <field name="sequence" string="Séq" readonly="1"/>
                     <field name="id" string="id" readonly="1"/>
                     <field name="categ_id" string="Département" readonly="1"/>
                     <field name="project_id" string="Projet" readonly="1"/>
@@ -159,7 +159,7 @@
                                            attrs="{'required': [('state', '=', 'affect')]}"/>
                                     <field name="date_end_r" string="Date Fin" widget="date"
                                            attrs="{'required': [('state', '=', 'draft')]}"/>
-                                    <field name="employee_id" invisible="0" string="Employee"/>
+                                    <field name="employee_id" invisible="0" string="Employé"/>
                                     <field name="color1" string="Durée(Jours)"
                                            attrs="{'required': [('state', '=', 'draft')]}"
                                            sum="Prev Hours"/>

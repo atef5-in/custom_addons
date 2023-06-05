@@ -368,8 +368,8 @@ class TaskWork(models.Model):
 
             rec.risk = ratio
 
-    name = fields.Char(string='Nom Service', readonly=True, states={'draft': [('readonly', False)]}, )
-    ftp = fields.Char(string='Ftp', readonly=True, states={'draft': [('readonly', False)]}, )
+    name = fields.Char(string='Libellé Travaux', readonly=True, states={'draft': [('readonly', False)]}, )
+    ftp = fields.Char(string='Lien FTP', readonly=True, states={'draft': [('readonly', False)]}, )
     job = fields.Char(string='Job', readonly=True, states={'draft': [('readonly', False)]}, )
     date = fields.Datetime('Date Doc', index="1", readonly=True, states={'draft': [('readonly', False)]}, )
     date_r = fields.Datetime(string='date', index="1", readonly=True, states={'draft': [('readonly', False)]}, )
@@ -383,42 +383,41 @@ class TaskWork(models.Model):
     ex_state = fields.Char(string='ex')
     r_id = fields.Many2one('risk.management.category', string='r ID', readonly=True,
                            states={'draft': [('readonly', False)]}, )
-    project_id = fields.Many2one('project.project', string='Project', ondelete='set null', select=True, readonly=True,
+    project_id = fields.Many2one('project.project', string='Projet', ondelete='set null', select=True, readonly=True,
                                  states={'draft': [('readonly', False)]}, )
-    task_id = fields.Many2one('project.task', string='Activités', ondelete='cascade', select="1", readonly=True,
+    task_id = fields.Many2one('project.task', string='Tache', ondelete='cascade', select="1", readonly=True,
                               states={'draft': [('readonly', False)]}, )
     product_id = fields.Many2one('product.product', string='T. de Service', ondelete='cascade', select="1",
                                  readonly=True, states={'draft': [('readonly', False)]}, )
-    hours = fields.Float(string='Hours', readonly=True, states={'draft': [('readonly', False)]}, )
-    ## hours_r = fields.Float(string='Hours r', )
+    hours = fields.Float(string='Total Hrs Prévues', readonly=True, states={'draft': [('readonly', False)]}, )
     etape = fields.Char(string='Etape', readonly=True, states={'draft': [('readonly', False)]}, )
     categ_id = fields.Many2one('product.category', string='Département', readonly=True,
                                states={'draft': [('readonly', False)]}, )
-    hours_r = fields.Float(compute='_get_planned', string='Company Currency', readonly=True,
+    hours_r = fields.Float(compute='_get_planned', string='Total Hrs Réalisées', readonly=True,
                            states={'draft': [('readonly', False)]}, )
     partner_id = fields.Many2one('res.partner', string='Clients', readonly=True,
                                  states={'draft': [('readonly', False)]}, )
-    kit_id = fields.Many2one('product.kit', string='Kit ID', ondelete='cascade', select="1",
+    kit_id = fields.Many2one('product.kit', string='Nom Kit', ondelete='cascade', select="1",
                              readonly=True, states={'draft': [('readonly', False)]}, )
     total_t = fields.Float(string='Total à Facturer T', readonly=True, states={'draft': [('readonly', False)]}, )
-    total_r = fields.Float(compute='_get_sum', string='Company Currency', readonly=True,
+    total_r = fields.Float(compute='_get_sum', string='Total à Facturer R', readonly=True,
                            states={'draft': [('readonly', False)]}, )
     poteau_t = fields.Float(string='Qté demamdée', readonly=True, states={'draft': [('readonly', False)]}, )
-    poteau_i = fields.Float(string='N.U', readonly=True, states={'draft': [('readonly', False)]}, )
-    poteau_r = fields.Float(compute='_get_qty', string='Company Currency', readonly=True,
+    poteau_i = fields.Float(string='Qté T. Prévue', readonly=True, states={'draft': [('readonly', False)]}, )
+    poteau_r = fields.Float(compute='_get_qty', string='Qté/Unité Réalisée', readonly=True,
                             states={'draft': [('readonly', False)]}, )
-    poteau_da = fields.Float(compute='_get_qty_affect', string='Company Currency', readonly=True,
+    poteau_da = fields.Float(compute='_get_qty_affect', string='Qté Déja Affect.', readonly=True,
                              states={'draft': [('readonly', False)]}, )
-    poteau_ra = fields.Float(compute='_get_qty_r_affect', string='Company Currency', readonly=True,
+    poteau_ra = fields.Float(compute='_get_qty_r_affect', string='Qté N.Affecté', readonly=True,
                              states={'draft': [('readonly', False)]}, )
     poteau_reste = fields.Integer(string='N.U', readonly=True, states={'draft': [('readonly', False)]}, )
     total_part = fields.Selection([
         ('partiel', 'Partiel'),
         ('total', 'Total'), ],
         string='N.U', copy=False, readonly=True, states={'draft': [('readonly', False)]}, )
-    sequence = fields.Integer(string='Sequence', select=True, readonly=True, states={'draft': [('readonly', False)]}, )
-    state_id = fields.Many2one('res.country.state', string='Cité/Ville')
-    city = fields.Char(string='City', readonly=True)
+    sequence = fields.Integer(string='Séq', select=True, readonly=True, states={'draft': [('readonly', False)]}, )
+    state_id = fields.Many2one('res.country.state', string='Municipalités')
+    city = fields.Char(string='Région', readonly=True)
     state_id1 = fields.Many2one('res.country.state', string='state ID')
     state_id2 = fields.Many2one('res.country.state', string='state 2 ID ')
     precision = fields.Char(string='Precision(P)')
@@ -467,8 +466,8 @@ class TaskWork(models.Model):
                               string='Status', copy=False)
     # kanban_color = fields.Integer(compute='_compute_kanban_color', string='Couleur')
     link_ids = fields.One2many('link.type', 'work_id', string='Work done')
-    zone = fields.Integer(string='Zone (entier)', readonly=True, states={'draft': [('readonly', False)]}, )
-    secteur = fields.Integer(string='Secteur (entier)', readonly=True, states={'draft': [('readonly', False)]}, )
+    zone = fields.Integer(string='Zone', readonly=True, states={'draft': [('readonly', False)]}, )
+    secteur = fields.Integer(string='Secteur', readonly=True, states={'draft': [('readonly', False)]}, )
     zo = fields.Char(string='Zone', readonly=True, states={'draft': [('readonly', False)]}, )
     sect = fields.Char(string='Secteur', readonly=True, states={'draft': [('readonly', False)]}, )
     user_id = fields.Many2one('res.users', string='user ID', select="1", readonly=True,
@@ -503,7 +502,7 @@ class TaskWork(models.Model):
                                   states={'draft': [('readonly', False)]}, )
     coordin_id10 = fields.Many2one('hr.employee', string='Coordinateur 10', readonly=True,
                                    states={'draft': [('readonly', False)]}, )
-    employee_id = fields.Many2one('hr.employee', 'Employés', readonly=True, states={'draft': [('readonly', False)]}, )
+    employee_id = fields.Many2one('hr.employee', 'Employé', readonly=True, states={'draft': [('readonly', False)]}, )
     issue_id = fields.Many2one('project.issue', 'Issue ID', select="1", readonly=True,
                                states={'draft': [('readonly', False)]}, )
     group_id = fields.Many2one('bon.show', 'group ID', select="1", readonly=True,
@@ -539,7 +538,7 @@ class TaskWork(models.Model):
     done4 = fields.Boolean(compute='_default_flow', string='Company Currency', readonly=True,
                            states={'draft': [('readonly', False)]}, )
     color = fields.Integer(string='Nbdays', readonly=True, states={'draft': [('readonly', False)]}, )
-    color1 = fields.Integer('Nbdays', readonly=True, states={'affect': [('readonly', False)]}, )
+    color1 = fields.Integer(string='Durée(Jours)', readonly=True, states={'affect': [('readonly', False)]}, )
     uom_id = fields.Many2one('product.uom', string='Unité Prévue', required=True, readonly=True,
                              states={'draft': [('readonly', False)]}, )
     uom_id_r = fields.Many2one('product.uom', string='Unité Réelle', readonly=True,
@@ -573,8 +572,8 @@ class TaskWork(models.Model):
     # is_correction = fields.Boolean(compute='_iscorr', string='correction')
     line_ids = fields.One2many('project.task.work.line', 'work_id', string='Work done')
     progress_me = fields.Float(compute='_get_progress', string='Company Currency')
-    progress_qty = fields.Float(compute='_get_progress_qty', string='Company Currency')
-    progress_amount = fields.Float(compute='_get_progress_amount', string='Company Currency')
+    progress_qty = fields.Float(compute='_get_progress_qty', string='% Qté')
+    progress_amount = fields.Float(compute='_get_progress_amount', string='% Montant')
     risk = fields.Char(compute='_get_risk', string='Risk')
 
 
@@ -595,8 +594,8 @@ class TaskWorkLine(models.Model):
     work_id = fields.Many2one('project.task.work', string='Task Work')
     work_id2 = fields.Many2one('project.task.work', string='Event')
     wizard_id = fields.Many2one('base.invoice.merge.automatic.wizard', string='Event')
-    date_start = fields.Date(string='Date', select="1")
-    date_end = fields.Date(string='Date', select="1")
+    date_start = fields.Date(string='Date Prévue', select="1")
+    date_end = fields.Date(string='Date Fin', select="1")
     date_start_r = fields.Date(string='Date', select="1", readonly=True, states={'affect': [('readonly', False)]}, )
     date_end_r = fields.Date(string='Date', select="1", readonly=True, states={'affect': [('readonly', False)]}, )
     employee_id = fields.Many2one('hr.employee', string='Employee')
@@ -605,10 +604,10 @@ class TaskWorkLine(models.Model):
                                  readonly=True, states={'affect': [('readonly', False)]}, )
     task_id = fields.Many2one('project.task', string='Task', ondelete='cascade', select="1", readonly=True, states={'affect': [('readonly', False)]}, )
     product_id = fields.Many2one('product.product', string='Task', ondelete='cascade', select="1", readonly=True, states={'affect': [('readonly', False)]}, )
-    hours = fields.Float(string='Time Spent', readonly=True, states={'affect': [('readonly', False)]}, )
-    hours_r = fields.Float(string='Time Spent')
-    total_t = fields.Float(string='Time Spent', readonly=True, states={'affect': [('readonly', False)]}, )
-    total_r = fields.Float(string='Time Spent', readonly=True, states={'affect': [('readonly', False)]}, )
+    hours = fields.Float(string='Total Hrs Prévues', readonly=True, states={'affect': [('readonly', False)]}, )
+    hours_r = fields.Float(string='Durée(Heurs)')
+    total_t = fields.Float(string='Total à Facturer T', readonly=True, states={'affect': [('readonly', False)]}, )
+    total_r = fields.Float(string='Total à Facturer R', readonly=True, states={'affect': [('readonly', False)]}, )
     poteau_t = fields.Float(string='Time Spent', readonly=True, states={'affect': [('readonly', False)]}, )
     poteau_r = fields.Float(string='Time Spent')
     poteau_reste = fields.Float(string='Time Spent', readonly=True, states={'affect': [('readonly', False)]}, )
@@ -621,9 +620,9 @@ class TaskWorkLine(models.Model):
     sequence = fields.Integer(string='Sequence', select=True, readonly=True, states={'affect': [('readonly', False)]}, )
     zone = fields.Integer(string='Color Index', readonly=True, states={'affect': [('readonly', False)]}, )
     secteur = fields.Integer(string='Color Index', readonly=True, states={'affect': [('readonly', False)]}, )
-    user_id = fields.Many2one('res.users', string='Done by', select="1",
+    user_id = fields.Many2one('res.users', string='USER', select="1",
                               readonly=True, states={'affect': [('readonly', False)]}, )
-    paylist_id = fields.Many2one('hr.payslip', 'Done by', select="1", readonly=True,
+    paylist_id = fields.Many2one('hr.payslip', string='Done by', select="1", readonly=True,
                                  states={'affect': [('readonly', False)]}, )
     gest_id = fields.Many2one('hr.employee', string='Superviseur', readonly=True,
                               states={'affect': [('readonly', False)]}, )
@@ -643,7 +642,7 @@ class TaskWorkLine(models.Model):
         ('close', 'Traité')
     ],
         string='Status', copy=False)
-    categ_id = fields.Many2one('product.category', string='Tags', readonly=True,
+    categ_id = fields.Many2one('product.category', string='Département', readonly=True,
                                states={'affect': [('readonly', False)]}, )
     note = fields.Text(string='Work summary', readonly=True, states={'affect': [('readonly', False)]}, )
     done = fields.Boolean(string='is done', readonly=True, states={'affect': [('readonly', False)]}, )
@@ -659,9 +658,9 @@ class TaskWorkLine(models.Model):
     facture = fields.Boolean(string='Facture', readonly=True, states={'affect': [('readonly', False)]}, )
     date_inv = fields.Date(string='Date', select="1")
     num = fields.Char(string='Work summary', readonly=True, states={'affect': [('readonly', False)]}, )
-    color = fields.Integer(string='Color', readonly=True, states={'affect': [('readonly', False)]}, )
+    color = fields.Integer(string='Durée(Jours)', readonly=True, states={'affect': [('readonly', False)]}, )
     color1 = fields.Integer(string='Color 1', readonly=True, states={'affect': [('readonly', False)]}, )
-    uom_id = fields.Many2one('product.uom', string='Unit of Measure', readonly=True,
+    uom_id = fields.Many2one('product.uom', string='Unité', readonly=True,
                              states={'affect': [('readonly', False)]}, )
     uom_id_r = fields.Many2one('product.uom', string='Unit of Measure', readonly=True,
                                states={'affect': [('readonly', False)]}, )

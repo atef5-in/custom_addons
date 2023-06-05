@@ -42,7 +42,7 @@
                                 <field name="sequence" string="N°"/>
                                 <field name="categ_id" string="Département"/>
                                 <field name="product_id" domain="[('categ_id','=',categ_id)]" string="Items"/>
-                                <field name="name" string="Type de Service"/>
+                                <field name="name" string="Nom Kit"/>
                                 <field name="description" string="Type de Service"/>
                                 <field name="date_start" string="Date Début" widget="date"/>
                                 <field name="date_end" string="Date Fin" widget="date"/>
