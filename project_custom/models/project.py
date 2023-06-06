@@ -369,6 +369,7 @@ class ProjectCustom(models.Model):
     child_id = fields.One2many('project.project', 'parent_id1', string='Child Categories')
     # doc_count = fields.Integer(compute='_get_attached_docs', string='Number of documents attached')
     name = fields.Char(required=False, string='Nom', )
+    issue_ids = fields.One2many('project.issue', 'project_id')
 
     def action_open_project(self):
 
@@ -403,59 +404,48 @@ class ProjectCustom(models.Model):
                 'flags': {'initial_mode': 'edit'},
             }
 
-    # def set_compute2(self, cr, uid, ids, context=None):
-    #     proj = self.browse(cr, uid, ids[0], context=context)
-    #     task_obj = self.pool.get('project.task')
-    #     task_obj_line = self.pool.get('project.task.work')
-    #     for project in self.browse(cr, uid, ids, context=context):
-    #         cp = 0
-    #         ct = 0
-    #         compteur = 0
-    #         etape = ''
-    #         task_ids_ord = task_obj.search(cr, uid, [('project_id', '=', project.id)], limit=0, order='sequence,id',
-    #                                        context=context)
-    #         for tk in task_ids_ord:
-    #             task = task_obj.browse(cr, uid, tk, context=context)
-    #             if task.dc:
-    #                 if 'Etap' in task.dc:
-    #                     compteur = (compteur - (compteur % 10000)) + 10000
-    #                     etape = task.dc
-    #                 else:
-    #                     if compteur < 10000:
-    #                         compteur = 10000 + compteur + 10
-    #                     else:
-    #                         compteur = compteur + 100
-    #                 self.pool.get('project.task').write(cr, uid, task.id, {'sequence': compteur, 'etape': etape,
-    #                                                                        'state_id': project.state_id.id,
-    #                                                                        'city': project.city}, context=context)
-    #             else:
-    #                 if 'Etap' in task.name:
-    #                     compteur = (compteur - (compteur % 10000)) + 10000
-    #                     etape = task.name
-    #                 else:
-    #                     if compteur < 10000:
-    #                         compteur = 10000 + compteur + 10
-    #                     else:
-    #                         compteur = compteur + 100
-    #                 self.pool.get('project.task').write(cr, uid, task.id,
-    #                                                     {'sequence': compteur, 'etape': etape, 'dc': task.name,
-    #                                                      'state_id': project.state_id.id, 'city': project.city},
-    #                                                     context=context)
-    #
-    #     return True
-    #
-    # def set_validate(self, cr, uid, ids, context=None):
+    def set_compute2(self):
+        task_obj = self.env['project.task']
+        for project in self:
+            compteur = 0
+            etape = ''
+            task_ids_ord = task_obj.search([('project_id', '=', project.id)], order='sequence,id').ids
+            for task_id in task_ids_ord:
+                task = task_obj.browse(task_id)
+                if task.dc:
+                    if 'Etap' in task.dc:
+                        compteur = (compteur - (compteur % 10000)) + 10000
+                        etape = task.dc
+                    else:
+                        if compteur < 10000:
+                            compteur = 10000 + compteur + 10
+                        else:
+                            compteur = compteur + 100
+                    task.write(
+                        {'sequence': compteur, 'etape': etape, 'state_id': project.state_id.id, 'city': project.city})
+                else:
+                    if 'Etap' in task.name:
+                        compteur = (compteur - (compteur % 10000)) + 10000
+                        etape = task.name
+                    else:
+                        if compteur < 10000:
+                            compteur = 10000 + compteur + 10
+                        else:
+                            compteur = compteur + 100
+                    task.write({'sequence': compteur, 'etape': etape, 'dc': task.name, 'state_id': project.state_id.id,
+                                'city': project.city})
+        return True
+
+    # def set_validate2(self, cr, uid, ids, context=None):
     #
     #     self.set_compute2(cr, uid, ids, context=context)
-    #     self.set_coord(cr, uid, ids, context=context)
     #     proj = self.browse(cr, uid, ids[0], context=context)
     #     cr.execute('update project_task set  state=%s where project_id =%s', ('open', ids[0]))
     #     cr.execute('update project_task set  partner_id=%s where project_id =%s', (proj.partner_id.id, ids[0]))
     #     proj_obj = self.pool.get('project.project')
     #     task_obj = self.pool.get('project.task')
     #     task_obj_line = self.pool.get('project.task.work')
-    #     self.write(cr, uid, ids, {'state': 'open'}, context=context)
-    #     if cr.dbname == 'DEMOdddd':
+    #     if cr.dbname == 'DEMO1':
             ##################CHECK INSERT PROJECT######################
             # connection = py.connect(host='localhost',
             #                         user='root',
@@ -463,39 +453,50 @@ class ProjectCustom(models.Model):
             #                         db='rukovoditel_en',
             #                         use_unicode=True, charset="utf8")
             # cursor = connection.cursor()
+            #
             # sql = ("select field_159 from app_entity_21 WHERE id = %s")
             #
-            # proj = self.browse(cr, uid, ids[0], context=context)
+            #INSERT PROJECT LIST
+            # pr = proj_obj.search(cr, uid,
+            #                      [('partner_id', '<>', False), ('state', '<>', 'draft'), ('npc', '<>', 'PROJET TYPE')],
+            #                      limit=0, order='sequence,id', context=context)
+            # for kk in pr:
+            #     proj = self.browse(cr, uid, kk, context=context)
             #
-            # cursor.execute(sql, (ids[0],))
-            # datas = cursor.fetchone()
-            # if not datas:
-            #     if proj.state == 'open':
-            #         state = '38'
-            #     elif proj.state == 'cancelled':
-            #         state = '39'
-            #     elif proj.state == 'pending':
-            #         state = '40'
-            #     elif proj.state == 'close':
-            #         state = '41'
-            #
-            #     sql1 = ((
-            #                 "INSERT INTO  app_entity_21  (id,date_added,date_updated,created_by,sort_order,field_156,field_157,field_159,field_207,field_215,field_217,field_216,field_219 ,field_220  )  VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')") % (
-            #                 proj.id, time.mktime(datetime.strptime(proj.date_start, '%Y-%m-%d').timetuple()),
-            #                 time.mktime(datetime.strptime(proj.date_start, '%Y-%m-%d').timetuple()), 1, 1, 34, state,
-            #                 time.mktime(datetime.strptime(proj.date_start, '%Y-%m-%d').timetuple()),
-            #                 time.mktime(datetime.strptime(proj.date_end, '%Y-%m-%d').timetuple()), proj.partner_id.id,
-            #                 proj.npc.encode('ascii', 'ignore').replace("'", "\\'"), proj.bord, str(proj.ref),
-            #                 str(proj.km)))
-            #     sql2 = (("INSERT INTO  app_entity_21_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
-            #         proj.id, 157, state))
-            #     sql3 = (("INSERT INTO  app_entity_21_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
-            #         proj.id, 215, proj.partner_id.id))
-            #
-            #     cursor.execute(sql1)
-            #     cursor.execute(sql2)
-            #     cursor.execute(sql3)
-            #     connection.commit()
+            #     cursor.execute(sql, (kk,))
+            #     datas = cursor.fetchone()
+            #     if not datas:
+                    #INSERT PROJECT LIST
+                    # if proj.state == 'open':
+                    #     state = '38'
+                    # elif proj.state == 'cancelled':
+                    #     state = '39'
+                    # elif proj.state == 'pending':
+                    #     state = '40'
+                    # elif proj.state == 'close':
+                    #     state = '41'
+                    #
+                    # sql1 = ((
+                    #             "INSERT INTO  app_entity_21  (id,date_added,date_updated,created_by,sort_order,field_156,field_157,field_159,field_207,field_215,field_217,field_216,field_219 ,field_220  )  VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')") % (
+                    #             proj.id, time.mktime(datetime.strptime(proj.date_start, '%Y-%m-%d').timetuple()),
+                    #             time.mktime(datetime.strptime(proj.date_start, '%Y-%m-%d').timetuple()), 1, 1, 34,
+                    #             state,
+                    #             time.mktime(datetime.strptime(proj.date_start, '%Y-%m-%d').timetuple()),
+                    #             time.mktime(datetime.strptime(proj.date_end, '%Y-%m-%d').timetuple()),
+                    #             proj.partner_id.id,
+                    #             proj.npc.encode('ascii', 'ignore').replace("'", "\\'"), proj.bord, str(proj.ref),
+                    #             str(proj.km)))
+                    # sql2 = ((
+                    #             "INSERT INTO  app_entity_21_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
+                    #             proj.id, 157, state))
+                    # sql3 = ((
+                    #             "INSERT INTO  app_entity_21_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
+                    #             proj.id, 215, proj.partner_id.id))
+                    #
+                    # cursor.execute(sql1)
+                    # cursor.execute(sql2)
+                    # cursor.execute(sql3)
+                    # connection.commit()
         #
         # for project in self.browse(cr, uid, ids, context=context):
         #     cr.execute(
@@ -508,16 +509,13 @@ class ProjectCustom(models.Model):
         #     else:
         #         res1 = '001'
         #
-        #     cp = 0
         #     ct = 0
-        #     compteur = 0
-        #     etape = ''
-        #     list = []
+        #
         #     if not project.number:
         #         self.write(cr, uid, ids, {'number': str(str(project.date[:4]) + str(str(res1).zfill(3))),
         #                                   'name': str(str(project.date[:4]) + ' - ' + str(str(res1).zfill(3)))},
         #                    context=context)
-        #     if cr.dbname == 'DEMOdddd':
+        #     if cr.dbname == 'DEMO3':
         #
                 ##################CHECK INSERT TASKS######################
                 # connection = py.connect(host='localhost',
@@ -525,6 +523,8 @@ class ProjectCustom(models.Model):
                 #                         passwd='',
                 #                         db='rukovoditel_en', use_unicode=True, charset="utf8")
                 # cursor = connection.cursor()
+                #
+                # sql = ("select id from app_entity_22 WHERE id = %s")
                 # pr = proj_obj.search(cr, uid, [('partner_id', '<>', False), ('state', '<>', 'draft'),
                 #                                ('npc', '<>', 'PROJET TYPE')], limit=0, order='sequence,id',
                 #                      context=context)
@@ -534,6 +534,7 @@ class ProjectCustom(models.Model):
                 #
                 #         cursor.execute(sql, (task.id,))
                 #         datas = cursor.fetchone()
+                #
                 #         if not datas:
                 #             if proj.state == 'open':
                 #                 state = '47'
@@ -577,16 +578,16 @@ class ProjectCustom(models.Model):
                 #                 sq24 = ((
                 #                             "INSERT INTO  app_entity_22_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
                 #                             task.id, 226, task.reviewer_id.id))
-                #                 cursor.execute(sq24)
                 #             if task.coordin_id:
                 #                 sq25 = ((
                 #                             "INSERT INTO  app_entity_22_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
                 #                             task.id, 227, task.coordin_id.id))
-                #                 cursor.execute(sq25)
                 #             cursor.execute(sq20)
                 #             cursor.execute(sq21)
                 #             cursor.execute(sq22)
                 #             cursor.execute(sq23)
+                #             cursor.execute(sq24)
+                #             cursor.execute(sq25)
                 #             connection.commit()
             #
             # for task in project.task_ids:
@@ -612,59 +613,15 @@ class ProjectCustom(models.Model):
             #             self.pool.get('project.task').write(cr, uid, task.id, {'priority': project.priority,
             #                                                                    'state_id': project.state_id.id or False,
             #                                                                    'city': project.city}, context=context)
-            #         sql = 0
             #         if task.kit_id:
             #             for hh in task.kit_id.type_id.ids:
             #                 pr = self.pool.get('product.product').browse(cr, uid, hh, context=context)
-            #                 if pr.is_load is True:
-            #                     sql = self.pool.get('project.task.work').create(cr, uid, {
-            #                         'task_id': task.id,
-            #                         'categ_id': task.categ_id.id,
-            #                         'product_id': pr.id,
-            #                         'name': task.kit_id.name,
-            #                         'date_start': task.date_start,
-            #                         'date_end': task.date_end,
-            #                         'poteau_t': task.qte,
-            #                         'poteau_i': task.qte,
-            #                         'color': task.color,
-            #                         'etape': task.etape,
-            #                         'zone': 0,
-            #                         'secteur': 0,
-            #                         'total_t': task.color * 7,  ##*work.employee_id.contract_id.wage
-            #                         'hours': task.color * 7,
-            #                         'project_id': task.project_id.id,
-            #                         'partner_id': task.project_id.partner_id.id,
-            #                         'planned_hours': task.color * 7,
-            #                         'state_id': project.state_id.id or False,
-            #                         'city': project.city,
-            #                         'gest_id': task.reviewer_id.id or False,
-            #                         'reviewer_id1': task.reviewer_id1.id or False,
-            #                         'coordin_id1': task.coordin_id1.id or False,
-            #                         'coordin_id2': task.coordin_id2.id or False,
-            #                         'coordin_id3': task.coordin_id3.id or False,
-            #                         'coordin_id4': task.coordin_id4.id or False,
-            #                         'uom_id': pr.uom_id.id,
-            #                         'uom_id_r': pr.uom_id.id,
-            #                         'ftp': task.ftp,
-            #                         'kit_id': task.kit_id.id,
-            #                         'state': 'draft',
-            #                         'sequence': task.sequence,
-            #                         'display': True,
-            #                         'active': True,
-            #                         'gest_id3': task.coordin_id.id or False,
-            #                         'current_gest': task.coordin_id.id or False,
-            #                         'current_sup': task.reviewer_id.id or False,
             #
-            #                     }, context=context)
-            #
-            #         elif int(task.rank) > 0 and int(task.rank) < 2:
-            #             if not 'Etape' in task.product_id.name and task.product_id.is_load:
-            #                 ct = ct + (task.color * 7)
             #                 sql = self.pool.get('project.task.work').create(cr, uid, {
             #                     'task_id': task.id,
             #                     'categ_id': task.categ_id.id,
-            #                     'product_id': task.product_id.id,
-            #                     'name': task.name,
+            #                     'product_id': pr.id,
+            #                     'name': pr.name,
             #                     'date_start': task.date_start,
             #                     'date_end': task.date_end,
             #                     'poteau_t': task.qte,
@@ -698,10 +655,10 @@ class ProjectCustom(models.Model):
             #                     'current_sup': task.reviewer_id.id or False,
             #
             #                 }, context=context)
-            #         else:
+            #         elif int(task.rank) > 0 and int(task.rank) < 2:
             #             if not 'Etape' in task.product_id.name and task.product_id.is_load:
             #                 ct = ct + (task.color * 7)
-            #                 sql = self.pool.get('project.task.work').create(cr, uid, {
+            #                 self.pool.get('project.task.work').create(cr, uid, {
             #                     'task_id': task.id,
             #                     'categ_id': task.categ_id.id,
             #                     'product_id': task.product_id.id,
@@ -713,7 +670,46 @@ class ProjectCustom(models.Model):
             #                     'color': task.color,
             #                     'zone': 0,
             #                     'secteur': 0,
-            #                     'etape': task.etape,
+            #                     'total_t': task.color * 7,  ##*work.employee_id.contract_id.wage
+            #                     'hours': task.color * 7,
+            #                     'project_id': task.project_id.id,
+            #                     'partner_id': task.project_id.partner_id.id,
+            #                     'planned_hours': task.color * 7,
+            #                     'state_id': project.state_id.id or False,
+            #                     'city': project.city,
+            #                     'gest_id': task.reviewer_id.id or False,
+            #                     'reviewer_id1': task.reviewer_id1.id or False,
+            #                     'coordin_id1': task.coordin_id1.id or False,
+            #                     'coordin_id2': task.coordin_id2.id or False,
+            #                     'coordin_id3': task.coordin_id3.id or False,
+            #                     'coordin_id4': task.coordin_id4.id or False,
+            #                     'uom_id': task.uom_id.id,
+            #                     'uom_id_r': task.uom_id.id,
+            #                     'ftp': task.ftp,
+            #                     'state': 'draft',
+            #                     'sequence': task.sequence,
+            #                     'display': True,
+            #                     'active': True,
+            #                     'gest_id3': task.coordin_id.id or False,
+            #                     'current_gest': task.coordin_id.id or False,
+            #                     'current_sup': task.reviewer_id.id or False,
+            #
+            #                 }, context=context)
+            #         else:
+            #             if not 'Etape' in task.product_id.name and task.product_id.is_load:
+            #                 ct = ct + (task.color * 7)
+            #                 self.pool.get('project.task.work').create(cr, uid, {
+            #                     'task_id': task.id,
+            #                     'categ_id': task.categ_id.id,
+            #                     'product_id': task.product_id.id,
+            #                     'name': task.name,
+            #                     'date_start': task.date_start,
+            #                     'date_end': task.date_end,
+            #                     'poteau_t': task.qte,
+            #                     'poteau_i': task.qte,
+            #                     'color': task.color,
+            #                     'zone': 0,
+            #                     'secteur': 0,
             #                     'total_t': task.color * 7,  ##*work.employee_id.contract_id.wage
             #                     'hours': task.color * 7,
             #                     'project_id': task.project_id.id,
@@ -737,117 +733,119 @@ class ProjectCustom(models.Model):
             #                     'gest_id3': task.coordin_id.id or False,
             #                     'current_gest': task.coordin_id.id or False,
             #                     'current_sup': task.reviewer_id.id or False,
+            #
             #                 }, context=context)
             #
             # if cr.dbname == 'TEST88':
             #     connection.close()
             #
-            # if cr.dbname == 'DEMO99':
-            #
-            #     connection = py.connect(host='localhost',
-            #                             user='root',
-            #                             passwd='',
-            #                             db='rukovoditel_en', use_unicode=True, charset="utf8")
-            #     cursor = connection.cursor()
-            #     pr = proj_obj.search(cr, uid, [('partner_id', '<>', False), ('state', '<>', 'draft'),
-            #                                    ('npc', '<>', 'PROJET TYPE')], limit=0, order='sequence,id',
-            #                          context=context)
-            #     for kk in pr:
-            #         proj = self.browse(cr, uid, kk, context=context)
-            #         tt = task_obj_line.search(cr, uid, [('active', '=', True), ('project_id', '=', kk),
-            #                                             ('product_id.is_gantt', '=', True)], limit=0, order='id',
-            #                                   context=context)
-            #
-            #         for jj in tt:
-            #             task = task_obj_line.browse(cr, uid, jj, context=None)
-            #             sql3 = ("select id from app_entity_26 WHERE id = %s")
-            #             cursor.execute(sql3, (jj,))
-            #             datas = cursor.fetchone()
-            #             if not datas:
-            #                 if task.state == 'draft':
-            #                     state = '72'
-            #                 elif task.state == 'affect':
-            #                     state = '73'
-            #                 elif task.state == 'tovalid':
-            #                     state = '74'
-            #                 elif task.state == 'tovalidcont':
-            #                     state = '74'
-            #                 elif task.state == 'validcont':
-            #                     state = '74'
-            #                 elif task.state == 'tovalidcorrec':
-            #                     state = '74'
-            #                 elif task.state == 'validcorrec':
-            #                     state = '74'
-            #                 elif task.state == 'cancel':
-            #                     state = '76'
-            #                 elif task.state == 'pending':
-            #                     state = '78'
-            #                 elif task.state == 'valid':
-            #                     state = '75'
-            #                 sq40 = ((
-            #                             "INSERT INTO  app_entity_26  (id,date_added,date_updated,created_by,parent_item_id,field_243,field_253,field_255,field_256,field_260,field_261,field_259,field_258,field_264,field_271,field_272,field_268,field_244,field_250,field_251,field_269,field_263,field_287,field_273,field_274,field_276,field_267,field_262)  VALUES (%s,'%s','%s','%s','%s','%s',%s,'%s','%s','%s','%s','%s','%s',%s,'%s',%s,'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')") % (
-            #                             task.id,
-            #                             int(time.mktime(datetime.strptime(task.date_start or task.create_date[:10],
-            #                                                               '%Y-%m-%d').timetuple())) or '',
-            #                             int(time.mktime(datetime.strptime(task.date_start or task.create_date[:10],
-            #                                                               '%Y-%m-%d').timetuple())) or '', 1, kk,
-            #                             task.name.encode('ascii', 'ignore').replace("'", "\\'"), kk,
-            #                             task.sequence or '',
-            #                             str(task.project_id.partner_id.id) or '',
-            #                             task.product_id.name.encode('ascii', 'ignore').replace("'", "\\'") or '',
-            #                             task.categ_id.name.encode('ascii', 'ignore').replace("'", "\\'") or '',
-            #                             str(task.gest_id3.id) or '', str(task.gest_id.id) or '', task.poteau_t or 0,
-            #                             int(time.mktime(datetime.strptime(task.date_start_r or '2000-01-01',
-            #                                                               '%Y-%m-%d').timetuple())) or '',
-            #                             int(time.mktime(
-            #                                 datetime.strptime(task.date_end_r or '2000-01-01',
-            #                                                   '%Y-%m-%d').timetuple())) or '',
-            #                             str(task.task_id.id) or '',
-            #                             task.state or '', int(time.mktime(
-            #                                 datetime.strptime(task.date_start or task.create_date[:10],
-            #                                                   '%Y-%m-%d').timetuple())) or '', int(time.mktime(
-            #                                 datetime.strptime(task.date_end or '2000-01-01',
-            #                                                   '%Y-%m-%d').timetuple())) or '',
-            #                             str(task.employee_id.id if task.employee_id else '') or '',
-            #                             str(task.uom_id.id) or '', str(task.job) or '', str(task.zone) or '',
-            #                             str(task.secteur) or '', task.active, task.product_id.is_gantt,
-            #                             task.etape.encode('ascii', 'ignore').replace("'", "\\'") or ''))
-            #
-            #                 sq41 = ((
-            #                             "INSERT INTO  app_entity_26_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
-            #                             task.id, 244, state))
-            #                 sq42 = ((
-            #                             "INSERT INTO  app_entity_26_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
-            #                             task.id, 253, task.project_id.id))
-            #                 sq43 = ((
-            #                             "INSERT INTO  app_entity_26_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
-            #                             task.id, 256, task.project_id.partner_id.id))
-            #                 sq44 = ((
-            #                             "INSERT INTO  app_entity_26_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
-            #                             task.id, 268, task.task_id.id))
-            #
-            #                 if task.gest_id:
-            #                     sq45 = ((
-            #                                 "INSERT INTO  app_entity_26_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
-            #                                 task.id, 258, task.gest_id.id))
-            #                     cursor.execute(sq45)
-            #                 if task.gest_id3:
-            #                     sq46 = ((
-            #                                 "INSERT INTO  app_entity_26_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
-            #                                 task.id, 259, task.gest_id3.id))
-            #                     cursor.execute(sq46)
-            #                 if task.employee_id:
-            #                     sq47 = ((
-            #                                 "INSERT INTO  app_entity_26_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
-            #                                 task.id, 269, task.employee_id.id))
-            #                 cursor.execute(sq40)
-            #                 cursor.execute(sq41)
-            #                 cursor.execute(sq42)
-            #                 cursor.execute(sq43)
-            #                 cursor.execute(sq44)
-            #                 connection.commit()
-            # self.write(cr, uid, ids, {'ct': ct}, context=context)
-        # return True
+            # if cr.dbname == 'DEMO4':
+                ##################CHECK INSERT TASKS######################
+                # connection = py.connect(host='localhost',
+                #                         user='root',
+                #                         passwd='',
+                #                         db='rukovoditel_en', use_unicode=True, charset="utf8")
+                # cursor = connection.cursor()
+                #
+                # pr = proj_obj.search(cr, uid, [('partner_id', '<>', False), ('state', '<>', 'draft'),
+                #                                ('npc', '<>', 'PROJET TYPE')], limit=0, order='sequence,id',
+                #                      context=context)
+                # for kk in pr:
+                #     proj = self.browse(cr, uid, kk, context=context)
+                #     tt = task_obj_line.search(cr, uid, [('project_id', '=', kk)], limit=0, order='id', context=context)
+                #
+                #     for jj in tt:
+                #         task = task_obj_line.browse(cr, uid, jj, context=None)
+                #         sql3 = ("select id from app_entity_26 WHERE id = %s")
+                #         cursor.execute(sql3, (jj,))
+                #         datas = cursor.fetchone()
+                #         if not datas:
+                #             if task.state == 'draft':
+                #                 state = '72'
+                #             elif task.state == 'affect':
+                #                 state = '73'
+                #             elif task.state == 'tovalid':
+                #                 state = '74'
+                #             elif task.state == 'tovalidcont':
+                #                 state = '74'
+                #             elif task.state == 'validcont':
+                #                 state = '74'
+                #             elif task.state == 'tovalidcorrec':
+                #                 state = '74'
+                #             elif task.state == 'validcorrec':
+                #                 state = '74'
+                #             elif task.state == 'cancel':
+                #                 state = '76'
+                #             elif task.state == 'pending':
+                #                 state = '78'
+                #             elif task.state == 'valid':
+                #                 state = '75'
+                #
+                #             sq40 = ((
+                #                         "INSERT INTO  app_entity_26  (id,date_added,date_updated,created_by,parent_item_id,field_243,field_253,field_255,field_256,field_260,field_261,field_259,field_258,field_264,field_271,field_272,field_268,field_244,field_250,field_251,field_269,field_263,field_287,field_273,field_274,field_276,field_267,field_262)  VALUES (%s,'%s','%s','%s','%s','%s',%s,'%s','%s','%s','%s','%s','%s',%s,'%s',%s,'%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')") % (
+                #                         task.id,
+                #                         int(time.mktime(datetime.strptime(task.date_start or task.create_date[:10],
+                #                                                           '%Y-%m-%d').timetuple())) or '',
+                #                         int(time.mktime(datetime.strptime(task.date_start or task.create_date[:10],
+                #                                                           '%Y-%m-%d').timetuple())) or '', 1, kk,
+                #                         task.name.encode('ascii', 'ignore').replace("'", "\\'"), kk,
+                #                         task.sequence or '',
+                #                         str(task.project_id.partner_id.id) or '',
+                #                         task.product_id.name.encode('ascii', 'ignore').replace("'", "\\'") or '',
+                #                         task.categ_id.name.encode('ascii', 'ignore').replace("'", "\\'") or '',
+                #                         str(task.gest_id3.id) or '', str(task.gest_id.id) or '', task.poteau_t or 0,
+                #                         int(time.mktime(datetime.strptime(task.date_start_r or '2000-01-01',
+                #                                                           '%Y-%m-%d').timetuple())) or '',
+                #                         int(time.mktime(
+                #                             datetime.strptime(task.date_end_r or '2000-01-01',
+                #                                               '%Y-%m-%d').timetuple())) or '',
+                #                         str(task.task_id.id) or '',
+                #                         task.state or '', int(time.mktime(
+                #                             datetime.strptime(task.date_start or task.create_date[:10],
+                #                                               '%Y-%m-%d').timetuple())) or '', int(time.mktime(
+                #                             datetime.strptime(task.date_end or '2000-01-01',
+                #                                               '%Y-%m-%d').timetuple())) or '',
+                #                         str(task.employee_id.id if task.employee_id else '') or '',
+                #                         str(task.uom_id.id) or '', str(task.job) or '', str(task.zone) or '',
+                #                         str(task.secteur) or '', task.active, task.product_id.is_gantt,
+                #                         task.etape.encode('ascii', 'ignore').replace("'", "\\'") or ''))
+                #
+                #             sq41 = ((
+                #                         "INSERT INTO  app_entity_26_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
+                #                         task.id, 244, state))
+                #             sq42 = ((
+                #                         "INSERT INTO  app_entity_26_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
+                #                         task.id, 253, task.project_id.id))
+                #             sq43 = ((
+                #                         "INSERT INTO  app_entity_26_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
+                #                         task.id, 256, task.project_id.partner_id.id))
+                #             sq44 = ((
+                #                         "INSERT INTO  app_entity_26_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
+                #                         task.id, 268, task.task_id.id))
+                #
+                #             if task.gest_id:
+                #                 sq45 = ((
+                #                             "INSERT INTO  app_entity_26_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
+                #                             task.id, 258, task.gest_id.id))
+                #                 cursor.execute(sq45)
+                #             if task.gest_id3:
+                #                 sq46 = ((
+                #                             "INSERT INTO  app_entity_26_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
+                #                             task.id, 259, task.gest_id3.id))
+                #                 cursor.execute(sq46)
+                #             if task.employee_id:
+                #                 sq47 = ((
+                #                             "INSERT INTO  app_entity_26_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
+                #                             task.id, 269, task.employee_id.id))
+                #
+                #             cursor.execute(sq40)
+                #             cursor.execute(sq41)
+                #             cursor.execute(sq42)
+                #             cursor.execute(sq43)
+                #             cursor.execute(sq44)
+                #
+                #             connection.commit()
+        # return self.write(cr, uid, ids, {'state': 'open', 'ct': ct}, context=context)
 
 
 class AgreementFeesAmortizationLine(models.Model):
@@ -858,6 +856,12 @@ class AgreementFeesAmortizationLine(models.Model):
 class HrAcademic(models.Model):
     _name = "hr.academic"
     project_id = fields.Many2one('project.project', string='project ID')
+    employee_id = fields.Char()
+    categ_id = fields.Char()
+    product_id = fields.Char()
+    partner_id = fields.Char()
+    currency_id = fields.Char()
+    amount = fields.Char()
 
 
 class AgreementFees(models.Model):
@@ -870,3 +874,13 @@ class RiskManagementCategory(models.Model):
 
 class ProjectTypeCustom(models.Model):
     _name = "project.type.custom"
+
+
+class ProjectIssue(models.Model):
+    _name = "project.issue"
+    project_id = fields.Many2one('project.project')
+    name = fields.Char()
+    task_id = fields.Char()
+    work_id = fields.Char()
+    state = fields.Char()
+
