@@ -6,7 +6,7 @@
             <field name="arch" type="xml">
                 <form string="Projet">
                     <header>
-                        <!--                        <button name="set_compute2" string="Création/Revalidation Project" type="object" class="oe_highlight" confirm="sure??"/>-->
+                        <!--                        <button name="set_validate" string="Création/Revalidation Project" type="object" class="oe_highlight" confirm="sure??"/>-->
                     </header>
                     <sheet>
                         <field name="state" string="State"/>
@@ -117,10 +117,8 @@
                             <page string="Travaux">
                                 <field name="work_ids">
                                     <tree string="Task Work"
-                                          colors="blue:state== 'draft';green:state== 'affect';purple:state== 'tovalid';red:state== 'cancel'"
                                           readonly="1" create="false" edit="false" editable="bottom"
                                           default_order='project_id,sequence'>
-                                        <field name="sequence" string="Séq " readonly="1"/>
                                         <field name="project_id" string="Projet" readonly="1"
                                                options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
                                         <field name="task_id" string="Tache" invisible="1"
@@ -236,9 +234,38 @@
                                     </tree>
                                 </field>
                             </page>
-                            <page string="Sous Projets">
-                                <field name="child_ids">
+                            <page string="Sous Projets"/>
+                            <page string="Affectations">
+                                <field name="task_ids2">
+                                    <tree editable="bottom" create="false">
+                                        <field name="state" invisible="1"/>
+                                        <field name="name" invisible="0"/>
+                                        <field name="reviewer_id" string="superviseur " invisible="0"/>
+                                        <field name="reviewer_id1" string="superviseur 2" invisible="0"/>
+                                        <field name="coordin_id" string="coordinateur" invisible="0"/>
+                                        <field name="coordin_id1" string="coordinateur 1" invisible="0"/>
+                                        <field name="coordin_id2" string="coordinateur 2" invisible="0"/>
+                                        <field name="coordin_id3" string="coordinateur 4" invisible="0"/>
+                                        <field name="coordin_id4" string="coordinateur 5" invisible="0"/>
+                                    </tree>
                                 </field>
+                            </page>
+
+                            <page string="Fonctions Admin" attrs="{'invisible':[('is_super_admin','=',False)]}">
+                                <group string="Modification Client">
+                                    <group>
+                                        <field name="partner_id2" string="Customer"
+                                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    </group>
+                                    <group>
+<!--                                        <button name="set_apply_partner" string="Forcer Client" type="object"-->
+<!--                                                confirm="Confirmez-vous l'affectation de ce client à la place de l'existant?"/>-->
+                                    </group>
+                                </group>
+                                <group string="Ouverture Projet">
+<!--                                    <button name="set_force_open" string="Forcer Ouverture" type="object"-->
+<!--                                            confirm="Confirmez-vous l'ouverture du Projet et remettre les taches à l'état précédant?"/>-->
+                                </group>
                             </page>
                         </notebook>
                     </sheet>
