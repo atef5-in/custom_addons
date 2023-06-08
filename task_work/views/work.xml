@@ -4,7 +4,7 @@
             <field name="name">task.work.tree</field>
             <field name="model">project.task.work</field>
             <field name="arch" type="xml">
-                <tree string="Tâches">
+                <tree string="Tâches" default_order="project_id,sequence,name">
                     <field name="sequence" string="Séq" readonly="1"/>
                     <field name="id" string="id" readonly="1"/>
                     <field name="categ_id" string="Département" readonly="1"/>
@@ -129,11 +129,11 @@
                                 <field name="user_id" string="USER" invisible="1"/>
                                 <field name="categ_id" string="categ" placeholder="Description..." invisible="1"/>
                                 <field name="note" string="Note" placeholder="Description..."/>
-                                <group string="Actions Administrateurs">
-                                    <field name="display" string="Réalisable" help="Décochoer si irréalisable!"
-                                           readonly="0"/>
-                                    <field name="active" string="Actif" help="Décochoer si vous voulez archiver!"/>
-                                </group>
+<!--                                <group string="Actions Administrateurs">-->
+<!--                                    <field name="display" string="Réalisable" help="Décochoer si irréalisable!"-->
+<!--                                           readonly="0"/>-->
+<!--                                    <field name="active" string="Actif" help="Décochoer si vous voulez archiver!"/>-->
+<!--                                </group>-->
                             </group>
                         </group>
                         <group>

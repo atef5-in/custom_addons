@@ -126,7 +126,7 @@ class TaskCustom(models.Model):
                                  "it will be hidden unless specifically asked.")
     name = fields.Char(string='Nom Kit', track_visibility='onchange', size=128, select=True, readonly=True,
                        states={'draft': [('readonly', False)]}, )
-    dc = fields.Char(string='Task Summary', track_visibility='onchange', size=128, select=True,readonly=True,
+    dc = fields.Char(string='Task Summary', track_visibility='onchange', size=128, select=True, readonly=True,
                      states={'draft': [('readonly', False)]}, )
     description = fields.Text('Description', readonly=True, states={'draft': [('readonly', False)]}, )
     priority = fields.Selection([('0', 'Faible'), ('1', 'Normale'), ('2', 'Elevée')], string='Priorité', select=True,
@@ -145,18 +145,18 @@ class TaskCustom(models.Model):
              " * Ready for next stage indicates the task is ready to be pulled to the next stage",
         required=False, copy=False)
     create_date = fields.Datetime('Create Date', index=True, readonly=True,
-                                  states={'draft': [('readonly', False)]},)
+                                  states={'draft': [('readonly', False)]}, )
     write_date = fields.Datetime(string='Last Modification Date', index=True, readonly=True,
-                                 states={'draft': [('readonly', False)]},)
+                                 states={'draft': [('readonly', False)]}, )
     # not displayed in the view but it might be useful with base_action_rule module (and it needs to be defined first for that)
     date_start = fields.Date(string='Date Début', index=True, copy=True, readonly=True,
-                             states={'draft': [('readonly', False)]},)
+                             states={'draft': [('readonly', False)]}, )
     date_end = fields.Date(string='Date Fin', index=True, copy=True, readonly=True,
-                           states={'draft': [('readonly', False)]},)
+                           states={'draft': [('readonly', False)]}, )
     date_deadline = fields.Date(string='Deadline', index=True, copy=True, readonly=True,
                                 states={'draft': [('readonly', False)]}, )
     date_last_stage_update = fields.Datetime(string='Last Stage Update', index=True, copy=False, readonly=True,
-                                             states={'draft': [('readonly', False)]},)
+                                             states={'draft': [('readonly', False)]}, )
     project_id = fields.Many2one('project.project', string='Project', ondelete='set null', select=True,
                                  track_visibility='onchange', change_default=True, )
     parent_ids = fields.Many2many('project.task', 'project_task_parent_rel', 'task_id', 'parent_id',
@@ -165,19 +165,19 @@ class TaskCustom(models.Model):
                                  string='Delegated Tasks')
     notes = fields.Text('Notes', readonly=True, states={'draft': [('readonly', False)]}, )
     hours_r = fields.Float(compute='_get_hours', string='Tps R.', readonly=True,
-                           states={'draft': [('readonly', False)]},)
+                           states={'draft': [('readonly', False)]}, )
     total_r = fields.Float(compute='_get_sum', string='Cout R.', readonly=True,
-                           states={'draft': [('readonly', False)]},)
+                           states={'draft': [('readonly', False)]}, )
     poteau_r = fields.Float(compute='_get_qty', string='Qt R.', readonly=True,
-                            states={'draft': [('readonly', False)]},)
+                            states={'draft': [('readonly', False)]}, )
     total_planned = fields.Float(compute='_get_planned', string='Company Currency', readonly=True,
                                  states={'draft': [('readonly', False)]}, )
     total_effective = fields.Float(compute='_get_effective', string='Company Currency', readonly=True,
                                    states={'draft': [('readonly', False)]}, )
     total_remaining = fields.Float(compute='_get_remaining', string='Company Currency', readonly=True,
-                                   states={'draft': [('readonly', False)]},)
+                                   states={'draft': [('readonly', False)]}, )
     progress_me = fields.Float(compute='_get_progress', string='% Tps', readonly=True,
-                               states={'draft': [('readonly', False)]},)
+                               states={'draft': [('readonly', False)]}, )
     product_id = fields.Many2one('product.product', string='Product', ondelete='cascade', select="1", readonly=True,
                                  states={'draft': [('readonly', False)]}, )
     kit_id = fields.Many2one('product.kit', 'Kit ID', ondelete='cascade', select="1", readonly=True,
@@ -259,7 +259,8 @@ class TaskCustom(models.Model):
                                  states={'draft': [('readonly', False)]}, )
     zone = fields.Integer(string='Zone', readonly=True, states={'draft': [('readonly', False)]}, )
     secteur = fields.Integer(string='Secteur', readonly=True, states={'draft': [('readonly', False)]}, )
-    categ_id = fields.Many2one('product.category', string='Département', readonly=True, states={'draft': [('readonly', False)]}, )
+    categ_id = fields.Many2one('product.category', string='Département', readonly=True,
+                               states={'draft': [('readonly', False)]}, )
     color = fields.Integer(string='Durée(Jrs)', readonly=True, states={'draft': [('readonly', False)]}, )
     done = fields.Boolean(string='Color Index', readonly=True, states={'draft': [('readonly', False)]}, )
     ct = fields.Float(string='CT', readonly=True, states={'draft': [('readonly', False)]}, )
@@ -332,6 +333,13 @@ class ProjectTaskType(models.Model):
 class ProductKit(models.Model):
     _name = "product.kit"
     name = fields.Char('Name')
+    type_ids = fields.One2many('product.product', 'rel_id')
+
+
+class Product(models.Model):
+    _inherit = 'product.product'
+    rel_id = fields.Many2one('product.kit')
+    is_load = fields.Boolean(default=1)
 
 
 class ProductUOM(models.Model):

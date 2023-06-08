@@ -61,7 +61,6 @@ class TaskWork(models.Model):
             else:
                 rec.done = 0
 
-
     def _default_done1(self):
 
         for rec in self:
@@ -112,18 +111,18 @@ class TaskWork(models.Model):
             else:
                 rec.done3 = 0
 
-    def _default_flow(self):
-
-        for rec in self:
-            self.env.cr.execute('select id from base_flow_merge_line where work_id= %s', (rec.id,))
-            work_ids = self.env.cr.fetchone()
-            if work_ids:
-                rec.done4 = 1
-            else:
-                rec.done4 = 0
+    # def _default_flow(self):
+    #
+    #     for rec in self:
+    #         self.env.cr.execute('select id from base_flow_merge_line where work_id= %s', (rec.id,))
+    #         work_ids = self.env.cr.fetchone()
+    #         if work_ids:
+    #             rec.done4 = 1
+    #         else:
+    #             rec.done4 = 0
 
     # _check_color
-    def _compute_kanban_color(self, cr, uid, ids, field_name, arg, context):
+    def _compute_kanban_color(self):
 
         res = {}
         for record in self:
@@ -535,8 +534,8 @@ class TaskWork(models.Model):
                            states={'draft': [('readonly', False)]}, )
     done3 = fields.Boolean(compute='_default_done3', string='Company Currency', readonly=True,
                            states={'draft': [('readonly', False)]}, )
-    done4 = fields.Boolean(compute='_default_flow', string='Company Currency', readonly=True,
-                           states={'draft': [('readonly', False)]}, )
+    # done4 = fields.Boolean(compute='_default_flow', string='Company Currency', readonly=True,
+    #                        states={'draft': [('readonly', False)]}, )
     color = fields.Integer(string='Nbdays', readonly=True, states={'draft': [('readonly', False)]}, )
     color1 = fields.Integer(string='Durée(Jours)', readonly=True, states={'affect': [('readonly', False)]}, )
     uom_id = fields.Many2one('product.uom', string='Unité Prévue', required=True, readonly=True,
@@ -602,8 +601,10 @@ class TaskWorkLine(models.Model):
     project_id = fields.Many2one('project.project', 'Project', ondelete='set null', select=True,
                                  track_visibility='onchange', change_default=True,
                                  readonly=True, states={'affect': [('readonly', False)]}, )
-    task_id = fields.Many2one('project.task', string='Task', ondelete='cascade', select="1", readonly=True, states={'affect': [('readonly', False)]}, )
-    product_id = fields.Many2one('product.product', string='Task', ondelete='cascade', select="1", readonly=True, states={'affect': [('readonly', False)]}, )
+    task_id = fields.Many2one('project.task', string='Task', ondelete='cascade', select="1", readonly=True,
+                              states={'affect': [('readonly', False)]}, )
+    product_id = fields.Many2one('product.product', string='Task', ondelete='cascade', select="1", readonly=True,
+                                 states={'affect': [('readonly', False)]}, )
     hours = fields.Float(string='Total Hrs Prévues', readonly=True, states={'affect': [('readonly', False)]}, )
     hours_r = fields.Float(string='Durée(Heurs)')
     total_t = fields.Float(string='Total à Facturer T', readonly=True, states={'affect': [('readonly', False)]}, )

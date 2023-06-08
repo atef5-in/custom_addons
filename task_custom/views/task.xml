@@ -57,7 +57,6 @@
                         </group>
                         <notebook>
                             <page string="Travaux Prévus">
-
                                 <field name="work_ids" readonly="1">
                                     <tree readonly="1" delete="0">
                                         <field name="product_id" domain="[('categ_id','=',parent.categ_id)]"
