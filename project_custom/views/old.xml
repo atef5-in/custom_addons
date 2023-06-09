@@ -1,0 +1,389 @@
+<?xml version="1.0"?>
+<form string="Project">
+    <header>
+        <button name="set_open2" string="Modification Projet" type="object" class="oe_highlight"
+                confirm="Confirmez-Vous la Modification Projet"/>
+
+        <button name="set_validate" string="Création Projet/Revalidation Projet" type="object" class="oe_highlight"
+                confirm="Confirmez-Vous la Création du Projet? Attention: Des taches et Travaux seront également créés!"/>
+
+        <button name="set_done" string="Cloturer Projet" type="object"
+                confirm="Confirmez-Vous la Cloture du Projet? Attention: Vous ne pouvez plus faires des retours sur les bons!"/>
+
+
+        <button name="set_open" string="Re-open project" type="object"/>
+
+        <button name="set_pending" string="Suspendre Projet" type="object"
+                confirm="Confirmez-Vous cette action? Attention: Toutes les taches et travaux seront suspendus!"/>
+
+
+        <button name="set_cancel" string="Cancel Project" type="object"
+                confirm="Confirmez-Vous l'annulation du Projet? Attention: Les Taches et les Travaux seront supprimés!"/>
+
+
+        <button name="set_reopen" string="Forcer Ouverture" type="object"
+                confirm="Confirmez-Vous l'ouverture du Projet? Attention: Les Taches et les Travaux seront ouverts!"
+                class="oe_highlight"/>
+        <field name="state" widget="statusbar" statusbar_visible="open,close,cancelled"
+               statusbar_colors="{&quot;pending&quot;:&quot;blue&quot;}" readonly="1"/>
+    </header>
+    <sheet string="Project">
+        <div class="oe_title">
+            <h1>
+                <label string="Création/Consultation Projet"/>
+
+
+            </h1>
+        </div>
+        <div class="oe_right oe_button_box" name="buttons" groups="base.group_user">
+            <button class="oe_inline oe_stat_button" type="action" name="141" icon="fa-tasks">
+                <field string="Tasks" name="task_count" widget="statinfo"/>
+            </button>
+            <button class="oe_inline oe_stat_button" name="attachment_tree_view" type="object" icon="fa-files-o">
+                <field string="Documents" name="doc_count" widget="statinfo"/>
+            </button>
+        </div>
+
+        <div name="options_active">
+        </div>
+
+
+        <group>
+            <group col="4">
+                <field name="user_id" string="Project Manager"
+                       attrs="{'readonly':[('state','in',['close', 'cancelled'])]}"
+                       context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'project.group_project_manager']}"
+                       invisible="1"/>
+                <newline/>
+                <field name="date" string="Date" on_change="onchange_date(date)"/>
+                <field name="is_admin" string="Date" invisible="1"/>
+                <field name="id" string="ID" invisible="0"/>
+
+                <newline/>
+                <field name="number" string="N°" invisible="1"/>
+                <field name="name" string="Nom" invisible="1"/>
+
+                <newline/>
+                <field name="partner_id" on_change="onchange_partner_id(partner_id)" string="Customer" required="1"
+                       domain="[('customer','=',True)]"
+                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                       attrs="{'readonly':[('state','!=','draft')]}"/>
+                <newline/>
+                <field name="resp_id" string="Chef du Projet" domain="[('is_resp','=',True)]"
+                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                <newline/>
+                <field name="fees_id" string="Contrat lié"
+                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                       attrs="{'readonly':[('fees_id','=',False)]}"/>
+                <newline/>
+                <field name="parent_id1" string="Projet Parent"/>
+                <newline/>
+                <field name="bord" string="N° PO"/>
+                <newline/>
+                <field name="npc" string="N° Projet Client"/>
+                <field name="is_1" string="AAA" invisible="1"/>
+                <newline/>
+                <field name="date_start" string="Date de Début" required="1"/>
+                <newline/>
+
+                <field name="date_end" string="Date de Livraison" required="1"/>
+
+            </group>
+            <group>
+                <field name="country_id" string="Pays" required="1"
+                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                <field name="state_id" string="Municipalités" required="0"
+                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                       on_change="onchange_munic(state_id)"/>
+                <field name="city" string="Région" required="0"/>
+                <field name="ftp" widget="url" string="Lien FTP" required="0"/>
+
+                <field name="priority" string="Priorité Projet"/>
+                <field name="ref" string="Nbre Poteaux"/>
+                <field name="km" string="Nbre KM"/>
+                <field name="type3" string="Type Projet" required="1"
+                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                <field name="fact" string="Facturable" attrs="{'invisible': [('type3', '!=', 3)]}"/>
+            </group>
+
+
+        </group>
+        <notebook>
+            <page string="Taches Planifiées" name="project_stages">
+                <group>
+                    <group>
+                        <field name="date_s" string="Date  D. Tache"/>
+                    </group>
+                    <group>
+                        <field name="date_e" string="Date  F. Tache"/>
+                        <button name="set_coord" string="Affecter Coordinateurs" type="object" icon="terp-personal-"/>
+
+
+                    </group>
+                </group>
+                <button name="set_compute2" string="Attribuer Séquence"
+                        type="object" icon="gtk-execute" attrs="{'invisible': [('is_admin', '=', False)]}"/>
+                <field name="task_ids"
+                       context="{'task_ids':task_ids,'default_priority':priority,'default_project_id':id}">
+
+                    <tree decoration-bf="product_id[0] ==39 or False" string="Tasks" editable="bottom">
+
+                        <field name="sequence" string="N°"/>
+                        <field name="is_admin" string="Date" invisible="1"/>
+
+
+                        <field name="categ_id" string="Département"
+                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                        <field name="product_id" domain="[('categ_id','=',categ_id)]" string="Items"
+                               on_change="onchange_product_id(product_id)"
+                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}" invisible="1"/>
+                        <field name="kit_id" string="Kit" options="{'no_create': True, 'no_create_edit':True}"
+                               on_change="onchange_kit_id(categ_id,kit_id)" domain="[('categ_id','=',categ_id)]"/>
+                        <field name="name" string="Nom Kit"/>
+
+                        <field name="date_start" string="Date Début" widget="date"
+                               on_change="onchange_date_to(date_end, date_start)"/>
+                        <field name="date_end" string="Date Fin" on_change="onchange_date_to(date_end, date_start)"/>
+                        <field name="color" string="Durée(Jrs)" sum="Total"/>
+                        <field name="planned_hours" string="Durée(Hrs)" sum="Total"
+                               bg_color="olive:product_id[0] ==38 or False;aqua:product_id[0] ==39 or False;violet:product_id[0] ==40 or False;magenta:product_id[0] ==41 or False;lime:product_id[0] ==42 or False;bisque:product_id[0] ==43 or False;silver:product_id[0] ==37 or False;Tan:product_id[0] ==340 or False;chocolate:product_id[0] ==353 or False;floralwhite:product_id[0] ==355 or False"
+                               invisible="1"/>
+
+
+                        <field name="qte" string="Qté/Unité" sum="Total" on_change="onchange_sum(qte,cout)"/>
+                        <field name="uom_id" string="Unité"
+                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}" invisible="1"/>
+                        <field name="cout" string="Tarif" on_change="onchange_sum(qte,cout)"
+                               attrs="{'invisible': [('is_admin', '=', False)]}"/>
+                        <field name="total" string="Sous-Total" sum="Total"
+                               attrs="{'invisible': [('is_admin', '=', False)]}"/>
+
+                        <field name="ftp" widget="url" string="Lien FTP" invisible="1"/>
+                        <field name="reviewer_id" string="Superviseur"
+                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}" invisible="0"/>
+                        <field name="coordin_id" string="Coordinateur"
+                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}" invisible="0"/>
+                        <field name="rank" string="Séq"/>
+                        <field name="pourc" string="% Workflow"/>
+                        <field name="priority" string="Priorité" required="0" invisible="1"/>
+                        <field name="state" string="Statut" readonly="1"/>
+
+
+                    </tree>
+                </field>
+
+            </page>
+            <page string="Equivalence Taches" attrs="{'invisible': [('is_admin', '=', False)]}">
+                <group>
+                    <button name="set_compute" string="Générer Equivalence" type="object" class="oe_highlight"
+                            icon="gtk-execute"/>
+                    <newline/>
+                    <field name="affect_id" nolabel="1"/>
+                </group>
+
+            </page>
+
+
+            <page string="Données Statistiques" attrs="{'invisible': [('is_admin', '=', False)]}">
+                <group>
+
+                    <group string="Calcul Prévisionnel">
+
+                        <field name="ct" string="Durée Prévionnelle"/>
+                        <field name="cp" string="Couts Prévionnel"/>
+
+                    </group>
+                    <group>
+
+
+                        <field name="hours_r" widget="percentpie" string="%Délai Réel/Délai Prévu" nolabel="1"/>
+
+                        <field name="progress_amount" widget="percentpie" string="% Dépense/Budget" nolabel="1"/>
+
+
+                    </group>
+                </group>
+            </page>
+
+
+            <page string="Travaux">
+                <field name="work_ids">
+                    <tree string="Task Work"
+                          colors="blue:state== 'draft';green:state== 'affect';purple:state== 'tovalid';red:state== 'cancel'"
+                          readonly="1" create="false" edit="false" editable="bottom"
+                          default_order='project_id,sequence'>
+                        <field name="sequence" string="Séq " readonly="1"/>
+
+                        <field name="project_id" string="Projet" readonly="1"
+                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                        <field name="task_id" string="Tache" invisible="1"
+                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                        <field name="product_id" domain="[('categ_id','=',parent.categ_id)]" readonly="1"
+                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                               string="Type de Service" invisible="0"/>
+                        <field name="name" string="Libellé Travaux" readonly="1"/>
+                        <field name="zone" string="Zone " readonly="1"/>
+                        <field name="etape" string="Etape" readonly="1" invisible="0"/>
+                        <field name="secteur" string="Sect" readonly="1"/>
+                        <field name="done4" string="Libellé " readonly="1" invisible="1"/>
+
+                        <field name="date_start" string="Date Déb." readonly="1"/>
+                        <field name="date_end" string="Date Fin" readonly="1"/>
+                        <field name="color" string="Nb Jrs Prév." required="1"/>
+                        <field name="hours" string="Nb Hrs  Prév." required="1"/>
+                        <field name="issue_id" string="Date Fin Prévue" invisible="1"/>
+                        <field name="line_ids" string="Date Fin Prévue" invisible="1"/>
+                        <field name="gest_id" string="Superviseur"
+                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}" readonly="1"/>
+                        <field name="employee_id" string="Ressource affectée"
+                               domain="[('academic_ids.product_id','=',product_id)]"
+                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                        <field name="r_id" string="Libellé " invisible="1"/>
+                        <field name="paylist_id" string="Facture"
+                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}" invisible="1"/>
+                        <field name="done" string="Libellé " readonly="1" invisible="1"/>
+                        <field name="done1" string="Libellé " readonly="1" invisible="1"/>
+                        <field name="done2" string="Libellé " readonly="1" invisible="1"/>
+                        <field name="done3" string="Libellé " readonly="1" invisible="1"/>
+                        <field name="poteau_i" string="Qté T. Prévue" readonly="1"/>
+                        <field name="poteau_da" string="Qté Déja Affect." readonly="1"/>
+                        <field name="poteau_ra" string="Qté Non Affect." readonly="1" bg_color="pink:poteau_ra>0;"/>
+                        <field name="poteau_t" string="Qté Ddée" readonly="1"/>
+
+                        <field name="done33" string="Libellé " readonly="1" invisible="1"/>
+                        <field name="uom_id" string="Unité" required="1"/>
+                        <field name="risk" string="risk" required="1" invisible="1"/>
+                        <field name="hours_r" string="Nb Hrs Réal." required="1"/>
+                        <field name="poteau_r" string="Qté Réal." required="1"/>
+                        <field name="total_r" string="Cout Réal" required="1"/>
+                        <field name="state" string="Etat"
+                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}" readonly="1"/>
+                        <field name="display" string="display"
+                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}" invisible="1"/>
+                        <field name="group_id" invisible="1"/>
+                        <button name="action_open" string="Consulter/Editer Tache" type="object" icon="gtk-edit"/>
+                        <button name="project_open" string="Consulter Projet" type="object" icon="gtk-preferences"/>
+
+                        <button name="action_open_flow" string="Consulter Workflow" type="object"
+                                icon="gtk-sort-descending" attrs="{'invisible': [('done4','=', False)]}"/>
+                        <button name="action_open_group2" string="Consulter Retours Bons" type="object"
+                                icon="terp-stock_effects-object-colorize"
+                                attrs="{'invisible': [('done3','=', False)]}"/>
+
+                        <button name="action_open_group" string="Consulter la F.T/Facture" type="object"
+                                icon="STOCK_INDENT" attrs="{'invisible': [('done2','=', False)]}"/>
+
+                        <button name="move_next" string="Taches Suivantes" type="object" icon="gtk-go-forward"
+                                attrs="{'invisible': [('done33','=', False)]}"/>
+
+
+                        <button name="action_open_invoice" string="Consulter la Facture/F.P" type="object"
+                                icon="STOCK_APPLY" attrs="{'invisible': [('done1','=', False)]}"/>
+                        <button name="action_copy" string="Dupliquer Fiche" type="object" icon="gtk-copy"
+                                confirm="Voulez-vous Dupliquer les Travaux?" invisible="1"/>
+                        <button name="action_issue2" string="Consulter Tableau Plans Relevé" type="object"
+                                icon="terp-go-year" attrs="{'invisible': [('r_id', '=', False)]}"/>
+
+
+                    </tree>
+                </field>
+
+
+            </page>
+
+
+            <page string="Affectations Département et Services" attrs="{'invisible': [('is_admin', '=', False)]}">
+                <group>
+                    <group>
+                        <field name="academic_ids" nolabel="1" context="{'default_partner_id':partner_id}">
+
+                            <tree string="Task Work" editable="bottom">
+                                <field name="employee_id" string="Employé"
+                                       options="{'no_create': True, 'no_create_edit':True}"/>
+                                <field name="categ_id" required="1" string="Département"
+                                       options="{'no_create': True, 'no_create_edit':True}"/>
+                                <field name="product_id" domain="[('categ_id','=',categ_id)]" string="Type Service"
+                                       options="{'no_create': True, 'no_create_edit':True}"/>
+
+                                <field name="partner_id" string="Client" readonly="1"
+                                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                <field name="currency_id" string="Date Fin" invisible="1"/>
+                                <field name="amount" string="Tarif Unitaire" widget="monetary"/>
+
+
+                            </tree>
+
+                        </field>
+
+
+                    </group>
+                </group>
+            </page>
+            <page string="Incidents et Anomalies">
+                <field name="issue_ids">
+                    <tree>
+                        <field name="name" readonly="1" string="Numéro"/>
+                        <field name="project_id" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                               readonly="1"/>
+
+                        <field name="task_id" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                               readonly="1"/>
+
+
+                        <field name="work_id" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                               readonly="1"/>
+                        <field name="state" invisible="0"/>
+                    </tree>
+                </field>
+
+
+            </page>
+            <page string="Sous Projets">
+                <field name="child_ids">
+
+                </field>
+
+
+            </page>
+            <page string="Affectations">
+                <field name="task_ids2">
+                    <tree editable="bottom" create="false">
+                        <field name="state" invisible="1"/>
+                        <field name="name" invisible="0"/>
+                        <field name="reviewer_id" string="superviseur " invisible="0"/>
+                        <field name="reviewer_id1" string="superviseur 2" invisible="0"/>
+                        <field name="coordin_id" string="coordinateur" invisible="0"/>
+                        <field name="coordin_id1" string="coordinateur 1" invisible="0"/>
+                        <field name="coordin_id2" string="coordinateur 2" invisible="0"/>
+                        <field name="coordin_id3" string="coordinateur 4" invisible="0"/>
+                        <field name="coordin_id4" string="coordinateur 5" invisible="0"/>
+                    </tree>
+
+                </field>
+
+
+            </page>
+
+            <page string="Fonctions Admin" attrs="{'invisible':[('is_1','=',False)]}">
+                <group string="Modification Client">
+                    <group>
+                        <field name="partner_id2" string="Customer" domain="[('customer','=',True)]"
+                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                    </group>
+                    <group>
+                        <button name="set_apply_partner" string="Forcer Client" type="object"
+                                confirm="Confirmez-vous l'affectation de ce client à la place de l'existant?"/>
+                    </group>
+                </group>
+                <group string="Ouverture Projet">
+                    <button name="set_force_open" string="Forcer Ouverture" type="object"
+                            confirm="Confirmez-vous l'ouverture du Projet et remettre les taches à l'état précédant?"/>
+                </group>
+
+            </page>
+
+
+        </notebook>
+    </sheet>
+
+</form>

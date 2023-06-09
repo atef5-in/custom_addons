@@ -538,7 +538,7 @@ class TaskWork(models.Model):
     #                        states={'draft': [('readonly', False)]}, )
     color = fields.Integer(string='Nbdays', readonly=True, states={'draft': [('readonly', False)]}, )
     color1 = fields.Integer(string='Durée(Jours)', readonly=True, states={'affect': [('readonly', False)]}, )
-    uom_id = fields.Many2one('product.uom', string='Unité Prévue', required=True, readonly=True,
+    uom_id = fields.Many2one('product.uom', string='Unité Prévue', required=False, readonly=True,
                              states={'draft': [('readonly', False)]}, )
     uom_id_r = fields.Many2one('product.uom', string='Unité Réelle', readonly=True,
                                states={'affect': [('readonly', False)]}, )
@@ -574,6 +574,137 @@ class TaskWork(models.Model):
     progress_qty = fields.Float(compute='_get_progress_qty', string='% Qté')
     progress_amount = fields.Float(compute='_get_progress_amount', string='% Montant')
     risk = fields.Char(compute='_get_risk', string='Risk')
+
+    def action_affect(self):
+
+        return {
+            'name': ('Modification Travaux Permis'),
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'target': 'popup',
+            'res_model': 'base.invoices.merge.automatic.wizard',
+            'view_id': 1677,
+            'context': {'types_affect': 'intervenant'},
+            'domain': []
+        }
+
+    def button_write1(self):
+
+        self.write({'state': 'tovalid'})
+        return True
+
+    def button_cancel_write(self):
+
+        if self.state == 'affect':
+            self.write({'state': 'draft'})
+        elif self.state == 'tovalid':
+            self.write({'state': 'affect'})
+
+        return {'name': "Modification Travaux",
+                'res_model': "project.task.work",
+                'src_model': "project.task.work",
+                'view_mode': "form",
+                'target': "new",
+                'key2': "client_action_multi",
+                'multi': "True",
+                'res_id': self.ids[0],
+                'type': 'ir.actions.act_window',
+                }
+
+    def button_cancel_affect(self):
+
+        self.write({'state': 'cancel'})
+        return True
+
+    def button_save_(self):
+
+        project_ids = self.ids[0]
+
+        if self.categ_id.id == 6:
+            return {
+                'name': ('Modification Travaux'),
+                'type': 'ir.actions.act_window',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'view_id': 1616,
+                'target': 'new',
+                'res_model': 'project.task.work',
+                'res_id': self.ids[0],
+                'context': {'active_id': self.ids[0]},
+                'domain': [('project_id', 'in', [project_ids])]
+            }
+        else:
+            return {
+                'name': ('Modification Travaux'),
+                'type': 'ir.actions.act_window',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'view_id': 330,
+                'target': 'new',
+                'res_model': 'project.task.work',
+                'res_id': self.ids[0],
+                'context': {'active_id': self.ids[0]},
+                'domain': [('project_id', 'in', [project_ids])]
+            }
+    # need to check
+    def button_approve(self):
+
+        hr_payslip = self.env['hr.payslip']
+        hr_payslip_line = self.env['hr.payslip.line']
+
+        sum1 = 0
+        employee_obj = self.env['hr.employee']
+        task_obj = self.env['project.task.work']
+        task_obj_line = self.env['project.task.work.line']
+
+        this = task_obj.browse()
+
+        line = this.employee_id.id
+        empl = employee_obj.browse(line)
+        if empl.job_id.id == 1:
+            name = 'Feuille de Temps'
+        else:
+            name = 'Facture'
+
+        self.env.cr.execute(
+            "select cast(substr(number, 6, 8) as integer) from hr_payslip where number is not Null and name=%s and EXTRACT(YEAR FROM date_from)=%s  order by number desc limit 1",
+            (name, this.date_start[:4]))
+        q3 = self.env.cr.fetchone()
+        if q3:
+            res1 = q3[0] + 1
+        else:
+            res1 = '001'
+        pay_id = hr_payslip.create({'employee_id': line,
+                                    'date_from': this.date_start,
+                                    'date_to': this.date_start,
+                                    'contract_id': this.employee_id.contract_id.id,
+                                    'name': name,
+                                    'number': str(str(this.date_start[:4]) + '-' + str(str(res1).zfill(3))),
+                                    'struct_id': 1,
+                                    'currency_id': 5,
+                                    })
+
+        for tt in this.line_ids:
+
+            if tt.state == 'tovalid' and not tt.paylist_id:
+                pay_id_line = hr_payslip_line.create({'employee_id': line,
+                                                      'contract_id': this.employee_id.contract_id.id,
+                                                      'name': ' ',
+                                                      'code': '-',
+                                                      'category_id': 1,
+                                                      'quantity': tt.hours_r,
+                                                      'slip_id': pay_id,
+                                                      'rate': 100,
+                                                      'work_id': tt.work_id.id,
+                                                      'quantity': tt.poteau_r,
+                                                      'salary_rule_id': 1,
+                                                      'amount': this.employee_id.contract_id.wage,
+                                                      })
+                task_obj_line.write({'state': 'valid', 'paylist_id': pay_id})
+
+        task_obj.write({'state': 'valid', 'paylist_id': pay_id})
+        return True
 
 
 class TaskWorkLine(models.Model):
@@ -662,7 +793,7 @@ class TaskWorkLine(models.Model):
     color = fields.Integer(string='Durée(Jours)', readonly=True, states={'affect': [('readonly', False)]}, )
     color1 = fields.Integer(string='Color 1', readonly=True, states={'affect': [('readonly', False)]}, )
     uom_id = fields.Many2one('product.uom', string='Unité', readonly=True,
-                             states={'affect': [('readonly', False)]}, )
+                             states={'affect': [('readonly', False)]}, required=False, )
     uom_id_r = fields.Many2one('product.uom', string='Unit of Measure', readonly=True,
                                states={'affect': [('readonly', False)]}, )
     wage = fields.Integer(string='T.H')

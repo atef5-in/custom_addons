@@ -30,6 +30,7 @@
                         <field name="state" widget="statusbar" statusbar_visible="open,close,cancelled" readonly="1"/>
                     </header>
                     <div class="oe_title">
+                        <!--need to check "label for"-->
                         <h1>
                             <label for="name" class="o_form_label" string="Création/Consultation Projet"
                                    style="font-size: 18px;"/>
@@ -47,21 +48,33 @@
                                    style="font-size: 12px; width: 120px;"/>
                         </button>
                     </div>
+                    <div name="options_active">
+                    </div>
                     <group>
                         <group>
-                            <field name="date" string="Date"/>
-                            <field name="is_admin" string="Date" invisible="1"/>
+                            <field name="is_super_admin" string="Super Admin ?" invisible="1"/>
+                            <field name="is_admin" string="Admin ?" invisible="1"/>
+                            <field name="user_id" string="Project Manager"
+                                   attrs="{'readonly':[('state','in',['close', 'cancelled'])]}" invisible="1"/>
+                            <!--                                   context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'project.group_project_manager']}"-->
+                            <newline/>
+                            <field name="date" string="Date" on_change="onchange_date(date)"/>
                             <field name="id" string="ID" invisible="0"/>
                             <newline/>
                             <field name="number" string="N°" invisible="1"/>
                             <field name="name" string="Nom" invisible="1"/>
                             <newline/>
                             <field name="partner_id" string="Client" required="1"
-                                   domain="[('company_id','=','company_id')]"/>
+                                   domain="[('company_id','=','company_id')]"
+                                   attrs="{'readonly':[('state','!=','draft')]}"/>
+                            <!--                                   options="{'no_create': True, 'no_create_edit':True,'no_open':True}"-->
                             <newline/>
                             <field name="resp_id" string="Chef du Project"/>
+                            <!--                                   domain="[('is_resp','=',True)]"-->
+                            <!--                                   options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>-->
                             <newline/>
                             <field name="fees_id" string="Contrat lié"
+                                   options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
                                    attrs="{'readonly':[('fees_id','=',False)]}"/>
                             <newline/>
                             <field name="parent_id1" string="Project Parent"/>
@@ -69,21 +82,24 @@
                             <field name="bord" string="N° PO"/>
                             <newline/>
                             <field name="npc" string="N° Project Client"/>
-                            <field name="is_super_admin" string="AAA" invisible="1"/>
                             <!--                                <newline/>-->
                             <!--                                <field name="date_start" string="Date de Début" required="1"/>-->
                             <!--                                <newline/>-->
                             <!--                                <field name="date_end" string="Date de Livraison" required="1"/>-->
                         </group>
                         <group>
-                            <field name="country_id" string="Pays" required="1"/>
-                            <field name="state_id" string="Municipalités"/>
-                            <field name="city" string="Région"/>
-                            <field name="ftp" widget="url" string="Lien FTP"/>
+                            <field name="country_id" string="Pays" required="1"
+                                   options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                            <field name="state_id" string="Municipalités"
+                                   options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                   on_change="onchange_munic(state_id)"/>
+                            <field name="city" string="Région" required="0"/>
+                            <field name="ftp" widget="url" string="Lien FTP" required="0"/>
                             <field name="priority" string="Priorité Projet"/>
                             <field name="ref" string="Nbre Poteaux"/>
                             <field name="km" string="Nbre KM"/>
-                            <field name="type3" string="Type Projet" required="1"/>
+                            <field name="type3" string="Type Projet" required="1"
+                                   options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
                             <field name="fact" string="Facturable" attrs="{'invisible': [('type3', '!=', 3)]}"/>
                         </group>
                     </group>
@@ -102,13 +118,20 @@
                                     <!--                                                icon="fa-duotone fa-user-helmet-safety"/>-->
                                 </group>
                             </group>
-                            <field name="task_ids">
+                            <field name="task_ids"
+                                   context="{'task_ids':task_ids,'default_priority':priority,'default_project_id':id}">
                                 <tree name="Task" editable="bottom">
-                                    <field name="id"/>
+                                    <!--                                    decoration-bf="product_id[0] ==39 or False"-->
+                                    <field name="is_super_admin" string="Super Admin ?" invisible="1"/>
                                     <field name="sequence" string="N°"/>
-                                    <field name="is_super_admin" string="AAA" invisible="1"/>
-                                    <field name="categ_id" string="Département"/>
-                                    <field name="kit_id"/>
+                                    <field name="categ_id" string="Département"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="product_id" domain="[('categ_id','=',categ_id)]" string="Items"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                           invisible="1"/>
+                                    <field name="kit_id" string="Kit"
+                                           options="{'no_create': True, 'no_create_edit':True}"/>
+                                    <!--                                    onchange_kit_id-->
                                     <field name="name" string="Nom Kit"/>
                                     <field name="date_start" string="Date Début" widget="date"/>
                                     <field name="date_end" string="Date Fin" widget="date"/>
@@ -151,61 +174,59 @@
                                 </group>
                             </group>
                         </page>
-<!--                        <page string="Travaux">-->
-<!--                            <field name="work_ids">-->
-<!--                                <tree string="Task Work"-->
-<!--                                      readonly="1" create="false" edit="false" editable="bottom"-->
-<!--                                      default_order='project_id,sequence'>-->
-<!--                                    <field name="project_id" string="Projet" readonly="1"-->
-<!--                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>-->
-<!--                                    <field name="task_id" string="Tache" invisible="1"-->
-<!--                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>-->
-<!--                                    <field name="product_id"-->
-<!--                                           readonly="1"-->
-<!--                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"-->
-<!--                                           string="Type de Service" invisible="0"/>-->
-<!--                                    <field name="name" string="Libellé Travaux" readonly="1"/>-->
-<!--                                    <field name="zone" string="Zone " readonly="1"/>-->
-<!--                                    <field name="etape" string="Etape" readonly="1" invisible="0"/>-->
-<!--                                    <field name="secteur" string="Sect" readonly="1"/>-->
-<!--                                    <field name="done4" string="Libellé " readonly="1" invisible="1"/>-->
-<!--                                    <field name="date_start" string="Date Déb." readonly="1"/>-->
-<!--                                    <field name="date_end" string="Date Fin" readonly="1"/>-->
-<!--                                    <field name="color" string="Nb Jrs Prév." required="1"/>-->
-<!--                                    <field name="hours" string="Nb Hrs  Prév." required="1"/>-->
-<!--                                    <field name="issue_id" string="Date Fin Prévue" invisible="1"/>-->
-<!--                                    <field name="line_ids" string="Date Fin Prévue" invisible="1"/>-->
-<!--                                    <field name="gest_id" string="Superviseur"-->
-<!--                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"-->
-<!--                                           readonly="1"/>-->
-<!--                                    <field name="employee_id" string="Ressource affectée"-->
-<!--                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>-->
-<!--                                    <field name="r_id" string="Libellé " invisible="1"/>-->
-<!--                                    <field name="paylist_id" string="Facture"-->
-<!--                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"-->
-<!--                                           invisible="1"/>-->
-<!--                                    <field name="done" string="Libellé " readonly="1" invisible="1"/>-->
-<!--                                    <field name="done1" string="Libellé " readonly="1" invisible="1"/>-->
-<!--                                    <field name="done2" string="Libellé " readonly="1" invisible="1"/>-->
-<!--                                    <field name="done3" string="Libellé " readonly="1" invisible="1"/>-->
-<!--                                    <field name="poteau_i" string="Qté T. Prévue" readonly="1"/>-->
-<!--                                    <field name="poteau_da" string="Qté Déja Affect." readonly="1"/>-->
-<!--                                    <field name="poteau_ra" string="Qté Non Affect." readonly="1"-->
-<!--                                           bg_color="pink:poteau_ra>0;"/>-->
-<!--                                    <field name="poteau_t" string="Qté Ddée" readonly="1"/>-->
-<!--                                    <field name="done33" string="Libellé " readonly="1" invisible="1"/>-->
-<!--                                    <field name="uom_id" string="Unité" required="1"/>-->
-<!--                                    <field name="risk" string="risk" required="1" invisible="1"/>-->
-<!--                                    <field name="hours_r" string="Nb Hrs Réal." required="1"/>-->
-<!--                                    <field name="poteau_r" string="Qté Réal." required="1"/>-->
-<!--                                    <field name="total_r" string="Cout Réal" required="1"/>-->
-<!--                                    <field name="state" string="Etat"-->
-<!--                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"-->
-<!--                                           readonly="1"/>-->
-<!--                                    <field name="display" string="display"-->
-<!--                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"-->
-<!--                                           invisible="1"/>-->
-<!--                                    <field name="group_id" invisible="1"/>-->
+                        <page string="Travaux">
+                            <field name="work_ids">
+                                <tree>
+                                    <field name="project_id" string="Projet" readonly="1"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="task_id" string="Tache" invisible="1"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="product_id"
+                                           readonly="1"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                           string="Type de Service" invisible="0"/>
+                                    <field name="name" string="Libellé Travaux" readonly="1"/>
+                                    <field name="zone" string="Zone " readonly="1"/>
+                                    <field name="etape" string="Etape" readonly="1" invisible="0"/>
+                                    <field name="secteur" string="Sect" readonly="1"/>
+                                    <!--                                    <field name="done4" string="Libellé " readonly="1" invisible="1"/>-->
+                                    <field name="date_start" string="Date Déb." readonly="1"/>
+                                    <field name="date_end" string="Date Fin" readonly="1"/>
+                                    <field name="color" string="Nb Jrs Prév." required="1"/>
+                                    <field name="hours" string="Nb Hrs  Prév." required="1"/>
+                                    <field name="issue_id" string="Date Fin Prévue" invisible="1"/>
+                                    <field name="line_ids" string="Date Fin Prévue" invisible="1"/>
+                                    <field name="gest_id" string="Superviseur"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                           readonly="1"/>
+                                    <field name="employee_id" string="Ressource affectée"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="r_id" string="Libellé " invisible="1"/>
+                                    <field name="paylist_id" string="Facture"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                           invisible="1"/>
+                                    <field name="done" string="Libellé " readonly="1" invisible="1"/>
+                                    <field name="done1" string="Libellé " readonly="1" invisible="1"/>
+                                    <field name="done2" string="Libellé " readonly="1" invisible="1"/>
+                                    <field name="done3" string="Libellé " readonly="1" invisible="1"/>
+                                    <field name="poteau_i" string="Qté T. Prévue" readonly="1"/>
+                                    <field name="poteau_da" string="Qté Déja Affect." readonly="1"/>
+                                    <field name="poteau_ra" string="Qté Non Affect." readonly="1"
+                                           bg_color="pink:poteau_ra>0;"/>
+                                    <field name="poteau_t" string="Qté Ddée" readonly="1"/>
+                                    <field name="done33" string="Libellé " readonly="1" invisible="1"/>
+                                    <field name="uom_id" string="Unité" required="1"/>
+                                    <field name="risk" string="risk" required="1" invisible="1"/>
+                                    <field name="hours_r" string="Nb Hrs Réal." required="1"/>
+                                    <field name="poteau_r" string="Qté Réal." required="1"/>
+                                    <field name="total_r" string="Cout Réal" required="1"/>
+                                    <field name="state" string="Etat"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                           readonly="1"/>
+                                    <field name="display" string="display"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                           invisible="1"/>
+                                    <field name="group_id" invisible="1"/>
                                     <!--                                        <button name="action_open" string="Consulter/Editer Tache" type="object"-->
                                     <!--                                                icon="gtk-edit"/>-->
                                     <!--                                        <button name="project_open" string="Consulter Projet" type="object"-->
@@ -229,9 +250,9 @@
                                     <!--                                        <button name="action_issue2" string="Consulter Tableau Plans Relevé"-->
                                     <!--                                                type="object" icon="terp-go-year"-->
                                     <!--                                                attrs="{'invisible': [('r_id', '=', False)]}"/>-->
-<!--                                </tree>-->
-<!--                            </field>-->
-<!--                        </page>-->
+                                </tree>
+                            </field>
+                        </page>
                         <page string="Affectations Département et Services"
                               attrs="{'invisible': [('is_admin', '=', False)]}">
                             <group>

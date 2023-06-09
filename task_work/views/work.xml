@@ -67,7 +67,7 @@
                     <field name="poteau_da" string="Qté Déja Affect." readonly="1"/>
                     <field name="poteau_ra" string="Qté Non Affect." readonly="1"/>
                     <field name="poteau_t" string="Qté Ddée" readonly="1"/>
-                    <field name="uom_id" string="Unité" required="1"/>
+                    <field name="uom_id" string="Unité" required="0"/>
                     <field name="risk" string="risk" required="1" invisible="1"/>
                     <field name="hours_r" string="Nb Hrs Réal." required="1"/>
                     <field name="poteau_r" string="Qté Réal." required="1"/>
@@ -86,7 +86,29 @@
             <field name="arch" type="xml">
                 <form>
                     <sheet string="Task">
-                        <field name="state"/>
+                        <header>
+                            <!--                            <button name="action_affect" type="object" string="Affecter Ressource" class="oe_highlight"-->
+                            <!--                                    confirm="Ouvrir l'interface Affectation?" states="draft"/>-->
+                            <!---->
+                            <!--                            <button name="button_write1" type="object" string="Validation Travaux" class="oe_highlight"-->
+                            <!--                                    confirm="Enregistrer Les Travaux et Envoyer au Superviseur pour Approbation?"-->
+                            <!--                                    states="affect" invisible="1"/>-->
+                            <!--                            <button name="button_cancel_write" type="object" string="Reouvrir le Travail"-->
+                            <!--                                    class="oe_highlight" confirm="Voulez vous Reouvrir le Travail?" states="affect"/>-->
+                            <!---->
+                            <!--                            <button name="button_cancel_affect" type="object" string="Annuler Fiche"-->
+                            <!--                                    class="oe_highlight" confirm="Annuler la Fiche?" states="affect" invisible="1"/>-->
+                            <!---->
+                            <!--                            <button name="button_approve" type="object" string="Facturer la Fiche" class="oe_highlight"-->
+                            <!--                                    confirm="Facturer cette Tache?" states="tovalid" invisible="1"/>-->
+                            <!--                            -->
+                            <!--                            <button name="button_save_" type="object" string="Enregistrement Les Modifications"-->
+                            <!--                                    confirm="Voulez vous Enregistrer les modifications?" icon="gtk-floppy"-->
+                            <!--                                    class="oe_highlight"/>-->
+
+                            <field name="state" widget="statusbar" statusbar_visible="draft,affect"
+                                   statusbar_colors="{&quot;draft&quot;:&quot;blue&quot;}"/>
+                        </header>
                         <group string="Travaux Prévus">
                             <group>
                                 <field name="sequence" readonly="1"/>
@@ -99,6 +121,9 @@
                                 <field name="employee_id" string="Intervenant"
                                        options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
                                        readonly="1"/>
+                                <newline/>
+<!--                                <button name="action_calendar" type="object" string="" icon="fa-light fa-calendar"-->
+<!--                                        class="btn-primary"/>-->
                                 <newline/>
                                 <field name="state_id" string="Municipalités" required="0"/>
                                 <field name="city" string="Région" required="0"/>
@@ -129,11 +154,11 @@
                                 <field name="user_id" string="USER" invisible="1"/>
                                 <field name="categ_id" string="categ" placeholder="Description..." invisible="1"/>
                                 <field name="note" string="Note" placeholder="Description..."/>
-<!--                                <group string="Actions Administrateurs">-->
-<!--                                    <field name="display" string="Réalisable" help="Décochoer si irréalisable!"-->
-<!--                                           readonly="0"/>-->
-<!--                                    <field name="active" string="Actif" help="Décochoer si vous voulez archiver!"/>-->
-<!--                                </group>-->
+                                <!--                                <group string="Actions Administrateurs">-->
+                                <!--                                    <field name="display" string="Réalisable" help="Décochoer si irréalisable!"-->
+                                <!--                                           readonly="0"/>-->
+                                <!--                                    <field name="active" string="Actif" help="Décochoer si vous voulez archiver!"/>-->
+                                <!--                                </group>-->
                             </group>
                         </group>
                         <group>
@@ -171,7 +196,6 @@
                                            attrs="{'required': [('state', '=', 'draft')]}"
                                            sum="Prev Hours" readonly="0"/>
                                     <field name="uom_id_r" string="Unité"
-                                           attrs="{'required': [('state', '=', 'draft')]}"
                                            options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
                                     <field name="wizard_id" invisible="1" string="Wizard"/>
                                     <field name="project_id" invisible="0"/>

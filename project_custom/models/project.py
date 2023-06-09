@@ -545,7 +545,6 @@ class ProjectCustom(models.Model):
                         for hh in task.kit_id.type_ids.ids:
                             pr = self.env['product.product'].browse(hh)
                             if pr.is_load is True:
-                                print('111111111111')
                                 self.env['project.task.work'].create({
                                     'task_id': task.id,
                                     'categ_id': task.categ_id.id,
@@ -589,7 +588,6 @@ class ProjectCustom(models.Model):
                     elif int(task.rank) > 0 and int(task.rank) < 2:
                         if not 'Etape' in task.product_id.name and task.product_id.is_load:
                             ct = ct + (task.color * 7)
-                            print('2222222222')
                             self.env['project.task.work'].create({
                                 'task_id': task.id,
                                 'categ_id': task.categ_id.id,
@@ -631,7 +629,6 @@ class ProjectCustom(models.Model):
                     else:
                         if not 'Etape' in task.product_id.name and task.product_id.is_load:
                             ct = ct + (task.color * 7)
-                            print('33333333333')
                             self.env['project.task.work'].create({
                                 'task_id': task.id,
                                 'categ_id': task.categ_id.id,
@@ -690,6 +687,31 @@ class ProjectCustom(models.Model):
         if self.state == 'close':
             self.env.cr.execute('update project_task_work set  state=ex_state where project_id =%s', (self.ids[0],))
             self.env.cr.execute('update project_task set  state=%s where project_id =%s', ('open', self.ids[0]))
+
+    # def onchange_date(self, context=None):
+    #     if context is None:
+    #         context = {}
+    #     result = {'value': {}}
+    #     self.env.cr.execute(
+    #         "select cast(substr(number, 5, 7) as integer) from project_project where number is not Null and EXTRACT(YEAR FROM date)=%s and parent_id1 is Null  AND position('-' in number) = 0 order by cast(number as integer) desc limit 1",
+    #         (date[:4],))
+    #     q3 = self.env.cr.fetchone()
+    #
+    #     if q3:
+    #         res1 = q3[0] + 1
+    #     else:
+    #         res1 = '001'
+    #     result['value'].update({'number': str(str(date.year]) + str(str(res1).zfill(3))),
+    #                             'name': str(str(date.year) + ' - ' + str(str(res1).zfill(3)))})
+    #     return result
+
+    # @api.onchange('state_id')
+    # def onchange_munic(self):
+    #     if self.state_id:
+    #         state_obj = self.env['res.country.state']
+    #         state = state_obj.browse(self.state_id)
+    #         return {'value': {'city': state.region}}
+    #     return {}
 
 
 class AgreementFeesAmortizationLine(models.Model):

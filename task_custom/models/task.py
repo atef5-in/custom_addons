@@ -289,6 +289,7 @@ class TaskCustom(models.Model):
     progress_amount = fields.Float(compute='_get_progress_amount', string='% Dépense')
     rank = fields.Char(string='Séq', readonly=True, states={'draft': [('readonly', False)]}, )
     display = fields.Boolean(string='Color Index')
+
     # 'manager_id': fields.related('project_id', 'analytic_account_id', 'user_id', type='many2one',
     #                              relation='res.users', string='Project Manager')
     # 'user_email': fields.related('user_id', 'email', type='char', string='User Email',
@@ -296,6 +297,79 @@ class TaskCustom(models.Model):
     # 'delegated_user_id': fields.related('child_ids', 'user_id', type='many2one', relation='res.users',
     #                                     string='Delegated To',
     #                                   , )
+
+    # To check
+    @api.onchange('product_id')
+    def onchange_product_id(self):
+        product_obj = self.env['product.product']
+        vals = {}
+        super = []
+        coord = []
+        if self.product_id:
+            prod = product_obj.browse(self.product_id)
+            line_obj1 = self.env['course.schedule']
+            list_dep = self.env['training.training']
+            perm = list_dep.search([('department', '=', prod.categ_id.id)])
+            if perm:
+                for dep in perm:
+                    line = list_dep.browse(dep)
+                    for kk in line.curr_ids.sorted(key=lambda r: int(r.name)):
+                        work = line_obj1.browse(kk.id)
+                        if work.location == 'super':
+                            super.append(work.employee_id.id)
+                        if work.location == 'cont':
+                            coord.append(work.employee_id.id)
+            if prod.name == 'Etape 0':
+                new_name = 'Relevé et dessin de base'
+            elif prod.name == 'Etape 1':
+                new_name = 'Conception FTTH'
+            elif prod.name == 'Etape 2':
+                new_name = 'Relevé UDS et de Validation'
+            elif prod.name == 'Etape 3':
+                new_name = ' Ingénierie civile'
+            elif prod.name == 'Etape 4':
+                new_name = 'Préparation plan de permis'
+            elif prod.name == 'Etape 5':
+                new_name = 'Demande de permis'
+            elif prod.name == 'Etape 6':
+                new_name = 'Émission de construction'
+            elif prod.name == 'Etape 7':
+                new_name = 'TQC'
+            else:
+                new_name = prod.name
+
+            vals.update({'name': new_name, 'uom_id': prod.uom_id.id, 'dc': prod.name,
+                         'reviewer_id': super[0] if super else False, 'coordin_id': coord[0] if coord else False})
+        return {'value': vals}
+
+    # @api.onchange('categ_id', 'kit_id')
+    # def onchange_kit_id(self):
+    #     product_obj = self.env['product.kit']
+    #     vals = {}
+    #     super = []
+    #     coord = []
+    #     if self.kit_id and self.categ_id:
+    #         prod = product_obj.browse(self.kit_id)
+    #         name = prod.name
+    #         line_obj1 = self.env['course.schedule']
+    #         list_dep = self.env['training.training']
+    #         perm = list_dep.search([('department', '=', self.categ_id)])
+    #         if perm:
+    #             for dep in perm:
+    #                 line = list_dep.browse(dep)
+    #                 for kk in line.curr_ids.sorted(key=lambda r: int(r.name)):
+    #                     work = line_obj1.browse(kk.id)
+    #                     if work.location == 'super':
+    #                         super.append(work.employee_id.id)
+    #                     if work.location == 'cont':
+    #                         coord.append(work.employee_id.id)
+    #
+    #         vals.update({'name': name, 'uom_id': 1, 'reviewer_id': super[0] if super else False,
+    #                      'coordin_id': coord[0] if coord else False})
+    #
+    #     return {'value': vals}
+
+
 
 
 class ProjectCategory(models.Model):
