@@ -58,7 +58,7 @@
                                    attrs="{'readonly':[('state','in',['close', 'cancelled'])]}" invisible="1"/>
                             <!--                                   context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'project.group_project_manager']}"-->
                             <newline/>
-                            <field name="date" string="Date" on_change="onchange_date(date)"/>
+                            <field name="date" string="Date"/>
                             <field name="id" string="ID" invisible="0"/>
                             <newline/>
                             <field name="number" string="N°" invisible="1"/>
@@ -91,8 +91,7 @@
                             <field name="country_id" string="Pays" required="1"
                                    options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
                             <field name="state_id" string="Municipalités"
-                                   options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
-                                   on_change="onchange_munic(state_id)"/>
+                                   options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
                             <field name="city" string="Région" required="0"/>
                             <field name="ftp" widget="url" string="Lien FTP" required="0"/>
                             <field name="priority" string="Priorité Projet"/>
@@ -131,20 +130,28 @@
                                            invisible="1"/>
                                     <field name="kit_id" string="Kit"
                                            options="{'no_create': True, 'no_create_edit':True}"/>
-                                    <!--                                    onchange_kit_id-->
+                                    <!--                                     domain="[('categ_id','=',categ_id)]"-->
                                     <field name="name" string="Nom Kit"/>
                                     <field name="date_start" string="Date Début" widget="date"/>
                                     <field name="date_end" string="Date Fin" widget="date"/>
                                     <field name="color" string="Durée(Jrs)" sum="Total"/>
                                     <field name="planned_hours" string="Durée(Hrs)" sum="Total"
                                            invisible="1"/>
+                                    <!--                                    bg_color -->
                                     <field name="qte" string="Qté/Unité" sum="Total"/>
-                                    <field name="uom_id" string="Unité" invisible="1"/>
-                                    <field name="cout" string="Tarif"/>
-                                    <field name="total" string="Sous-Total" sum="Total"/>
+                                    <field name="uom_id" string="Unité" invisible="1"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="cout" string="Tarif"
+                                           attrs="{'invisible': [('is_super_admin', '=', False)]}"/>
+                                    <field name="total" string="Sous-Total" sum="Total"
+                                           attrs="{'invisible': [('is_super_admin', '=', False)]}"/>
                                     <field name="ftp" widget="url" string="Lien FTP" invisible="1"/>
-                                    <field name="reviewer_id" string="Superviseur"/>
-                                    <field name="coordin_id" string="Coordinateur"/>
+                                    <field name="reviewer_id" string="Superviseur"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                           invisible="0"/>
+                                    <field name="coordin_id" string="Coordinateur"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                           invisible="0"/>
                                     <field name="rank" string="Séq"/>
                                     <field name="pourc" string="% Workflow"/>
                                     <field name="priority" string="Priorité" required="0" invisible="1"/>
@@ -176,7 +183,8 @@
                         </page>
                         <page string="Travaux">
                             <field name="work_ids">
-                                <tree>
+                                <tree editable="bottom">
+                                    <field name="sequence" string="Séq " readonly="1"/>
                                     <field name="project_id" string="Projet" readonly="1"
                                            options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
                                     <field name="task_id" string="Tache" invisible="1"
@@ -185,11 +193,12 @@
                                            readonly="1"
                                            options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
                                            string="Type de Service" invisible="0"/>
+                                    <!--domain="[('categ_id','=',parent.categ_id)]"-->
                                     <field name="name" string="Libellé Travaux" readonly="1"/>
                                     <field name="zone" string="Zone " readonly="1"/>
                                     <field name="etape" string="Etape" readonly="1" invisible="0"/>
                                     <field name="secteur" string="Sect" readonly="1"/>
-                                    <!--                                    <field name="done4" string="Libellé " readonly="1" invisible="1"/>-->
+                                    <!--<field name="done4" string="Libellé " readonly="1" invisible="1"/>-->
                                     <field name="date_start" string="Date Déb." readonly="1"/>
                                     <field name="date_end" string="Date Fin" readonly="1"/>
                                     <field name="color" string="Nb Jrs Prév." required="1"/>
@@ -201,6 +210,7 @@
                                            readonly="1"/>
                                     <field name="employee_id" string="Ressource affectée"
                                            options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <!--domain="[('academic_ids.product_id','=',product_id)]"-->
                                     <field name="r_id" string="Libellé " invisible="1"/>
                                     <field name="paylist_id" string="Facture"
                                            options="{'no_create': True, 'no_create_edit':True,'no_open':True}"

@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
+from datetime import datetime, date
+from odoo.exceptions import UserError
+import math
 
 
 class TaskCustom(models.Model):
@@ -369,7 +372,39 @@ class TaskCustom(models.Model):
     #
     #     return {'value': vals}
 
+    @api.onchange('date_end', 'date_start')
+    def onchange_date_to(self):
+        """
+        Update the number_of_days.
+        """
+        # date_to has to be greater than date_from
+        date_from = self.date_start
+        date_to = self.date_end
+        if (date_from and date_to) and (date_from > date_to):
+            raise UserError('Attention!\nLa date de début doit être antérieure à la date de fin.')
+        result = {'value': {}}
+        if (date_to and date_from) and (date_from <= date_to):
+            timedelta = date_to - date_from
+            diff_day = timedelta.days
+            result['value']['color'] = round(math.floor(diff_day), 2) + 1
+            result['value']['planned_hours'] = (round(math.floor(diff_day), 2) + 1) * 7
 
+        else:
+            if date_from:
+                result['value']['date_end'] = date_from
+            result['value']['color'] = 0
+        return result
+
+    @api.onchange('qte', 'cout')
+    def onchange_sum(self):
+        result = {'value': {}}
+        #  please add code here to get sum of 'first' and 'second' and assign to variable 'sum'
+        sum = 0.0
+        ##for data in self.browse(cr, uid, ids, context=context):
+
+        result['value']['total'] = self.qte * self.cout
+        ##  result['value']['above'] = sum
+        return result
 
 
 class ProjectCategory(models.Model):
