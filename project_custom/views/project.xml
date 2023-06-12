@@ -54,9 +54,10 @@
                         <group>
                             <field name="is_super_admin" string="Super Admin ?" invisible="1"/>
                             <field name="is_admin" string="Admin ?" invisible="1"/>
+                            <field name="is_kit" string="Kit ?" invisible="0"/>
                             <field name="user_id" string="Project Manager"
-                                   attrs="{'readonly':[('state','in',['close', 'cancelled'])]}" invisible="1"/>
-                            <!--                                   context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'project.group_project_manager']}"-->
+                                   attrs="{'readonly':[('state','in',['close', 'cancelled'])]}" invisible="1"
+                                   context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'project.group_project_manager']}"/>
                             <newline/>
                             <field name="date" string="Date"/>
                             <field name="id" string="ID" invisible="0"/>
@@ -67,11 +68,11 @@
                             <field name="partner_id" string="Client" required="1"
                                    domain="[('company_id','=','company_id')]"
                                    attrs="{'readonly':[('state','!=','draft')]}"/>
-                            <!--                                   options="{'no_create': True, 'no_create_edit':True,'no_open':True}"-->
-                            <newline/>
-                            <field name="resp_id" string="Chef du Project"/>
-                            <!--                                   domain="[('is_resp','=',True)]"-->
                             <!--                                   options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>-->
+                            <newline/>
+                            <field name="resp_id" string="Chef du Project"
+                                   domain="[('is_resp','=',True)]"
+                                   options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
                             <newline/>
                             <field name="fees_id" string="Contrat lié"
                                    options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
@@ -136,8 +137,8 @@
                                     <field name="date_end" string="Date Fin" widget="date"/>
                                     <field name="color" string="Durée(Jrs)" sum="Total"/>
                                     <field name="planned_hours" string="Durée(Hrs)" sum="Total"
-                                           invisible="1"/>
-                                    <!--                                    bg_color -->
+                                           invisible="1"
+                                           bg_color="olive:product_id[0] ==38 or False;aqua:product_id[0] ==39 or False;violet:product_id[0] ==40 or False;magenta:product_id[0] ==41 or False;lime:product_id[0] ==42 or False;bisque:product_id[0] ==43 or False;silver:product_id[0] ==37 or False;Tan:product_id[0] ==340 or False;chocolate:product_id[0] ==353 or False;floralwhite:product_id[0] ==355 or False"/>
                                     <field name="qte" string="Qté/Unité" sum="Total"/>
                                     <field name="uom_id" string="Unité" invisible="1"
                                            options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
@@ -193,7 +194,7 @@
                                            readonly="1"
                                            options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
                                            string="Type de Service" invisible="0"/>
-                                    <!--domain="[('categ_id','=',parent.categ_id)]"-->
+                                    <!--                                    domain="[('categ_id','=',parent.categ_id)]"-->
                                     <field name="name" string="Libellé Travaux" readonly="1"/>
                                     <field name="zone" string="Zone " readonly="1"/>
                                     <field name="etape" string="Etape" readonly="1" invisible="0"/>
@@ -210,7 +211,7 @@
                                            readonly="1"/>
                                     <field name="employee_id" string="Ressource affectée"
                                            options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
-                                    <!--domain="[('academic_ids.product_id','=',product_id)]"-->
+                                    <!--                                    domain="[('academic_ids.product_id','=',product_id)]"-->
                                     <field name="r_id" string="Libellé " invisible="1"/>
                                     <field name="paylist_id" string="Facture"
                                            options="{'no_create': True, 'no_create_edit':True,'no_open':True}"

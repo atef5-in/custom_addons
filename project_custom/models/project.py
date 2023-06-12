@@ -26,6 +26,7 @@ class ProjectCustom(models.Model):
         'mail.alias': 'alias_id',
     }
     _rec_name = 'id'
+    _order = "npc"
 
     # def _auto_init(self, cr, context=None):
     #     """ Installation hook: aliases, project.project """
@@ -209,12 +210,12 @@ class ProjectCustom(models.Model):
 
     is_super_admin = fields.Boolean(string='Super Admin', compute='_compute_is_super_admin')
     is_admin = fields.Boolean(string='Is Admin', compute='_compute_is_admin')
-    active = fields.Boolean(string='Active', readonly=True, states={'draft': [('readonly', False)]}, )
-    is_kit = fields.Boolean(string='Is Kit', readonly=True, states={'draft': [('readonly', False)]}, )
+    active = fields.Boolean(string='Active', readonly=True, states={'draft': [('readonly', False)]}, default=True, )
+    is_kit = fields.Boolean(string='Is Kit', readonly=True, states={'draft': [('readonly', False)]}, default=True, )
     priority = fields.Selection([('0', 'Faible'), ('1', 'Normale'), ('2', 'Elevée')], string='Priorité Projet',
-                                select=True, readonly=True, states={'draft': [('readonly', False)]}, )
+                                select=True, readonly=True, states={'draft': [('readonly', False)]}, default='0', )
     sequence = fields.Integer(string='Sequence', help="Gives the sequence order when displaying a list of Projects.",
-                              readonly=True, states={'draft': [('readonly', False)]}, )
+                              readonly=True, states={'draft': [('readonly', False)]}, default=10000, )
     bord = fields.Char(string='N° PO', readonly=True, states={'draft': [('readonly', False)]}, )
     type3 = fields.Many2one('project.type.custom', string='Type Projet', select=True, readonly=True,
                             states={'draft': [('readonly', False)]})
@@ -223,9 +224,10 @@ class ProjectCustom(models.Model):
          ('4', 'Changement de conception'), ('5', 'Plan détaillé'), ('6', 'Projet civile'),
          ('7', 'Ingénierie locataire HQ')
             , ('8', 'Projet Permis'), ('9', 'Projet Clé')],
-        'Priority', select=True, readonly=True, states={'draft': [('readonly', False)]}, )
+        string='Priority', select=True, readonly=True, states={'draft': [('readonly', False)]}, default='', )
     fact = fields.Selection([('0', 'Non Facturable'), ('1', 'Facturable')],
-                            string='Facturable', select=True, readonly=True, states={'draft': [('readonly', False)]}, )
+                            string='Facturable', select=True, readonly=True, states={'draft': [('readonly', False)]},
+                            default='0', )
     ref = fields.Char(string='Nbre Poteaux', readonly=True, states={'draft': [('readonly', False)]}, )
     km = fields.Char(string='Nbre KM', readonly=True, states={'draft': [('readonly', False)]}, )
     partner_id = fields.Many2one('res.partner', string='Client', readonly=True,
@@ -301,14 +303,15 @@ class ProjectCustom(models.Model):
     task_ids2 = fields.One2many('project.task', 'project_id')
     color = fields.Integer(string='Color Index', readonly=True, states={'draft': [('readonly', False)]}, )
     parent_id = fields.Integer(string='Parent ID', readonly=True, states={'draft': [('readonly', False)]}, )
-    date = fields.Date(string='date', readonly=True, states={'draft': [('readonly', False)]}, )
+    date = fields.Date(string='date', readonly=True, states={'draft': [('readonly', False)]},
+                       default=lambda *a: time.strftime('%Y-%m-%d'), )
     date_start = fields.Date(string='Date de Début', readonly=True, states={'draft': [('readonly', False)]}, copy=True)
     date_end = fields.Date(string='Date de Livraison', readonly=True, states={'draft': [('readonly', False)]},
                            copy=True)
     date_s = fields.Date(string='date', readonly=True, states={'draft': [('readonly', False)]}, )
     date_e = fields.Date(string='date', readonly=True, states={'draft': [('readonly', False)]}, )
     country_id = fields.Many2one('res.country', string='Pays', readonly=True,
-                                 states={'draft': [('readonly', False)]}, )
+                                 states={'draft': [('readonly', False)]}, default=38, )
     fees_id = fields.Many2one('agreement.fees', string='Contrat lié', readonly=True,
                               states={'draft': [('readonly', False)]}, )
     r_id = fields.Many2one('risk.management.category', string='R ID', readonly=True,
@@ -361,13 +364,14 @@ class ProjectCustom(models.Model):
                               ('pending', 'Suspendu'),
                               ('close', 'Terminé')],
                              string='Status', required=True, copy=False, default='draft')
-    zone = fields.Integer('Zone', readonly=True, states={'draft': [('readonly', False)]}, )
+    zone = fields.Integer('Zone', readonly=True, states={'draft': [('readonly', False)]}, default=1, )
     work_ids = fields.One2many('project.task.work', 'project_id', readonly=True,
                                states={'draft': [('readonly', False)]}, )
     work_line_ids = fields.One2many('project.task.work.line', 'project_id', readonly=True,
                                     states={'draft': [('readonly', False)]}, )
     academic_ids = fields.One2many('hr.academic', 'project_id', 'Academic experiences', help="Academic experiences")
-    parent_id1 = fields.Many2one('project.project', string='Project Parent', select=True, ondelete='cascade')
+    parent_id1 = fields.Many2one('project.project', string='Project Parent', select=True, ondelete='cascade',
+                                 default=False, )
     child_id = fields.One2many('project.project', 'parent_id1', string='Child Categories')
     doc_count = fields.Integer(compute='_get_attached_docs', string='Number of documents attached')
     name = fields.Char(required=False, string='Nom', )
@@ -377,6 +381,7 @@ class ProjectCustom(models.Model):
 
         if self.is_kit is True:
 
+            print('true')
             return {
                 'name': ('Consulter Projet'),
                 'type': 'ir.actions.act_window',
@@ -391,12 +396,13 @@ class ProjectCustom(models.Model):
                 'domain': []
             }
         else:
+            print('false')
             return {
                 'name': ('Consulter Projet'),
                 'type': 'ir.actions.act_window',
                 'view_type': 'form',
                 'view_mode': 'form',
-                'view_id': 1142,
+                'view_id': 1149,
                 'target': 'current',
                 'res_model': 'project.project',
                 'res_id': self.ids[0],
@@ -688,30 +694,30 @@ class ProjectCustom(models.Model):
             self.env.cr.execute('update project_task_work set  state=ex_state where project_id =%s', (self.ids[0],))
             self.env.cr.execute('update project_task set  state=%s where project_id =%s', ('open', self.ids[0]))
 
-    # def onchange_date(self, context=None):
-    #     if context is None:
-    #         context = {}
-    #     result = {'value': {}}
-    #     self.env.cr.execute(
-    #         "select cast(substr(number, 5, 7) as integer) from project_project where number is not Null and EXTRACT(YEAR FROM date)=%s and parent_id1 is Null  AND position('-' in number) = 0 order by cast(number as integer) desc limit 1",
-    #         (date[:4],))
-    #     q3 = self.env.cr.fetchone()
-    #
-    #     if q3:
-    #         res1 = q3[0] + 1
-    #     else:
-    #         res1 = '001'
-    #     result['value'].update({'number': str(str(date.year]) + str(str(res1).zfill(3))),
-    #                             'name': str(str(date.year) + ' - ' + str(str(res1).zfill(3)))})
-    #     return result
+    @api.onchange('date')
+    def onchange_date(self):
+        result = {'value': {}}
+        if self.date:
+            self.env.cr.execute(
+                "select cast(substr(number, 5, 7) as integer) from project_project where number is not Null and EXTRACT(YEAR FROM date)=%s and parent_id1 is Null  AND position('-' in number) = 0 order by cast(number as integer) desc limit 1",
+                (self.date.year,))
+            q3 = self.env.cr.fetchone()
 
-    # @api.onchange('state_id')
-    # def onchange_munic(self):
-    #     if self.state_id:
-    #         state_obj = self.env['res.country.state']
-    #         state = state_obj.browse(self.state_id)
-    #         return {'value': {'city': state.region}}
-    #     return {}
+            if q3:
+                res1 = q3[0] + 1
+            else:
+                res1 = '001'
+            result['value']['number'] = str(str(self.date.year) + str(str(res1).zfill(3)))
+            result['value']['name'] = str(str(self.date.year) + ' - ' + str(str(res1).zfill(3)))
+        return result
+
+    @api.onchange('state_id')
+    def onchange_munic(self):
+        if self.state_id:
+            state_obj = self.env['res.country.state']
+            state = state_obj.browse(self.state_id.id)
+            return {'value': {'city': state.region}}
+        return {}
 
 
 class AgreementFeesAmortizationLine(models.Model):
@@ -749,3 +755,15 @@ class ProjectIssue(models.Model):
     task_id = fields.Char()
     work_id = fields.Char()
     state = fields.Char()
+
+
+class ResCountryState(models.Model):
+    _inherit = 'res.country.state'
+
+    region = fields.Char()
+
+
+class HrEmployee(models.Model):
+    _inherit = 'hr.employee'
+
+    is_resp = fields.Boolean(default=True)

@@ -306,22 +306,8 @@ class TaskCustom(models.Model):
     def onchange_product_id(self):
         product_obj = self.env['product.product']
         vals = {}
-        super = []
-        coord = []
         if self.product_id:
-            prod = product_obj.browse(self.product_id)
-            line_obj1 = self.env['course.schedule']
-            list_dep = self.env['training.training']
-            perm = list_dep.search([('department', '=', prod.categ_id.id)])
-            if perm:
-                for dep in perm:
-                    line = list_dep.browse(dep)
-                    for kk in line.curr_ids.sorted(key=lambda r: int(r.name)):
-                        work = line_obj1.browse(kk.id)
-                        if work.location == 'super':
-                            super.append(work.employee_id.id)
-                        if work.location == 'cont':
-                            coord.append(work.employee_id.id)
+            prod = product_obj.browse(self.product_id.id)
             if prod.name == 'Etape 0':
                 new_name = 'Relevé et dessin de base'
             elif prod.name == 'Etape 1':
@@ -341,36 +327,19 @@ class TaskCustom(models.Model):
             else:
                 new_name = prod.name
 
-            vals.update({'name': new_name, 'uom_id': prod.uom_id.id, 'dc': prod.name,
-                         'reviewer_id': super[0] if super else False, 'coordin_id': coord[0] if coord else False})
+            vals.update({'name': new_name, 'uom_id': prod.uom_id.id, 'dc': prod.name})
         return {'value': vals}
 
-    # @api.onchange('categ_id', 'kit_id')
-    # def onchange_kit_id(self):
-    #     product_obj = self.env['product.kit']
-    #     vals = {}
-    #     super = []
-    #     coord = []
-    #     if self.kit_id and self.categ_id:
-    #         prod = product_obj.browse(self.kit_id)
-    #         name = prod.name
-    #         line_obj1 = self.env['course.schedule']
-    #         list_dep = self.env['training.training']
-    #         perm = list_dep.search([('department', '=', self.categ_id)])
-    #         if perm:
-    #             for dep in perm:
-    #                 line = list_dep.browse(dep)
-    #                 for kk in line.curr_ids.sorted(key=lambda r: int(r.name)):
-    #                     work = line_obj1.browse(kk.id)
-    #                     if work.location == 'super':
-    #                         super.append(work.employee_id.id)
-    #                     if work.location == 'cont':
-    #                         coord.append(work.employee_id.id)
-    #
-    #         vals.update({'name': name, 'uom_id': 1, 'reviewer_id': super[0] if super else False,
-    #                      'coordin_id': coord[0] if coord else False})
-    #
-    #     return {'value': vals}
+    @api.onchange('categ_id', 'kit_id')
+    def onchange_kit_id(self):
+        product_obj = self.env['product.kit']
+        vals = {}
+        if self.kit_id and self.categ_id:
+            prod = product_obj.browse(self.kit_id.id)
+            name = prod.name
+            vals.update({'name': name, 'uom_id': 1})
+
+        return {'value': vals}
 
     @api.onchange('date_end', 'date_start')
     def onchange_date_to(self):

@@ -20,10 +20,10 @@
         <button name="set_cancel" string="Cancel Project" type="object"
                 confirm="Confirmez-Vous l'annulation du Projet? Attention: Les Taches et les Travaux seront supprimés!"/>
 
-
         <button name="set_reopen" string="Forcer Ouverture" type="object"
                 confirm="Confirmez-Vous l'ouverture du Projet? Attention: Les Taches et les Travaux seront ouverts!"
                 class="oe_highlight"/>
+
         <field name="state" widget="statusbar" statusbar_visible="open,close,cancelled"
                statusbar_colors="{&quot;pending&quot;:&quot;blue&quot;}" readonly="1"/>
     </header>
@@ -113,6 +113,10 @@
                 <group>
                     <group>
                         <field name="date_s" string="Date  D. Tache"/>
+                        <field name="jrs" string="Nbre Jrs Décal."/>
+                        <field name="etap" string="Etape"/>
+                        <button name="set_decal" string="Décaler les Dates" type="object"/>
+                        <button name="set_date_etape" string="Appliquer Dates Etapes" type="object"/>
                     </group>
                     <group>
                         <field name="date_e" string="Date  F. Tache"/>
@@ -136,10 +140,8 @@
                                options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
                         <field name="product_id" domain="[('categ_id','=',categ_id)]" string="Items"
                                on_change="onchange_product_id(product_id)"
-                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}" invisible="1"/>
-                        <field name="kit_id" string="Kit" options="{'no_create': True, 'no_create_edit':True}"
-                               on_change="onchange_kit_id(categ_id,kit_id)" domain="[('categ_id','=',categ_id)]"/>
-                        <field name="name" string="Nom Kit"/>
+                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                        <field name="name" string="Type de Service"/>
 
                         <field name="date_start" string="Date Début" widget="date"
                                on_change="onchange_date_to(date_end, date_start)"/>
@@ -152,17 +154,17 @@
 
                         <field name="qte" string="Qté/Unité" sum="Total" on_change="onchange_sum(qte,cout)"/>
                         <field name="uom_id" string="Unité"
-                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}" invisible="1"/>
+                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
                         <field name="cout" string="Tarif" on_change="onchange_sum(qte,cout)"
                                attrs="{'invisible': [('is_admin', '=', False)]}"/>
                         <field name="total" string="Sous-Total" sum="Total"
                                attrs="{'invisible': [('is_admin', '=', False)]}"/>
 
                         <field name="ftp" widget="url" string="Lien FTP" invisible="1"/>
-                        <field name="reviewer_id" string="Superviseur"
-                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}" invisible="0"/>
+                        <field name="reviewer_id" string="Superviseur" required="1"
+                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
                         <field name="coordin_id" string="Coordinateur"
-                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}" invisible="0"/>
+                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
                         <field name="rank" string="Séq"/>
                         <field name="pourc" string="% Workflow"/>
                         <field name="priority" string="Priorité" required="0" invisible="1"/>
@@ -226,7 +228,7 @@
                         <field name="etape" string="Etape" readonly="1" invisible="0"/>
                         <field name="secteur" string="Sect" readonly="1"/>
                         <field name="done4" string="Libellé " readonly="1" invisible="1"/>
-
+                        <field name="is_intervenant" string="Date" invisible="1"/>
                         <field name="date_start" string="Date Déb." readonly="1"/>
                         <field name="date_end" string="Date Fin" readonly="1"/>
                         <field name="color" string="Nb Jrs Prév." required="1"/>
@@ -363,6 +365,7 @@
 
 
             </page>
+
 
             <page string="Fonctions Admin" attrs="{'invisible':[('is_1','=',False)]}">
                 <group string="Modification Client">

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_kit_false" model="ir.ui.view">
+        <field name="name">kit.false</field>
+        <field name="model">project.project</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="name" string="Name"/>
+                    <field name="state" string="status"/>
+                </group>
+            </form>
+        </field>
+    </record>
+</odoo>
