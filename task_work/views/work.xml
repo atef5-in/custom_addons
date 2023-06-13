@@ -57,11 +57,10 @@
                     <field name="done1" string="Libellé " readonly="1" invisible="1"/>
                     <field name="done2" string="Libellé " readonly="1" invisible="1"/>
                     <field name="done3" string="Libellé " readonly="1" invisible="1"/>
-                    <!--                    base_flow_merge_line doesn't exist-->
-                    <!--                    <field name="done4" string="Libellé " readonly="1" invisible="1"/>-->
-                    <!--                    <field name="is_intervenant" string="Libellé " readonly="1" invisible="1"/>-->
-                    <!--                    <field name="is_control" string="Libellé " readonly="1" invisible="1"/>-->
-                    <!--                    <field name="is_correction" string="Libellé " readonly="1" invisible="1"/>-->
+                    <field name="done4" string="Libellé " readonly="1" invisible="1"/>
+                    <field name="is_intervenant" string="Libellé " readonly="1" invisible="1"/>
+                    <field name="is_control" string="Libellé " readonly="1" invisible="1"/>
+                    <field name="is_correction" string="Libellé " readonly="1" invisible="1"/>
                     <field name="done33" string="Libellé " readonly="1" invisible="1"/>
                     <field name="poteau_i" string="Qté T. Prévue" readonly="1"/>
                     <field name="poteau_da" string="Qté Déja Affect." readonly="1"/>
@@ -89,25 +88,20 @@
                         <header>
                             <!--                            <button name="action_affect" type="object" string="Affecter Ressource" class="oe_highlight"-->
                             <!--                                    confirm="Ouvrir l'interface Affectation?" states="draft"/>-->
-                            <!---->
-                            <!--                            <button name="button_write1" type="object" string="Validation Travaux" class="oe_highlight"-->
-                            <!--                                    confirm="Enregistrer Les Travaux et Envoyer au Superviseur pour Approbation?"-->
-                            <!--                                    states="affect" invisible="1"/>-->
-                            <!--                            <button name="button_cancel_write" type="object" string="Reouvrir le Travail"-->
-                            <!--                                    class="oe_highlight" confirm="Voulez vous Reouvrir le Travail?" states="affect"/>-->
-                            <!---->
-                            <!--                            <button name="button_cancel_affect" type="object" string="Annuler Fiche"-->
-                            <!--                                    class="oe_highlight" confirm="Annuler la Fiche?" states="affect" invisible="1"/>-->
-                            <!---->
-                            <!--                            <button name="button_approve" type="object" string="Facturer la Fiche" class="oe_highlight"-->
-                            <!--                                    confirm="Facturer cette Tache?" states="tovalid" invisible="1"/>-->
-                            <!--                            -->
-                            <!--                            <button name="button_save_" type="object" string="Enregistrement Les Modifications"-->
-                            <!--                                    confirm="Voulez vous Enregistrer les modifications?" icon="gtk-floppy"-->
-                            <!--                                    class="oe_highlight"/>-->
+                            <button name="button_write1" type="object" string="Validation Travaux" class="oe_highlight"
+                                    confirm="Enregistrer Les Travaux et Envoyer au Superviseur pour Approbation?"
+                                    states="affect" invisible="1"/>
+                            <button name="button_cancel_write" type="object" string="Reouvrir le Travail"
+                                    class="oe_highlight" confirm="Voulez vous Reouvrir le Travail?" states="affect"/>
+                            <button name="button_cancel_affect" type="object" string="Annuler Fiche"
+                                    class="oe_highlight" confirm="Annuler la Fiche?" states="affect" invisible="0"/>
+                            <button name="button_approve" type="object" string="Facturer la Fiche" class="oe_highlight"
+                                    confirm="Facturer cette Tache?" states="tovalid" invisible="1"/>
+                            <button name="button_save_" type="object" string="Enregistrement Les Modifications"
+                                    confirm="Voulez vous Enregistrer les modifications?" icon="fa-light fa-floppy-disk"
+                                    class="oe_highlight"/>
 
-                            <field name="state" widget="statusbar" statusbar_visible="draft,affect"
-                                   statusbar_colors="{&quot;draft&quot;:&quot;blue&quot;}"/>
+                            <field name="state" widget="statusbar" statusbar_visible="draft,affect"/>
                         </header>
                         <group string="Travaux Prévus">
                             <group>
@@ -122,8 +116,8 @@
                                        options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
                                        readonly="1"/>
                                 <newline/>
-<!--                                <button name="action_calendar" type="object" string="" icon="fa-light fa-calendar"-->
-<!--                                        class="btn-primary"/>-->
+                                <!--                                <button name="action_calendar" type="object" string="" icon="fa-light fa-calendar"-->
+                                <!--                                        class="btn-primary"/>-->
                                 <newline/>
                                 <field name="state_id" string="Municipalités" required="0"/>
                                 <field name="city" string="Région" required="0"/>

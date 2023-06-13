@@ -201,12 +201,12 @@ class ProjectCustom(models.Model):
     @api.depends_context('uid')
     def _compute_is_super_admin(self):
         for record in self:
-            record.is_super_admin = self.env.user.has_group('om_hospital.group_super_admin')
+            record.is_super_admin = self.env.user.has_group('project_custom.group_super_admin')
 
     @api.depends_context('uid')
     def _compute_is_admin(self):
         for record in self:
-            record.is_admin = self.env.user.has_group('om_hospital.group_admin')
+            record.is_admin = self.env.user.has_group('project_custom.group_admin')
 
     is_super_admin = fields.Boolean(string='Super Admin', compute='_compute_is_super_admin')
     is_admin = fields.Boolean(string='Is Admin', compute='_compute_is_admin')

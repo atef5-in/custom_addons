@@ -206,15 +206,14 @@ class TaskWork(models.Model):
             else:
                 book.done33 = False
 
-    def _isinter(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
-        current = self
-        for book in current:
-            result[book.id] = False
+    def _isinter(self):
+
+        for book in self:
+            book.is_intervenant = False
             if book.line_ids:
                 tt = []
                 for kk in book.line_ids.ids:
-                    rec_line = self.env['project.task.work.line'].browse(cr, uid, kk, context=context)
+                    rec_line = self.env['project.task.work.line'].browse(kk)
                     if rec_line.group_id2:
                         if rec_line.group_id2.ids not in tt:
                             tt.append(rec_line.group_id2.ids)
@@ -222,55 +221,48 @@ class TaskWork(models.Model):
                     for kk in tt:
                         self.env.cr.execute(
                             'update base_group_merge_automatic_wizard set create_uid= %s where id in %s',
-                            (uid, tuple(kk)))
-                    test = self.env['base.group.merge.automatic.wizard'].search(cr, uid, [('id', 'in', tt), (
+                            (tuple(kk)))
+                    test = self.env['base.group.merge.automatic.wizard'].search([('id', 'in', tt), (
                         'state', '<>', 'draft')])
                     if test:
-                        result[book.id] = True
-        return result
+                        book.is_intervenant = True
 
-    def _iscontrol(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
-        current = self
-        for book in current:
-            result[book.id] = False
+    def _iscontrol(self):
+
+        for book in self:
+            book.is_control = False
             if book.line_ids:
                 tt = []
                 for kk in book.line_ids.ids:
-                    rec_line = self.env['project.task.work.line'].browse(cr, uid, kk, context=context)
+                    rec_line = self.env['project.task.work.line'].browse(kk)
                     if rec_line.group_id2:
                         if rec_line.group_id2.id not in tt:
                             tt.append(rec_line.group_id2.id)
                 if tt:
 
-                    test = self.env['base.group.merge.automatic.wizard'].search(cr, uid, [('id', 'in', tt), (
+                    test = self.env['base.group.merge.automatic.wizard'].search([('id', 'in', tt), (
                         'state1', '<>', 'draft')])
 
                     if test:
-                        result[book.id] = True
+                        book.is_control = True
 
-                    test1 = self.env['project.task.work.line'].search(cr, uid,
-                                                                      [('work_id2', '=', book.id or False)])
-                    ##raise osv.except_osv(_('Error !'), _('No period defined for this date: %s !\nPlease create one.')%test1)
+                    test1 = self.env['project.task.work.line'].search([('work_id2', '=', book.id or False)])
                     if test1:
                         for jj in test1:
-                            rec_line = self.env['project.task.work.line'].browse(cr, uid, jj, context=context)
+                            rec_line = self.env['project.task.work.line'].browse(jj)
                             if rec_line.group_id2:
                                 if rec_line.group_id2.id not in tt:
                                     tt.append(rec_line.group_id2.id)
-                        result[book.id] = True
+                        book.is_control = True
 
-        return result
+    def _iscorr(self):
 
-    def _iscorr(self, cr, uid, ids, field_name, arg, context=None):
-        result = {}
-        current = self
-        for book in current:
-            result[book.id] = False
+        for book in self:
+            book.is_correction = False
             if book.line_ids:
                 tt = []
                 for kk in book.line_ids.ids:
-                    rec_line = self.env['project.task.work.line'].browse(cr, uid, kk, context=context)
+                    rec_line = self.env['project.task.work.line'].browse(kk)
                     if rec_line.group_id2:
                         if rec_line.group_id2.ids not in tt:
                             tt.append(rec_line.group_id2.ids)
@@ -278,21 +270,19 @@ class TaskWork(models.Model):
                     for kk in tt:
                         self.env.cr.execute(
                             'update base_group_merge_automatic_wizard set create_uid= %s where id in %s',
-                            (uid, tuple(kk)))
-                    test = self.env['base.group.merge.automatic.wizard'].search(cr, uid, [('id', 'in', tt), (
+                            (tuple(kk)))
+                    test = self.env['base.group.merge.automatic.wizard'].search([('id', 'in', tt), (
                         'state2', '<>', 'draft')])
                     if test:
-                        result[book.id] = True
-                    test1 = self.env['project.task.work.line'].search(cr, uid,
-                                                                      [('work_id2', '=', book.id or False)])
+                        book.is_correction = True
+                    test1 = self.env['project.task.work.line'].search([('work_id2', '=', book.id or False)])
                     if test1:
                         for jj in test1:
-                            rec_line = self.env['project.task.work.line'].browse(cr, uid, jj, context=context)
+                            rec_line = self.env['project.task.work.line'].browse(jj)
                             if rec_line.group_id2:
                                 if rec_line.group_id2.id not in tt:
                                     tt.append(rec_line.group_id2.id)
-                        result[book.id] = True
-        return result
+                        book.is_correction = True
 
     def _get_progress(self):
 
@@ -563,9 +553,9 @@ class TaskWork(models.Model):
     affect_cor = fields.Char(string='corrdinateur')
     affect_con_list = fields.Char(string='controle id')
     affect_cor_list = fields.Char(string='corrdinateur id')
-    # is_intervenant = fields.Boolean(compute='_isinter', string='intervenant')
-    # is_control = fields.Boolean(compute='_iscontrol', string='controle')
-    # is_correction = fields.Boolean(compute='_iscorr', string='correction')
+    is_intervenant = fields.Boolean(compute='_isinter', string='intervenant')
+    is_control = fields.Boolean(compute='_iscontrol', string='controle')
+    is_correction = fields.Boolean(compute='_iscorr', string='correction')
     line_ids = fields.One2many('project.task.work.line', 'work_id', string='Work done')
     progress_me = fields.Float(compute='_get_progress', string='Company Currency')
     progress_qty = fields.Float(compute='_get_progress_qty', string='% Qté')
@@ -614,6 +604,7 @@ class TaskWork(models.Model):
         self.write({'state': 'cancel'})
         return True
 
+    # need to modify the id of the first condition
     def button_save_(self):
 
         project_ids = self.ids[0]
@@ -637,20 +628,19 @@ class TaskWork(models.Model):
                 'type': 'ir.actions.act_window',
                 'view_type': 'form',
                 'view_mode': 'form',
-                'view_id': 330,
+                'view_id': 1139,
                 'target': 'new',
                 'res_model': 'project.task.work',
                 'res_id': self.ids[0],
                 'context': {'active_id': self.ids[0]},
                 'domain': [('project_id', 'in', [project_ids])]
             }
+
     # need to check
     def button_approve(self):
 
         hr_payslip = self.env['hr.payslip']
         hr_payslip_line = self.env['hr.payslip.line']
-
-        sum1 = 0
         employee_obj = self.env['hr.employee']
         task_obj = self.env['project.task.work']
         task_obj_line = self.env['project.task.work.line']
@@ -666,7 +656,7 @@ class TaskWork(models.Model):
 
         self.env.cr.execute(
             "select cast(substr(number, 6, 8) as integer) from hr_payslip where number is not Null and name=%s and EXTRACT(YEAR FROM date_from)=%s  order by number desc limit 1",
-            (name, this.date_start[:4]))
+            (name, this.date_start.year))
         q3 = self.env.cr.fetchone()
         if q3:
             res1 = q3[0] + 1
@@ -677,7 +667,7 @@ class TaskWork(models.Model):
                                     'date_to': this.date_start,
                                     'contract_id': this.employee_id.contract_id.id,
                                     'name': name,
-                                    'number': str(str(this.date_start[:4]) + '-' + str(str(res1).zfill(3))),
+                                    'number': str(str(this.date_start.year) + '-' + str(str(res1).zfill(3))),
                                     'struct_id': 1,
                                     'currency_id': 5,
                                     })
@@ -685,19 +675,19 @@ class TaskWork(models.Model):
         for tt in this.line_ids:
 
             if tt.state == 'tovalid' and not tt.paylist_id:
-                pay_id_line = hr_payslip_line.create({'employee_id': line,
-                                                      'contract_id': this.employee_id.contract_id.id,
-                                                      'name': ' ',
-                                                      'code': '-',
-                                                      'category_id': 1,
-                                                      'quantity': tt.hours_r,
-                                                      'slip_id': pay_id,
-                                                      'rate': 100,
-                                                      'work_id': tt.work_id.id,
-                                                      'quantity': tt.poteau_r,
-                                                      'salary_rule_id': 1,
-                                                      'amount': this.employee_id.contract_id.wage,
-                                                      })
+                hr_payslip_line.create({'employee_id': line,
+                                        'contract_id': this.employee_id.contract_id.id,
+                                        'name': ' ',
+                                        'code': '-',
+                                        'category_id': 1,
+                                        'quantity': tt.hours_r,
+                                        'slip_id': pay_id,
+                                        'rate': 100,
+                                        'work_id': tt.work_id.id,
+                                        'quantity': tt.poteau_r,
+                                        'salary_rule_id': 1,
+                                        'amount': this.employee_id.contract_id.wage,
+                                        })
                 task_obj_line.write({'state': 'valid', 'paylist_id': pay_id})
 
         task_obj.write({'state': 'valid', 'paylist_id': pay_id})
