@@ -111,20 +111,18 @@ class TaskWork(models.Model):
             else:
                 rec.done3 = 0
 
-    # def _default_flow(self):
-    #
-    #     for rec in self:
-    #         self.env.cr.execute('select id from base_flow_merge_line where work_id= %s', (rec.id,))
-    #         work_ids = self.env.cr.fetchone()
-    #         if work_ids:
-    #             rec.done4 = 1
-    #         else:
-    #             rec.done4 = 0
+    def _default_flow(self):
 
-    # _check_color
-    def _compute_kanban_color(self):
+        for rec in self:
+            self.env.cr.execute('select id from base_flow_merge_line where work_id= %s', (rec.id,))
+            work_ids = self.env.cr.fetchone()
+            if work_ids:
+                rec.done4 = 1
+            else:
+                rec.done4 = 0
 
-        res = {}
+    def _check_color(self):
+
         for record in self:
             color = 0
             if record.statut in ('Soumise', 'A l''étude', 'Envoyé'):
@@ -144,8 +142,7 @@ class TaskWork(models.Model):
             elif record.statut == u'Travaux Prép.':
                 color = 8
 
-            res[record.id] = color
-        return res
+            record.kanban_color = color
 
     def _get_planned(self):
 
@@ -463,7 +460,7 @@ class TaskWork(models.Model):
                                ('TPSD', 'En TP - Sans Dérogation'),
                                ],
                               string='Status', copy=False)
-    # kanban_color = fields.Integer(compute='_compute_kanban_color', string='Couleur')
+    kanban_color = fields.Integer(compute='_check_color', string='Couleur')
     link_ids = fields.One2many('link.type', 'work_id', string='Work done')
     zone = fields.Integer(string='Zone', readonly=True, states={'draft': [('readonly', False)]}, )
     secteur = fields.Integer(string='Secteur', readonly=True, states={'draft': [('readonly', False)]}, )
@@ -534,8 +531,8 @@ class TaskWork(models.Model):
                            states={'draft': [('readonly', False)]}, )
     done3 = fields.Boolean(compute='_default_done3', string='Company Currency', readonly=True,
                            states={'draft': [('readonly', False)]}, )
-    # done4 = fields.Boolean(compute='_default_flow', string='Company Currency', readonly=True,
-    #                        states={'draft': [('readonly', False)]}, )
+    done4 = fields.Boolean(compute='_default_flow', string='Company Currency', readonly=True,
+                           states={'draft': [('readonly', False)]}, )
     color = fields.Integer(string='Nbdays', readonly=True, states={'draft': [('readonly', False)]}, )
     color1 = fields.Integer(string='Durée(Jours)', readonly=True, states={'affect': [('readonly', False)]}, )
     uom_id = fields.Many2one('product.uom', string='Unité Prévue', required=False, readonly=True,
@@ -874,3 +871,8 @@ class BaseGroup(models.Model):
 class BaseInvoiceMergeAutomaticWizard(models.Model):
     _name = "base.invoice.merge.automatic.wizard"
     name = fields.Char('Name')
+
+
+class BaseFlowMergeLine(models.Model):
+    _name = "base.flow.merge.line"
+    work_id = fields.Many2one('project.task.work', string='Tache')

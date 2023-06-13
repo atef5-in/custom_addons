@@ -199,7 +199,7 @@
                                     <field name="zone" string="Zone " readonly="1"/>
                                     <field name="etape" string="Etape" readonly="1" invisible="0"/>
                                     <field name="secteur" string="Sect" readonly="1"/>
-                                    <!--<field name="done4" string="Libellé " readonly="1" invisible="1"/>-->
+                                    <field name="done4" string="Libellé " readonly="1" invisible="1"/>
                                     <field name="date_start" string="Date Déb." readonly="1"/>
                                     <field name="date_end" string="Date Fin" readonly="1"/>
                                     <field name="color" string="Nb Jrs Prév." required="1"/>
@@ -367,7 +367,7 @@
             <field name="name">Projects</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">project.project</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">tree</field>
             <field name="context">{}</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
