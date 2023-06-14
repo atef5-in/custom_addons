@@ -17,13 +17,13 @@
                             confirm="Confirmez-Vous la Cloture du Projet? Attention: Vous ne pouvez plus faires des retours sur les bons!"/>
 
 
-                    <button name="set_open" string="Re-open project" type="object"/>
+                    <button name="set_open" string="Rouvrir project" type="object"/>
 
                     <button name="set_pending" string="Suspendre Projet" type="object"
                             confirm="Confirmez-Vous cette action? Attention: Toutes les taches et travaux seront suspendus!"/>
 
 
-                    <button name="set_cancel" string="Cancel Project" type="object"
+                    <button name="set_cancel" string="Annuler Projet" type="object"
                             confirm="Confirmez-Vous l'annulation du Projet? Attention: Les Taches et les Travaux seront supprimés!"/>
 
                     <button name="set_reopen" string="Forcer Ouverture" type="object"

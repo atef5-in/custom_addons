@@ -15,7 +15,7 @@ class TaskCustom(models.Model):
     @api.depends_context('uid')
     def _compute_is_super_admin(self):
         for record in self:
-            record.is_super_admin = self.env.user.has_group('om_hospital.group_super_admin')
+            record.is_super_admin = self.env.user.has_group('project_custom.group_super_admin')
 
     def _get_planned(self):
 
@@ -418,8 +418,3 @@ class Product(models.Model):
     _inherit = 'product.product'
     rel_id = fields.Many2one('product.kit')
     is_load = fields.Boolean(default=1)
-
-
-class ProductUOM(models.Model):
-    _name = "product.uom"
-    name = fields.Char('Name')

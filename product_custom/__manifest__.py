@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Project",
+    'name': "Product Custom",
 
     'summary': """
-        Project Custom""",
+        Product Custom""",
 
     'description': """
     """,
@@ -18,20 +18,17 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'project', 'task_custom', 'task_work'],
+    'depends': ['base', 'product', 'mail'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-        'security/security.xml',
-        'views/project.xml',
-        'views/kit.xml',
-        'views/not_kit.xml',
+        'views/views.xml',
+        'views/templates.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
         'demo/demo.xml',
     ],
-
-    'application' : True,
+    'application': True,
 }

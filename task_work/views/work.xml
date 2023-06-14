@@ -86,8 +86,8 @@
                 <form>
                     <sheet string="Task">
                         <header>
-                            <!--                            <button name="action_affect" type="object" string="Affecter Ressource" class="oe_highlight"-->
-                            <!--                                    confirm="Ouvrir l'interface Affectation?" states="draft"/>-->
+                            <button name="action_affect" type="object" string="Affecter Ressource" class="oe_highlight"
+                                    confirm="Ouvrir l'interface Affectation?" states="draft"/>
                             <button name="button_write1" type="object" string="Validation Travaux" class="oe_highlight"
                                     confirm="Enregistrer Les Travaux et Envoyer au Superviseur pour Approbation?"
                                     states="affect" invisible="1"/>

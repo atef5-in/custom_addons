@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access.product.uom.categ,access_product_uom_categ,product_custom.model_product_uom_categ,base.group_user,1,1,1,1
+access.product.uom,access_product_uom,product_custom.model_product_uom,base.group_user,1,1,1,1
+access.product.ul,access_product_ul,product_custom.model_product_ul,base.group_user,1,1,1,1
+access.product.attribute,access_product_attribute,product_custom.model_product_attribute,base.group_user,1,1,1,1
+access.product.attribute.value,access_product_attribute_value,product_custom.model_product_attribute_value,base.group_user,1,1,1,1
+access.product.attribute.price,access_product_attribute_price,product_custom.model_product_attribute_price,base.group_user,1,1,1,1
+access.product.attribute.line,access_product_attribute_line,product_custom.model_product_attribute_line,base.group_user,1,1,1,1
+access.product.price.history,access_product_price_history,product_custom.model_product_price_history,base.group_user,1,1,1,1

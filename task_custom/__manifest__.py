@@ -3,11 +3,9 @@
     'name': "Task",
 
     'summary': """
-        Short (1 phrase/line) summary of the module's purpose, used as
-        subtitle on modules listing or apps.openerp.com""",
+        Project Task""",
 
     'description': """
-        Long description of module's purpose
     """,
 
     'author': "My Company",
@@ -20,7 +18,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'project', 'task_work'],
+    'depends': ['base', 'project', 'task_work', 'product_custom'],
 
     # always loaded
     'data': [

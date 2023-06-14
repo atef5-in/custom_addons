@@ -701,7 +701,7 @@ class TaskWorkLine(models.Model):
     @api.depends_context('uid')
     def _compute_is_super_admin(self):
         for record in self:
-            record.is_super_admin = self.env.user.has_group('om_hospital.group_super_admin')
+            record.is_super_admin = self.env.user.has_group('project_custom.group_super_admin')
 
     is_super_admin = fields.Boolean(string='Super Admin', compute='_compute_is_super_admin', method=True)
     name = fields.Char(string='Work summary', readonly=True, states={'affect': [('readonly', False)]}, )
@@ -804,11 +804,6 @@ class RiskManagementCategory(models.Model):
     name = fields.Char()
 
 
-class ProductCategory(models.Model):
-    _name = "product.category"
-    name = fields.Char('Name')
-
-
 class ProductKit(models.Model):
     _name = "product.kit"
     name = fields.Char('Name')
@@ -840,11 +835,6 @@ class BonShow(models.Model):
 
 class ProjectIssue(models.Model):
     _name = "project.issue"
-    name = fields.Char('Name')
-
-
-class ProductUOM(models.Model):
-    _name = "product.uom"
     name = fields.Char('Name')
 
 

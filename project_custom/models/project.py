@@ -377,6 +377,11 @@ class ProjectCustom(models.Model):
     name = fields.Char(required=False, string='Nom', )
     issue_ids = fields.One2many('project.issue', 'project_id')
 
+    _sql_constraints = [
+        ('project_date_greater', 'check(date_end >= date_start)',
+         'Error! Project start date must be before project end date.')
+    ]
+
     def action_open_project(self):
 
         if self.is_kit is True:
