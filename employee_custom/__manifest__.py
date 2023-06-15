@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Product Custom",
+    'name': "employee_custom",
 
     'summary': """
-        Product Custom""",
+    Employee Custom""",
 
     'description': """
+        Long description of module's purpose
     """,
 
     'author': "My Company",
@@ -18,12 +19,12 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'product', 'mail'],
+    'depends': ['base', 'hr'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-        'views/product.xml',
+        'views/employee.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

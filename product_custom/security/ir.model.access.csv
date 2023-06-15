@@ -7,3 +7,4 @@ access.product.attribute.value,access_product_attribute_value,product_custom.mod
 access.product.attribute.price,access_product_attribute_price,product_custom.model_product_attribute_price,base.group_user,1,1,1,1
 access.product.attribute.line,access_product_attribute_line,product_custom.model_product_attribute_line,base.group_user,1,1,1,1
 access.product.price.history,access_product_price_history,product_custom.model_product_price_history,base.group_user,1,1,1,1
+access.pricelist.partnerinfo,access_pricelist_partnerinfo,product_custom.model_pricelist_partnerinfo,base.group_user,1,1,1,1
