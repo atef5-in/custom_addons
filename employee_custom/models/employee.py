@@ -127,7 +127,8 @@ class HrEmployee(models.Model):
 
     # we need a related field in order to be able to sort the employee by name
     # 'name_related': fields.related('resource_id', 'name', type='char', string='Name', readonly=True, store=True),
-    # remuneration_ids = fields.One2many('hr.curriculum', 'employee_id', 'Rénumération', copy=True)
+    academic_ids = fields.One2many('hr.academic', 'employee_id', string='Affectations Département', )
+    remuneration_ids = fields.One2many('hr.curriculum', 'employee_id', 'Rénumération', copy=True)
     date_pay = fields.Date("Date of Payment")  # check the name
     otherid = fields.Char('Other Id')
     gender = fields.Selection([('male', 'Male'), ('female', 'Female')], string='Gender')
@@ -419,8 +420,8 @@ class HrContract(models.Model):
     date_end = fields.Date(string='End Date', default=lambda *a: time.strftime("%Y-%m-%d"))
     trial_date_start = fields.Date(string='Trial Start Date')
     trial_date_end = fields.Date(string='Trial End Date')
-    working_hours = fields.Many2one('resource.calendar','Working Schedule')
-    wage = fields.Float(string='Wage', digits=(16,2), required=True, help="Basic Salary of the employee")
+    working_hours = fields.Many2one('resource.calendar', 'Working Schedule')
+    wage = fields.Float(string='Wage', digits=(16, 2), required=True, help="Basic Salary of the employee")
     advantages = fields.Text(string='Advantages')
     notes = fields.Text(string='Notes')
     permit_no = fields.Char(string='Work Permit No', required=False, readonly=False)
@@ -455,97 +456,64 @@ class HrContract(models.Model):
     # ]
 
 
-class HrAcademic(models.Model):
-    _name = 'hr.academic'
-    # _inherit = 'hr.curriculum'
+class HrCurriculum(models.Model):
+    _name = 'hr.curriculum'
+    _description = "Employee's Curriculum"
+    _rec_name = 'employee_id'
+    # _inherit = 'ir.needaction_mixin'
 
-    employee_id = fields.Char()
-    diploma = fields.Char(string='Diploma', translate=True)
-    study_field = fields.Char(string='Field of study', translate=True, )
-    activities = fields.Text(string='Activities and associations',
-                             translate=True)
-    product_id = fields.Many2one('product.product', string='Professional Experiences', )
+    #     # Allow the possibility to attachements to curriculum
+    #     # even if it's a diploma, degree...
+
+    name = fields.Char('Name')
+    employee_id = fields.Many2one('hr.employee', string='Employee', default="employee_id.id", )
+    start_date = fields.Date('Start date')
+    end_date = fields.Date('End date')
+    description = fields.Text('Description')
+    partner_id = fields.Many2one('res.partner', string='Partner',
+                                 help="Employer, School, University ,Certification Authority")
+    location = fields.Char('Location', help="Location")
+    expire = fields.Boolean('Expire', help="Expire", default=True)
+    product_id = fields.Many2one('product.product', string=' Professional Experiences', )
+    project_id = fields.Many2one('project.project', string=' Professional Experiences', )
     categ_id = fields.Many2one('product.category', string=' Professional Experiences', )
     amount = fields.Float(string='Diploma', translate=True)
     amount2 = fields.Float(string='Diploma', translate=True)
     currency_id = fields.Many2one('res.currency', string=' Professional Experiences', default=5, )
-    partner_id = fields.Many2one('res.partner', string=' Professional Experiences', )
-    project_id = fields.Many2one('project.project', string=' Professional Experiences', )
-    role_id = fields.Many2one('res.users.role', string=' Professional Experiences', )
-    uom_id = fields.Many2one('product.uom', string='Professional Experiences', )
+    uom_id = fields.Many2one('product.uom', string=' Professional Experiences', )
     uom_id2 = fields.Many2one('product.uom', string=' Professional Experiences', )
-    # curr_ids = fields.One2many('hr.curriculum', 'aca_id', string=u"Role lines", copy=True)
+    aca_id = fields.Many2one('hr.academic', string=' Professional Experiences', )
+    # status = fields.Selection([
+    #     ('valide', 'Valide'),
+    #     ('invalide', 'Invalide')], string='Status')
+    #
+    # def onchange_end_date(self, cr, uid, ids, end_date, context=None):
+    #     result = {'value': {}}
+    #     DATETIME_FORMAT = "%Y-%m-%d"
+    #     if end_date:
+    #         if datetime.strptime(end_date, DATETIME_FORMAT) < datetime.now():
+    #             result['value']['status'] = 'invalide'
+    #         else:
+    #             result['value']['status'] = 'valide'
+    #
+    #     return result
+
+
+class HrAcademic(models.Model):
+    _name = 'hr.academic'
+    _inherit = 'hr.curriculum'
+
+    diploma = fields.Char(string='Diploma', translate=True)
+    study_field = fields.Char(string='Field of study', translate=True, )
+    activities = fields.Text(string='Activities and associations',
+                             translate=True)
+    role_id = fields.Many2one('res.users.role', string=' Professional Experiences', )
+    curr_ids = fields.One2many('hr.curriculum', 'aca_id', string=u"Role lines", copy=True)
 
     # def onchange_project_id(self, cr, uid, ids, project_id, context=None):
     #     if project_id:
     #         department = self.pool.get('project.project').browse(cr, uid, project_id)
     #         value['partner_id'] = department.partner_id.id
     #     return {'value': value}
-
-
-class HrCurriculum(models.Model):
-    _name = 'hr.curriculum'
-    _description = "Employee's Curriculum"
-#
-#     # Allow the possibility to attachements to curriculum
-#     # even if it's a diploma, degree...
-#     _inherit = 'ir.needaction_mixin'
-#     _rec_name = 'employee_id'
-#
-    name = fields.Char('Name')
-#     employee_id = fields.Many2one('hr.employee', string='Employee', default="employee_id.id", )
-#     start_date = fields.Date('Start date')
-#     end_date = fields.Date('End date')
-#     description = fields.Text('Description')
-#     partner_id = fields.Many2one('res.partner',
-#                                  'Partner',
-#                                  help="Employer, School, University, "
-#                                       "Certification Authority")
-#     location = fields.Char('Location', help="Location")
-#     expire = fields.Boolean('Expire', help="Expire", default=True)
-#     product_id = fields.Many2one('product.product',
-#
-#                                  ' Professional Experiences',
-#                                  )
-#     project_id = fields.Many2one('project.project',
-#
-#                                  ' Professional Experiences',
-#                                  )
-#     categ_id = fields.Many2one('product.category',
-#
-#                                ' Professional Experiences',
-#                                )
-#     amount = fields.Float(string='Diploma', translate=True)
-#     amount2 = fields.Float(string='Diploma', translate=True)
-#     currency_id = fields.Many2one('res.currency',
-#
-#                                   ' Professional Experiences', default=5
-#                                   )
-#     uom_id = fields.Many2one('product.uom',
-#
-#                              ' Professional Experiences',
-#                              )
-#     uom_id2 = fields.Many2one('product.uom',
-#
-#                               ' Professional Experiences',
-#                               )
-#     aca_id = fields.Many2one('hr.academic',
-#
-#                              ' Professional Experiences',
-#                              )
-#     # status = fields.Selection([
-#     #     ('valide', 'Valide'),
-#     #     ('invalide', 'Invalide')], string='Status')
-#     #
-#     # def onchange_end_date(self, cr, uid, ids, end_date, context=None):
-#     #     result = {'value': {}}
-#     #     DATETIME_FORMAT = "%Y-%m-%d"
-#     #     if end_date:
-#     #         if datetime.strptime(end_date, DATETIME_FORMAT) < datetime.now():
-#     #             result['value']['status'] = 'invalide'
-#     #         else:
-#     #             result['value']['status'] = 'valide'
-#     #
-#     #     return result
 
 

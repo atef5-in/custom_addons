@@ -369,7 +369,7 @@ class ProjectCustom(models.Model):
                                states={'draft': [('readonly', False)]}, )
     work_line_ids = fields.One2many('project.task.work.line', 'project_id', readonly=True,
                                     states={'draft': [('readonly', False)]}, )
-    academic_ids = fields.One2many('hr.academic', 'project_id', 'Academic experiences', help="Academic experiences")
+    academic_ids = fields.One2many('hr.academic', 'project_id', string='Academic experiences', help="Academic experiences")
     parent_id1 = fields.Many2one('project.project', string='Project Parent', select=True, ondelete='cascade',
                                  default=False, )
     child_id = fields.One2many('project.project', 'parent_id1', string='Child Categories')
