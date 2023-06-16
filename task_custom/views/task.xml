@@ -93,6 +93,6 @@
             </field>
         </record>
 
-        <menuitem id="menu_task" name="Activités" sequence="-110" action="action_task"/>
+        <menuitem id="menu_task" name="Activités" sequence="-900" action="action_task"/>
     </data>
 </odoo>

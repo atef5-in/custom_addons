@@ -376,7 +376,7 @@
             </field>
         </record>
 
-        <menuitem id="menu_project" name="Projects" sequence="-120" action="action_project"/>
+        <menuitem id="menu_project" name="Projets" sequence="-1000" action="action_project"/>
 
     </data>
 </odoo>

@@ -87,7 +87,7 @@
             </field>
         </record>
 
-        <menuitem id="menu_product" name="Liste de services" sequence="-60" action="action_product"/>
+        <menuitem id="menu_product" name="Liste de services" sequence="-700" action="action_product"/>
 
     </data>
 </odoo>

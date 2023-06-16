@@ -730,17 +730,6 @@ class AgreementFeesAmortizationLine(models.Model):
     project_id = fields.Many2one('project.project', string='project ID')
 
 
-class HrAcademic(models.Model):
-    _name = "hr.academic"
-    project_id = fields.Many2one('project.project', string='project ID')
-    employee_id = fields.Char()
-    categ_id = fields.Char()
-    product_id = fields.Char()
-    partner_id = fields.Char()
-    currency_id = fields.Char()
-    amount = fields.Char()
-
-
 class AgreementFees(models.Model):
     _name = "agreement.fees"
 

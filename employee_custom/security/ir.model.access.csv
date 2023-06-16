@@ -1,1 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access.hr.contract.type,access_hr_contract_type,employee_custom.model_hr_contract_type,base.group_user,1,1,1,1
+access.hr.contract,access_hr_contract,employee_custom.model_hr_contract,base.group_user,1,1,1,1
+access.hr.academic,access_hr_academic,employee_custom.model_hr_academic,base.group_user,1,1,1,1
+access.hr.curriculum,access_hr_curriculum,employee_custom.model_hr_curriculum,base.group_user,1,1,1,1

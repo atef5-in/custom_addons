@@ -222,6 +222,6 @@
             </field>
         </record>
 
-        <menuitem id="menu_work" name="Tâches" sequence="-100" action="action_task_work"/>
+        <menuitem id="menu_work" name="Tâches" sequence="-800" action="action_task_work"/>
     </data>
 </odoo>
