@@ -17,7 +17,7 @@
                             <field name="job_id" string="Nature de Relation" widget="selection" required="1"/>
                             <field name="tva" string="TPS/TVQ?" widget="selection" invisible="1"/>
                             <!--                                   attrs="{'required': [('job_id', '=',8)],'invisible':[('job_id', '=',1 )]}"/>-->
-                            <field name="user_id" string="Utilisateur lié" on_change="onchange_user(user_id)"
+                            <field name="user_id" string="Utilisateur lié"
                                    context="{'default_groups_ref': ['base.group_user']}"/>
                         </group>
                         <group>
@@ -27,18 +27,22 @@
                             <field name="active" string="En activité?"/>
                         </group>
                     </group>
-                    <!--                        <div class="oe_right oe_button_box" name="button_box">-->
-                    <!--                            &lt;!&ndash; Put here related buttons &ndash;&gt;-->
-                    <!--                        </div>-->
-                    <!--                        <div class="oe_right oe_button_box" name="button_box">-->
-                    <!--                            &lt;!&ndash; Put here related buttons &ndash;&gt;-->
-                    <!--                        </div>-->
+                    <group>
+                        <button class="oe_inline oe_stat_button" type="action"
+                                name="%(employee_custom.action_contract)d" icon="fa-book"
+                                style="border: 1px solid #999999;">
+                            <field string="Contrats" name="contracts_count" widget="statinfo"
+                                   style="font-size: 12px; width: 120px;"/>
+                            <!--                            groups="base.group_hr_manager"-->
+                        </button>
+                    </group>
                     <notebook>
                         <page string="Données Personnelles">
                             <group>
                                 <group string="Données Personnelles">
                                     <field name="gender" string="Sexe" required="1"/>
                                     <field name="marital" required="0"/>
+                                    <field name="children"/>
                                 </group>
                                 <group string="Autres Informations">
                                     <field name="address_home_id"
@@ -55,29 +59,29 @@
                                            options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}"/>
                                     <field name="identification_id" string="N° Carte Idendité"/>
                                     <field name="passport_id"/>
-                                    <field name="bank_account_id"/>
+                                    <field name="bank_account_id" context="{'display_partner':True}"/>
                                     <field name="otherid" groups="base.group_hr_user"/>
                                 </group>
                                 <group string="Birth">
                                     <field name="birthday"/>
+                                    <field name="place_of_birth"/>
                                 </group>
                             </group>
                         </page>
                         <page string="Addresses et Données de Localisations">
                             <group>
-                                <field name="address_id" on_change="onchange_address_id(address_id)"
+                                <field name="address_id"
                                        context="{'show_address': 1, 'default_customer': False}"
                                        options="{&quot;always_reload&quot;: True, &quot;highlight_first_line&quot;: True}"
                                        invisible="1"/>
-                                <group colspan="4" col="4">
+                                <group>
                                     <separator string="Addresses et Localisations" colspan="4"/>
-                                    <field name="lat" colspan="1"/>
-                                    <field name="lng" colspan="1"/>
+                                    <field name="lat"/>
+                                    <field name="lng"/>
                                     <field name="map" widget="map"/>
                                 </group>
                                 <group>
-                                    <field name="company_id" groups="base.group_multi_company"
-                                           on_change="onchange_company(company_id)"/>
+                                    <field name="company_id" groups="base.group_multi_company"/>
                                 </group>
                             </group>
                         </page>
@@ -93,8 +97,7 @@
                                     </field>
                                 </group>
                                 <group string="Contacts et Email">
-                                    <field name="department_id" on_change="onchange_department_id(department_id)"
-                                           invisible="1"/>
+                                    <field name="department_id" invisible="1"/>
                                     <field name="work_email" string="Mail Interne"/>
                                     <field name="mobile_phone" string="Tél. 1"/>
                                     <field name="work_phone" string="Tél. 2"/>
@@ -104,11 +107,21 @@
                                     <field name="work_location" string="Mail Société"/>
                                     <field name="parent_id" invisible="1"/>
                                     <field name="coach_id" invisible="1"/>
+                                    <field name="manager" invisible="1"/>
                                 </group>
                             </group>
                         </page>
                         <page string="HR Settings">
                             <group>
+                                <group string="Contract" invisible="1">
+                                    <field name="medic_exam" string="Medical Exam"/>
+                                    <field name="vehicle"/>
+                                    <field name="vehicle_distance"/>
+                                </group>
+                                <group string="Timesheets" invisible="1">
+                                    <field name="product_id" domain="[('type','=','service')]"/>
+                                    <field name="journal_id"/>
+                                </group>
                                 <group string="Données Contractuelles" name="active_group">
                                     <field name="contract_id" string="Contrat"/>
                                 </group>
@@ -156,9 +169,59 @@
                                     <field name="facture" string="Envois Facture"/>
                                     <field name="workflow" string="Actions Workflow"/>
                                 </group>
-                                <group>
-                                </group>
                             </group>
+                        </page>
+                        <page string="Professional Experiences" groups="base.group_user,base.group_hr_user">
+                            <field name="experience_ids" context="{'default_employee_id': active_id}">
+                                <tree string="Professional Experiences">
+                                    <field name="name" string="Position"/>
+                                    <field name="partner_id" string="Employer" invisible="1"/>
+                                    <field name="location" string="Employeur"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                </tree>
+                                <form string="Professional Experience">
+                                    <group name="main">
+                                        <field name="name" string="Position"/>
+                                        <separator string="Dates" colspan="4"/>
+                                        <field name="start_date"/>
+                                        <field name="expire" invisible="1"/>
+                                        <field name="end_date" attrs="{'invisible':[('expire', '=', False)]}"/>
+                                        <field name="partner_id" string="Employer" invisible="1"/>
+                                        <field name="location" string="Employeur"/>
+                                        <separator string="Description" colspan="4"/>
+                                        <field name="description" colspan="4" nolabel="1"/>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Certifications" groups="base.group_user,base.group_hr_user">
+                            <field name="certification_ids" context="{'default_employee_id': active_id}">
+                                <tree string="Certifications">
+                                    <field name="name" string="Certification"/>
+                                    <field name="certification" string="# Certificate"/>
+                                    <field name="partner_id" string="Issued By" invisible="1"/>
+                                    <field name="location" string="Employeur"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                </tree>
+                                <form string="Professional Experience">
+                                    <group name="main">
+                                        <field name="name" string="Certification"/>
+                                        <field name="certification" string="# Certification"/>
+                                        <field name="start_date"/>
+                                        <field name="expire" invisible="1"/>
+                                        <field name="end_date" attrs="{'invisible':[('expire', '=', False)]}"/>
+                                        <field name="partner_id" string="Employer" invisible="1"/>
+                                        <field name="location" string="Employeur"/>
+                                        <separator string="Description" colspan="4"/>
+                                        <field name="description" colspan="4" nolabel="1"/>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Commentaires et Remarques">
+                            <field name="notes" placeholder="Other Information ..." colspan="4"/>
                         </page>
                     </notebook>
                 </form>

@@ -3,3 +3,6 @@ access.hr.contract.type,access_hr_contract_type,employee_custom.model_hr_contrac
 access.hr.contract,access_hr_contract,employee_custom.model_hr_contract,base.group_user,1,1,1,1
 access.hr.academic,access_hr_academic,employee_custom.model_hr_academic,base.group_user,1,1,1,1
 access.hr.curriculum,access_hr_curriculum,employee_custom.model_hr_curriculum,base.group_user,1,1,1,1
+access.hr.experience,access_hr_experience,employee_custom.model_hr_experience,base.group_user,1,1,1,1
+access.hr.certification,access_hr_certification,employee_custom.model_hr_certification,base.group_user,1,1,1,1
+access.account.analytic.journal,access_account_analytic_journal,employee_custom.model_account_analytic_journal,base.group_user,1,1,1,1

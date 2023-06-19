@@ -109,12 +109,9 @@ class HrEmployee(models.Model):
             else:
                 emp.contract_id = False
 
-    # def _contracts_count(self):
-    #     contract = self.env['hr.contract']
-    #     return {
-    #         employee_id: contract.search_count(cr, SUPERUSER_ID, [('employee_id', '=', employee_id)], context=context)
-    #         for employee_id in ids
-    #     }
+    def _contracts_count(self):
+        self.contracts_count = self.env['hr.contract'].search_count([('employee_id', '=', self.ids[0])])
+        print(self.contracts_count)
 
     # def _get_image(self, cr, uid, ids, name, args, context=None):
     #     result = dict.fromkeys(ids, False)
@@ -221,7 +218,11 @@ class HrEmployee(models.Model):
     contract_ids = fields.One2many('hr.contract', 'employee_id', string='Contracts')
     contract_id = fields.Many2one('hr.contract', compute='_get_latest_contract', string='Contract',
                                   help='Latest contract of the employee')
-    # contracts_count = fields.Integer(compute='_contracts_count', string='Contracts')
+    contracts_count = fields.Integer(compute='_contracts_count', string='Contrats')
+    experience_ids = fields.One2many('hr.experience', 'employee_id', string='Expérience Professionnelles')
+    certification_ids = fields.One2many('hr.certification', 'employee_id', string='Certifications')
+    product_id = fields.Many2one('product.product', string=' Professional Experiences', )
+    journal_id = fields.Many2one('account.analytic.journal', string=' Professional Experiences', )
 
     # def _get_default_image(self, cr, uid, context=None):
     #     image_path = get_module_resource('hr', 'static/src/img', 'default_image.png')
@@ -279,33 +280,37 @@ class HrEmployee(models.Model):
     #     super(hr_employee, self).unlink(cr, uid, ids, context=context)
     #     return self.pool.get('resource.resource').unlink(cr, uid, resource_ids, context=context)
     #
-    # def onchange_address_id(self, cr, uid, ids, address, context=None):
-    #     if address:
-    #         address = self.pool.get('res.partner').browse(cr, uid, address, context=context)
-    #         return {'value': {'work_phone': address.phone, 'mobile_phone': address.mobile}}
-    #     return {'value': {}}
-    #
-    # def onchange_company(self, cr, uid, ids, company, context=None):
-    #     address_id = False
-    #     if company:
-    #         company_id = self.pool.get('res.company').browse(cr, uid, company, context=context)
-    #         address = self.pool.get('res.partner').address_get(cr, uid, [company_id.partner_id.id], ['default'])
-    #         address_id = address and address['default'] or False
-    #     return {'value': {'address_id': address_id}}
-    #
-    # def onchange_department_id(self, cr, uid, ids, department_id, context=None):
-    #     value = {'parent_id': False}
-    #     if department_id:
-    #         department = self.pool.get('hr.department').browse(cr, uid, department_id)
-    #         value['parent_id'] = department.manager_id.id
-    #     return {'value': value}
-    #
-    # def onchange_user(self, cr, uid, ids, user_id, context=None):
-    #     work_email = False
-    #     if user_id:
-    #         work_email = self.pool.get('res.users').browse(cr, uid, user_id, context=context).email
-    #     return {'value': {'work_email': work_email}}
-    #
+    @api.onchange('address')
+    def onchange_address_id(self):
+        if self.address:
+            address = self.env['res.partner'].browse(self.address)
+            return {'value': {'work_phone': address.phone, 'mobile_phone': address.mobile}}
+        return {'value': {}}
+
+    @api.onchange('company_id')
+    def onchange_company(self):
+        address_id = False
+        if self.company:
+            company_id = self.env['res.company'].browse(self.company)
+            address = self.env['res.partner'].address_get([company_id.partner_id.id], ['default'])
+            address_id = address and address['default'] or False
+        return {'value': {'address_id': address_id}}
+
+    @api.onchange('departement_id')
+    def onchange_department_id(self):
+        value = {'parent_id': False}
+        if self.department_id:
+            department = self.env['hr.department'].browse(self.department_id)
+            value['parent_id'] = department.manager_id.id
+        return {'value': value}
+
+    @api.onchange('user_id')
+    def onchange_user(self):
+        work_email = False
+        if self.user_id:
+            work_email = self.env['res.users'].browse(self.user_id.id).email
+        return {'value': {'work_email': work_email}}
+
     # def action_follow(self, cr, uid, ids, context=None):
     #     """ Wrapper because message_subscribe_users take a user_ids=None
     #         that receive the context without the wrapper. """
@@ -427,6 +432,15 @@ class HrContract(models.Model):
     permit_no = fields.Char(string='Work Permit No', required=False, readonly=False)
     visa_no = fields.Char(string='Visa No', required=False, readonly=False)
     visa_expire = fields.Date('Visa Expire Date')
+    schedule_pay = fields.Selection([
+        ('monthly', 'Monthly'),
+        ('quarterly', 'quarterly'),
+        ('semi-annually', 'semi-annually'),
+        ('annually', 'annually'),
+        ('weekly', 'weekly'),
+        ('bi-weekly', 'bi-weekly'),
+        ('bi-monthly', 'bi-monthly'),
+        ], string='type de payment')
 
     # def _get_type(self, cr, uid, context=None):
     #     type_ids = self.pool.get('hr.contract.type').search(cr, uid, [('name', '=', 'Employee')])
@@ -516,4 +530,24 @@ class HrAcademic(models.Model):
     #         value['partner_id'] = department.partner_id.id
     #     return {'value': value}
 
+
+class HrExperience(models.Model):
+    _name = 'hr.experience'
+    _inherit = 'hr.curriculum'
+
+    category = fields.Selection([('professional', 'Professional'),
+                                 ('academic', 'Academic'),
+                                 ('certification', 'Certification')],
+                                'Category', default='professional', help='Category')
+
+
+class HrCertification(models.Model):
+    _name = 'hr.certification'
+    _inherit = 'hr.curriculum'
+
+    certification = fields.Char(string='Certification Number', help='Certification Number')
+
+
+class AccountAnalyticJournal(models.Model):
+    _name = 'account.analytic.journal'
 
