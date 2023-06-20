@@ -1,1 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access.res.partner.bank.type,access_res_partner_bank_type,partner_custom.model_res_partner_bank_type,base.group_user,1,1,1,1
+access.res.partner.bank.type.field,access_res_partner_bank_type_field,partner_custom.model_res_partner_bank_type_field,base.group_user,1,1,1,1

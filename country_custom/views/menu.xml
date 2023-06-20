@@ -1,0 +1,5 @@
+<odoo>
+
+    <menuitem id="menu_country_root" name="Localisation" sequence="-300"/>
+
+</odoo>
