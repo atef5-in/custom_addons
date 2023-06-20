@@ -1,8 +1,8 @@
 <odoo>
 
-    <record id="view_country_tree" model="ir.ui.view">
-        <field name="name">res.country.state.tree</field>
-        <field name="model">res.country.state</field>
+    <record id="view_country_group_tree" model="ir.ui.view">
+        <field name="name">res.country.group.tree</field>
+        <field name="model">res.country.group</field>
         <field name="arch" type="xml">
             <tree string="Country Group" editable="bottom">
                 <field name="name"/>
@@ -10,14 +10,14 @@
         </field>
     </record>
 
-    <record id="action_region" model="ir.actions.act_window">
+    <record id="action_group" model="ir.actions.act_window">
         <field name="name">Régions</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="res_model">res.country.state</field>
+        <field name="res_model">res.country.group</field>
         <field name="view_mode">tree</field>
         <field name="context">{}</field>
     </record>
 
-    <menuitem id="menu_region" name="Régions" parent="menu_country_root" sequence="20" action="action_region"/>
+    <menuitem id="menu_group" name="Régions" parent="menu_country_root" sequence="20" action="action_group"/>
 
 </odoo>
