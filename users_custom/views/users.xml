@@ -1,0 +1,38 @@
+<odoo>
+
+    <record id="view_users_tree" model="ir.ui.view">
+        <field name="name">users.tree</field>
+        <field name="model">res.users</field>
+        <field name="arch" type="xml">
+            <tree string="Users">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="employee_id" string="Associated Employee"/>
+                <field name="login"/>
+                <field name="lang"/>
+                <field name="login_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_users_form_inherit" model="ir.ui.view">
+        <field name="name">users.form.inherit</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[field[@name='partner_id']]" position="inside">
+                <field name="employee_id" string="Associated Employee"/>
+                <field name="employee" string="Employee"/>
+                <field name="active" string="Actif"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="base.action_res_users" model="ir.actions.act_window">
+        <field name="view_ids" eval="[(5, 0, 0),
+                                  (0, 0, {'view_mode': 'tree', 'view_id': ref('users_custom.view_users_tree')}),
+                                  (0, 0, {'view_mode': 'form', 'view_id': ref('base.view_users_form')})]"/>
+    </record>
+
+</odoo>
