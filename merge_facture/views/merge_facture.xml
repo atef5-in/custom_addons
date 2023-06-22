@@ -1,0 +1,197 @@
+<odoo>
+
+    <record id="view_merge_facture_tree" model="ir.ui.view">
+        <field name="name">merge.facture.tree</field>
+        <field name="model">base.facture.wizard</field>
+        <field name="arch" type="xml">
+            <tree default_order='date_inv desc'>
+                <field name="num" readonly="1" string="Numéro"/>
+                <field name="date_inv" readonly="1" string="Date"/>
+                <field name="name" string="Description" readonly="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_merge_facture_form" model="ir.ui.view">
+        <field name="name">merge.facture.form</field>
+        <field name="model">base.facture.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Merge Tasks">
+                <header>
+                    <button name="apply_" string="Valider la Facture" type="object" class="oe_highlight"
+                            icon="fa-solid fa-check" confirm="Confirmez-vous le traitement?" states="draft"/>
+                    <button name="cancel_" string="Annuler la Facture" type="object" class="oe_highlight"
+                            icon="fa-solid fa-xmark" confirm="Confirmez-vous l'annulation?" states="open"/>
+
+                    <field name="state" widget="statusbar" statusbar_visible="open"
+                           statusbar_colors="{&quot;pending&quot;:&quot;blue&quot;}" readonly="1"/>
+                </header>
+                <div class="oe_title">
+                </div>
+                <!-- <h5>***If Assigned to: is empty , the user from the destination task will be assigned!</h5> -->
+                <group string="Assign tasks to" invisible="1">
+                    <field name="name" class="oe_inline"/>
+                    <field name="user_id" class="oe_inline"/>
+                    <field name="dst_project" class="oe_inline"/>
+                </group>
+                <group attrs="{'readonly':[('state','in',['done'])]}">
+                    <group string="Filtre de Recherche des Taches">
+                        <field name="partner_id" string="Client" domain="[('customer','=',True)]"
+                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                        <field name="project_ids" string="Projet"
+                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                               domain="[('partner_id','=',partner_id),('state','=','open')]"/>
+                        <field name="date_from" string="Date de" help="Date de Réalisation Prévue"/>
+                        <field name="date_to" string="Date A" help="Date de Réalisation Prévue"/>
+                        <field name="categ_id" string="Département"
+                               options="{'no_create': True, 'no_create_edit':True}"/>
+                        <field name="zone" string="Zone Concernée"/>
+                        <field name="secteur" string="Secteur Concerné"/>
+                    </group>
+                    <group string="Données de Facturation">
+                        <field name="num" string="Num Facture"/>
+                        <field name="date_inv" string="Date facture"/>
+                        <field name="year_no" string="Refus si Applicable"/>
+                        <field name="type" string="Type" invisible="1"/>
+                        <field name="note" string="Note"/>
+                        <field name="clos" string="Cloturer Projet"/>
+                    </group>
+                </group>
+                <notebook string="Paramètres">
+                    <page string="Taches Concernés">
+                        <group string="Afficher Taches Concernés">
+                            <field name="work_ids"
+                                   options="{'no_create': True, 'no_create_edit':True,'no_open':True}" nolabel="1"
+                                   context="{'active_test':False}" editable="bottom" readonly="1">
+                                <tree colors="blue:state== 'affect';black:state== 'tovalid';red:state== 'cancel';purple:state== 'valid'"
+                                      readonly="1" create="false" edit="false" editable="bottom">
+                                    <field name="work_id" invisible="1"/>
+                                    <field name="project_id"/>
+                                    <field name="categ_id" string="département"/>
+                                    <field name="date" invisible="0" string="Date" readonly="1"/>
+                                    <field name="date_start_r" string="Date Début" widget="date"
+                                           on_change="onchange_date_to_(date_end_r,date_start_r,employee_id,task_id)"
+                                           attrs="{'required': [('state', '=', 'affect')]}" readonly="1"/>
+                                    <field name="date_end_r" string="Date Fin" widget="date"
+                                           on_change="onchange_date_to_(date_end_r,date_start_r,employee_id,task_id)"
+                                           attrs="{'required': [('state', '=', 'draft')]}" readonly="1"/>
+                                    <field name="product_id" invisible="0" string="Type Service" readonly="1"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="employee_id" invisible="0" string="Employee" readonly="1"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="color1" string="Durée(Jours)"
+                                           attrs="{'required': [('state', '=', 'draft')]}" sum="Prev Hours"
+                                           on_change="onchange_date_to_(date_end_r,date_start_r,employee_id,task_id)"
+                                           readonly="1"/>
+                                    <field name="hours_r" string="Durée(Heurs)"
+                                           attrs="{'required': [('state', '=', 'draft')]}" widget="float_time"
+                                           sum="Prev Hours" on_change="onchange_hours_(hours_r,employee_id)"
+                                           readonly="1"/>
+                                    <field name="poteau_r" string="Qté/Unité"
+                                           attrs="{'required': [('state', '=', 'draft')]}" sum="Prev Hours"
+                                           readonly="1"/>
+                                    <field name="taux_horaire" sum="Prev Hours" readonly="1"/>
+                                    <field name="uom_id_r" string="Unité"
+                                           attrs="{'required': [('state', '=', 'draft')]}"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                           readonly="1"/>
+                                    <field name="state" invisible="1" string="Etat"/>
+                                    <field name="done3" string="Controlé?" placeholder="Description..."
+                                           readonly="1"/>
+                                    <field name="done1" string="Facturé?" placeholder="Description..."
+                                           readonly="1"/>
+                                    <field name="facture" string="Facture Client?" readonly="1"/>
+                                    <field name="auto" string="Gen Auto" readonly="0"/>
+                                    <field name="rentability" readonly="1" sum="total"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </page>
+                    <page string="Lignes factures">
+                        <group>
+                            <group colspan="4">
+                                <newline/>
+                                <!--                                    <button name="button_accept1" string="Générer à partir du contrat" type="object"-->
+                                <!--                                            class="oe_highlight" icon="gtk-execute"-->
+                                <!--                                            confirm="Génération automatique des Lignes de Factures?"/>-->
+                                <!--                                    <button name="merge_lines" string="Fusionner les Lignes" type="object"-->
+                                <!--                                            class="oe_highlight" icon="STOCK_UNINDENT"-->
+                                <!--                                            confirm="Voulez vous fusionner les lignes avec des articles similaires?"/>-->
+                            </group>
+                            <newline/>
+                            <field name="line_ids" nolabel="1"
+                                   options="{'no_create': True, 'no_create_edit':True,'no_open':True}">
+                                <tree editable="bottom">
+                                    <field name="poteau_t" string="Qté" change="onchange_qty(poteau_t,price)"/>
+                                    <field name="product_id" string="Type Sercice"
+                                           change="onchange_product_id(product_id)"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="uom_id" string="Unité"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="code" string="Code"/>
+                                    <field name="name" string="Decription"/>
+                                    <field name="price" string="Prix Unitaire"
+                                           change="onchange_qty(poteau_t,price)"/>
+                                    <field name="total" string="Total"/>
+                                    <field name="wizard_id" string="Total" invisible="1"/>
+                                </tree>
+                            </field>
+                            <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+                                <!--                                    <button name="button_save_" type="object" string="Calculer" icon="STOCK_EXECUTE"-->
+                                <!--                                            class="oe_highlight"/>-->
+                                <newline/>
+                                <field name="amount_untaxed" widget="monetary" options="{'currency_field': '5'}"
+                                       string="Total H.T"/>
+                                <field name="tps" widget="monetary" options="{'currency_field': '5'}" string="TPS"
+                                       readonly="1"/>
+                                <field name="tvq" widget="monetary" options="{'currency_field': 5}" string="TVQ"
+                                       readonly="1"/>
+                                <div class="oe_subtotal_footer_separator oe_inline">
+                                    <label for="amount_total" string="Total"/>
+                                </div>
+                                <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator"
+                                       widget="monetary" options="{'currency_field': '5'}"/>
+                            </group>
+                            <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+                            </group>
+                        </group>
+                    </page>
+                    <page string="Rentabilité du projet">
+                        <!--                            <button name="rentabilite_projet" type="object" string="Calculer" icon="STOCK_EXECUTE"-->
+                        <!--                                    class="oe_highlight"/>-->
+                        <newline/>
+                        <field name="project_profitability">
+                            <tree>
+                                <field name="project_id"/>
+                                <field name="total_depenses" sum="total"/>
+                                <field name="montant_total" invisible="1"/>
+                                <field name="diference" invisible="1"/>
+                                <field name="taux" string="Taux en (%)" invisible="1"/>
+                                <!--                                <field name="progress_amount" widget="progressbar" invisible="1"/>-->
+                            </tree>
+                        </field>
+                        <newline/>
+                        <group colspan="3">
+                            <group/>
+                            <group>
+                                <field name="taux_gain" widget="monetary" string="% TAUX GAIN"/>
+                            </group>
+                            <group/>
+                        </group>
+                    </page>
+                </notebook>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_merge_facture" model="ir.actions.act_window">
+        <field name="name">Facture Clients</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">base.facture.wizard</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+    </record>
+
+    <menuitem id="menu_merge_facture" name="Factures Clients" sequence="-300" action="action_merge_facture"/>
+
+</odoo>

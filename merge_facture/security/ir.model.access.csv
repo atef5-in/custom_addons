@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access.base.facture.merge.line,access_base_facture_merge_line,merge_facture.model_base_facture_merge_line,base.group_user,1,1,1,1
+access.base.facture.wizard,access_base_facture_wizard,merge_facture.model_base_facture_wizard,base.group_user,1,1,1,1
+access.project.profitability,access_project_profitability,merge_facture.model_project_profitability,base.group_user,1,1,1,1
+access.risk.management.response.category,access_risk_management_response_category,merge_facture.model_risk_management_response_category,base.group_user,1,1,1,1
