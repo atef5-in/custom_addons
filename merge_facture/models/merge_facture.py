@@ -286,869 +286,875 @@ class EbMergeFactures(models.Model):
     taux_gain = fields.Float(compute='_compute_progress_gauge', string='% Taux Gain', readonly=True, )
     progress_gauge_total = fields.Float(string='%', readonly=True, )
 
-    #     def rentabilite_projet(self, cr, uid, ids, context=None):
-    #         this = self.browse(cr, uid, ids[0], context=context)
-    #         cr.execute("delete from project_profitability")
-    #         for rec_project in this.project_ids.ids:
-    #             cr.execute("INSERT INTO project_profitability (project_id,invoice_id) VALUES (%s,%s)",
-    #                        ((tuple([rec_project])), ids[0]))
-    #         line_work_ids = self.pool.get('base.facture.wizard')
-    #         work_line = self.pool.get('project.task.work.line')
-    #         for line in this.work_ids:
-    #             work_line.write(cr, uid, line.id, {'rentability': 0, 'taux_horaire': 0},
-    #                             context=context)
-    #         # raise osv.except_osv(_('Error !'), _('%s')% this.project_profitability.ids)
-    #         for line in this.project_profitability:
-    #             tarif_client = 0
-    #             total_dep2=0
-    #             update = False
-    #             for kk in this:
-    #                 for rec in this.work_ids:
-    #                     wage = 0
-    #                     exist = 0
-    #                     name_emp= ' '
-    #                     if rec.project_id.id == line.project_id.id:
-    #                         # if rec.project_id.fees_id:
-    #                         #     for fees_line in rec.project_id.fees_id.line_ids:
-    #                         #         if fees_line.product_ids:
-    #                         #             for recs in fees_line.product_ids:
-    #                         #                 if recs.name == rec.product_id.name:
-    #                         #                     if empl.job_id.id == 1 or ll.uom_id.id == 5 or rec.uom_id_r.id == 6:
-    #                         #                         tarif_client += fees_line.amount_total * rec.hours_r
-    #                         #                     else:
-    #                         #                         tarif_client += fees_line.amount_total * rec.poteau_r
-    #                         #                     break
-    #                         #         if fees_line.product_ids1:
-    #                         #             for recs in fees_line.product_ids1:
-    #                         #                 if recs.name == rec.product_id.name:
-    #                         #                     if rec.uom_id_r.id == 5 or rec.uom_id_r.id == 6:
-    #                         #                         tarif_client += fees_line.amount_total * rec.hours_r
-    #                         #                     else:
-    #                         #                         tarif_client += fees_line.amount_total * rec.poteau_r
-    #                         #                     break
-    #                         #         if fees_line.product_ids2:
-    #                         #             for recs in fees_line.product_ids2:
-    #                         #                 if recs.name == rec.product_id.name:
-    #                         #                     if rec.uom_id_r.id == 5 or rec.uom_id_r.id == 6:
-    #                         #                         tarif_client += fees_line.amount_total * rec.hours_r
-    #                         #                     else:
-    #                         #                         tarif_client += fees_line.amount_total * rec.poteau_r
-    #                         #                     break
-    #                         #         if fees_line.product_ids3:
-    #                         #             for recs in fees_line.product_ids3:
-    #                         #                 if recs.name == rec.product_id.name:
-    #                         #                     if rec.uom_id_r.id == 5 or rec.uom_id_r.id == 6:
-    #                         #                         tarif_client += fees_line.amount_total * rec.hours_r
-    #                         #                     else:
-    #                         #                         tarif_client += fees_line.amount_total * rec.poteau_r
-    #                         #                     break
-    #                         #         if fees_line.product_ids4:
-    #                         #             for recs in fees_line.product_ids4:
-    #                         #                 if recs.name == rec.product_id.name:
-    #                         #                     if rec.uom_id_r.id == 5 or rec.uom_id_r.id == 6:
-    #                         #                         tarif_client += fees_line.amount_total * rec.hours_r
-    #                         #                     else:
-    #                         #                         tarif_client += fees_line.amount_total * rec.poteau_r
-    #                         #                     break
-    #                         #         if fees_line.product_ids5:
-    #                         #             for recs in fees_line.product_ids5:
-    #                         #                 if recs.name == rec.product_id.name:
-    #                         #                     if rec.uom_id_r.id == 5 or rec.uom_id_r.id == 6:
-    #                         #                         tarif_client += fees_line.amount_total * rec.hours_r
-    #                         #                     else:
-    #                         #                         tarif_client += fees_line.amount_total * rec.poteau_r
-    #                         #                     break
-    #                         #         if fees_line.product_ids6:
-    #                         #             for recs in fees_line.product_ids6:
-    #                         #                 if recs.name == rec.product_id.name:
-    #                         #                     if rec.uom_id_r.id == 5 or rec.uom_id_r.id == 6:
-    #                         #                         tarif_client += fees_line.amount_total * rec.hours_r
-    #                         #                     else:
-    #                         #                         tarif_client += fees_line.amount_total * rec.poteau_r
-    #                         #                     break
-    #                         #         if fees_line.product_ids7:
-    #                         #             for recs in fees_line.product_ids7:
-    #                         #                 if recs.name == rec.product_id.name:
-    #                         #                     if rec.uom_id_r.id == 5 or rec.uom_id_r.id == 6:
-    #                         #                         tarif_client += fees_line.amount_total * rec.hours_r
-    #                         #                     else:
-    #                         #                         tarif_client += fees_line.amount_total * rec.poteau_r
-    #                         #                     break
-    #                         work = line_work_ids.browse(cr, uid, kk.id, context)
-    #                         employee_obj = self.pool.get('hr.employee')
-    #                         academic_obj = self.pool.get('hr.academic')
-    #                         roles_obj = self.pool.get('res.users.role')
-    #                         empl = employee_obj.browse(cr, uid, rec.employee_id.id, context=context)
-    #                         aca = academic_obj.search(cr, uid, [('employee_id', '=', empl.id)])
-    #                         if rec.group_id:
-    #                             bon_id = self.pool.get('bon.show').browse(cr, uid, rec.group_id.id, context=context)
-    #                             for line in bon_id.line_ids2:
-    #                                 if rec.product_id.id == line.product_id.id and rec.project_id.id== line.project_id.id and rec.date_start_r == line.date_start_r:
-    #                                     wage = line.wage
-    #                                     total_dep = line.amount_line
-    #                                     total_dep2 += line.amount_line
-    #                                     work_line.write(cr, uid, rec.id, {'rentability': total_dep,'taux_horaire':wage}, context=context)
-    #                                     break
-    #                             # break
-    #                         elif aca:
-    #                             for list in aca:
-    #                                 # raise osv.except_osv(_('Error !'), _('%s') % date.today())
-    #                                 if list:
-    #                                     ligne = academic_obj.browse(cr, uid, list, context=context)
-    #                                     if ligne.curr_ids:
-    #                                         for ll in ligne.curr_ids:
-    #                                             if ligne.project_id and ll.project_id.id == ligne.project_id.id:
-    #                                                 # raise osv.except_osv(_('Error !'), _('innnnnnnnn1'))
-    #                                                 if ll.product_id and ll.uom_id:
-    #                                                     if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                         if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                             wage = ll.amount
-    #                                                             total_dep = wage * rec.hours_r
-    #                                                             total_dep2 += wage * rec.hours_r
-    #                                                         else:
-    #                                                             wage = ll.amount
-    #                                                             total_dep = wage * rec.poteau_r
-    #                                                             total_dep2 += wage * rec.poteau_r
-    #                                                         work_line.write(cr, uid, rec.id, {'rentability': total_dep,'taux_horaire':wage},context=context)
-    #                                                         break
-    #                                                     elif ll.product_id and ll.uom_id2:
-    #                                                         if ll.product_id.id == rec.product_id.id:
-    #                                                             if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                                 if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                     name_emp = empl.name
-    #                                                                     exist += 1
-    #                                                                     wage = ll.amount2
-    #                                                                     total_dep = wage * rec.hours_r
-    #                                                                     total_dep2 += wage * rec.hours_r
-    #                                                                 else:
-    #                                                                     name_emp = empl.name
-    #                                                                     exist += 1
-    #                                                                     wage = ll.amount2
-    #                                                                     total_dep = wage * rec.poteau_r
-    #                                                                     total_dep2 += wage * rec.poteau_r
-    #                                                                 work_line.write(cr, uid, rec.id, {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                                 context=context)
-    #
-    #                                                                 break
-    #                                                 elif ll.product_id and ll.uom_id2:
-    #                                                     if ll.product_id.id == rec.product_id.id:
-    #                                                         if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                             if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                 name_emp = empl.name
-    #                                                                 exist += 1
-    #                                                                 wage = ll.amount2
-    #                                                                 total_dep = wage * rec.hours_r
-    #                                                                 total_dep2 += wage * rec.hours_r
-    #                                                             else:
-    #                                                                 name_emp = empl.name
-    #                                                                 exist += 1
-    #                                                                 wage = ll.amount2
-    #                                                                 total_dep = wage * rec.poteau_r
-    #                                                                 total_dep2 += wage * rec.poteau_r
-    #                                                             work_line.write(cr, uid, rec.id, {'rentability': total_dep,'taux_horaire':wage},context=context)
-    #                                                             break
-    #                                                 elif ll.categ_id and ll.uom_id:
-    #                                                     if ll.categ_id.id == rec.categ_id.id:
-    #                                                         if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                             if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                 name_emp = empl.name
-    #                                                                 exist += 1
-    #                                                                 wage = ll.amount
-    #                                                                 total_dep = wage * rec.hours_r
-    #                                                                 total_dep2 += wage * rec.hours_r
-    #                                                             else:
-    #                                                                 name_emp = empl.name
-    #                                                                 exist += 1
-    #                                                                 wage = ll.amount
-    #                                                                 total_dep = wage * rec.poteau_r
-    #                                                                 total_dep2 += wage * rec.poteau_r
-    #                                                             work_line.write(cr, uid, rec.id, {'rentability': total_dep,'taux_horaire':wage},context=context)
-    #                                                             break
-    #                                                     elif ll.categ_id and ll.uom_id2:
-    #                                                         if ll.categ_id.id == rec.categ_id.id:
-    #                                                             if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                                 if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                     name_emp = empl.name
-    #                                                                     exist += 1
-    #                                                                     wage = ll.amount2
-    #                                                                     total_dep = wage * rec.hours_r
-    #                                                                     total_dep2 += wage * rec.hours_r
-    #                                                                 else:
-    #                                                                     name_emp = empl.name
-    #                                                                     exist += 1
-    #                                                                     wage = ll.amount2
-    #                                                                     total_dep = wage * rec.poteau_r
-    #                                                                     total_dep2 += wage * rec.poteau_r
-    #                                                                 work_line.write(cr, uid, rec.id, {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                                 context=context)
-    #                                                                 break
-    #                                                 elif ll.categ_id and ll.uom_id2:
-    #                                                     if ll.categ_id.id == rec.categ_id.id:
-    #                                                         if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                             if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                 wage = ll.amount2
-    #                                                                 total_dep = wage * rec.hours_r
-    #                                                                 total_dep2 += wage * rec.hours_r
-    #                                                             else:
-    #                                                                 wage = ll.amount2
-    #                                                                 total_dep = wage * rec.poteau_r
-    #                                                                 total_dep2 += wage * rec.poteau_r
-    #                                                             work_line.write(cr, uid, rec.id, {'rentability': total_dep,'taux_horaire':wage},context=context)
-    #                                                             break
-    #                                     if ligne.curr_ids:
-    #                                         # raise osv.except_osv(_('Error !'), _('innnnnnnnn2'))
-    #                                         for ll in ligne.curr_ids:
-    #                                             if ll.partner_id.id == ligne.partner_id.id:
-    #                                                 if ll.product_id and ll.uom_id:
-    #                                                     if ll.product_id.id == rec.product_id.id:
-    #                                                         if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                             # raise osv.except_osv(_('Error !'), _('innnnnnnnn2.1'))
-    #                                                             if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                 wage = ll.amount
-    #                                                                 total_dep = wage * rec.hours_r
-    #                                                                 total_dep2 += wage * rec.hours_r
-    #                                                             else:
-    #                                                                 wage = ll.amount
-    #                                                                 total_dep = wage * rec.poteau_r
-    #                                                                 total_dep2 += wage * rec.poteau_r
-    #                                                             work_line.write(cr, uid, rec.id, {'rentability': total_dep,'taux_horaire':wage},context=context)
-    #                                                             break
-    #                                                     elif ll.product_id and ll.uom_id2:
-    #                                                         if ll.product_id.id == rec.product_id.id:
-    #                                                             if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                                 if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                     name_emp = empl.name
-    #                                                                     exist += 1
-    #                                                                     wage = ll.amount2
-    #                                                                     total_dep = wage * rec.hours_r
-    #                                                                     total_dep2 += wage * rec.hours_r
-    #                                                                 else:
-    #                                                                     name_emp = empl.name
-    #                                                                     exist += 1
-    #                                                                     wage = ll.amount2
-    #                                                                     total_dep = wage * rec.poteau_r
-    #                                                                     total_dep2 += wage * rec.poteau_r
-    #                                                                 work_line.write(cr, uid, rec.id, {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                                 context=context)
-    #                                                                 break
-    #                                                 elif ll.product_id and ll.uom_id2:
-    #                                                     if ll.product_id.id == rec.product_id.id:
-    #                                                         if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                             if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                 exist += 1
-    #                                                                 wage = ll.amount2
-    #                                                                 total_dep = wage * rec.hours_r
-    #                                                                 total_dep2 += wage * rec.hours_r
-    #                                                             else:
-    #                                                                 exist += 1
-    #                                                                 wage = ll.amount2
-    #                                                                 total_dep = wage * rec.poteau_r
-    #                                                                 total_dep2 += wage * rec.poteau_r
-    #                                                             work_line.write(cr, uid, rec.id, {'rentability': total_dep,'taux_horaire':wage},context=context)
-    #                                                             break
-    #                                                 elif ll.categ_id and ll.uom_id:
-    #                                                     if ll.categ_id.id == rec.categ_id.id:
-    #                                                         if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                             if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                 wage = ll.amount
-    #                                                                 total_dep = wage * rec.hours_r
-    #                                                                 total_dep2 += wage * rec.hours_r
-    #                                                             else:
-    #                                                                 wage = ll.amount
-    #                                                                 total_dep = wage * rec.poteau_r
-    #                                                                 total_dep2 += wage * rec.poteau_r
-    #                                                             work_line.write(cr, uid, rec.id, {'rentability': total_dep,'taux_horaire':wage},context=context)
-    #                                                             break
-    #                                                     elif ll.categ_id and ll.uom_id2:
-    #                                                         if ll.categ_id.id == rec.categ_id.id:
-    #                                                             if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                                 if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                     name_emp = empl.name
-    #                                                                     exist += 1
-    #                                                                     wage = ll.amount2
-    #                                                                     total_dep = wage * rec.hours_r
-    #                                                                     total_dep2 += wage * rec.hours_r
-    #                                                                 else:
-    #                                                                     name_emp = empl.name
-    #                                                                     exist += 1
-    #                                                                     wage = ll.amount2
-    #                                                                     total_dep = wage * rec.poteau_r
-    #                                                                     total_dep2 += wage * rec.poteau_r
-    #                                                                 work_line.write(cr, uid, rec.id, {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                                 context=context)
-    #
-    #                                                                 break
-    #
-    #                                                 elif ll.categ_id and ll.uom_id2:
-    #                                                     if ll.categ_id.id == rec.categ_id.id:
-    #                                                         if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                             if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                 name_emp = empl.name
-    #                                                                 exist += 1
-    #                                                                 wage = ll.amount2
-    #                                                                 total_dep = wage * rec.hours_r
-    #                                                                 total_dep2 += wage * rec.hours_r
-    #                                                             else:
-    #                                                                 name_emp = empl.name
-    #                                                                 exist += 1
-    #                                                                 wage = ll.amount2
-    #                                                                 total_dep = wage * rec.poteau_r
-    #                                                                 total_dep2 += wage * rec.poteau_r
-    #                                                             work_line.write(cr, uid, rec.id, {'rentability': total_dep,'taux_horaire':wage},context=context)
-    #                                                             break
-    #                                         continue
-    #                                     if ligne.curr_ids:
-    #                                         for ll in ligne.curr_ids:
-    #                                             if ll.product_id and ll.uom_id:
-    #                                                 if ll.product_id.id == rec.product_id.id:
-    #                                                     if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                     # raise osv.except_osv(_('Error !'), _('innnnnnnnn3'))
-    #                                                         if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                             wage = ll.amount
-    #                                                             total_dep = wage * rec.hours_r
-    #                                                             total_dep2 += wage * rec.hours_r
-    #                                                         else:
-    #                                                             name_emp = empl.name
-    #                                                             exist += 1
-    #                                                             wage = ll.amount
-    #                                                             total_dep = wage * rec.poteau_r
-    #                                                             total_dep2 += wage * rec.poteau_r
-    #                                                         work_line.write(cr, uid, rec.id, {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                         context=context)
-    #                                                         break
-    #                                                 elif ll.product_id and ll.uom_id2:
-    #                                                     if ll.product_id.id == rec.product_id.id:
-    #                                                         if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                             if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                 name_emp = empl.name
-    #                                                                 exist += 1
-    #                                                                 wage = ll.amount2
-    #                                                                 total_dep = wage * rec.hours_r
-    #                                                                 total_dep2 += wage * rec.hours_r
-    #                                                             else:
-    #                                                                 name_emp = empl.name
-    #                                                                 exist += 1
-    #                                                                 wage = ll.amount2
-    #                                                                 total_dep = wage * rec.poteau_r
-    #                                                                 total_dep2 += wage * rec.poteau_r
-    #                                                             work_line.write(cr, uid, rec.id, {'rentability': total_dep,'taux_horaire':wage},context=context)
-    #                                                             break
-    #                                             elif ll.product_id and ll.uom_id2:
-    #                                                 if ll.product_id.id == rec.product_id.id:
-    #                                                     if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                         if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                             name_emp = empl.name
-    #                                                             exist += 1
-    #                                                             wage = ll.amount2
-    #                                                             total_dep = wage * rec.hours_r
-    #                                                             total_dep2 += wage * rec.hours_r
-    #                                                         else:
-    #                                                             name_emp = empl.name
-    #                                                             exist += 1
-    #                                                             wage = ll.amount2
-    #                                                             total_dep = wage * rec.poteau_r
-    #                                                             total_dep2 += wage * rec.poteau_r
-    #                                                         work_line.write(cr, uid, rec.id, {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                         context=context)
-    #                                                         break
-    #                                             elif ll.categ_id and ll.uom_id:
-    #                                                 if ll.categ_id.id == rec.categ_id.id:
-    #                                                     if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                         # raise osv.except_osv(_('Error !'), _('innnnnnnnn 3.1'))
-    #                                                         if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                             name_emp = empl.name
-    #                                                             exist += 1
-    #                                                             wage = ll.amount
-    #                                                             total_dep = wage * rec.hours_r
-    #                                                             total_dep2 += wage * rec.hours_r
-    #                                                         else:
-    #                                                             name_emp = empl.name
-    #                                                             exist += 1
-    #                                                             wage = ll.amount
-    #                                                             total_dep = wage * rec.poteau_r
-    #                                                             total_dep2 += wage * rec.poteau_r
-    #                                                         work_line.write(cr, uid, rec.id, {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                         context=context)
-    #                                                         break
-    #                                                 elif ll.categ_id and ll.uom_id2:
-    #                                                     if ll.categ_id.id == rec.categ_id.id:
-    #                                                         if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                             if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                 name_emp = empl.name
-    #                                                                 exist += 1
-    #                                                                 wage = ll.amount2
-    #                                                                 total_dep = wage * rec.hours_r
-    #                                                                 total_dep2 += wage * rec.hours_r
-    #                                                             else:
-    #                                                                 name_emp = empl.name
-    #                                                                 exist += 1
-    #                                                                 wage = ll.amount2
-    #                                                                 total_dep = wage * rec.poteau_r
-    #                                                                 total_dep2 += wage * rec.poteau_r
-    #                                                             work_line.write(cr, uid, rec.id, {'rentability': total_dep,'taux_horaire':wage},context=context)
-    #
-    #                                                             break
-    #
-    #                                             elif ll.categ_id and ll.uom_id2:
-    #                                                 if ll.categ_id.id == rec.categ_id.id:
-    #                                                     if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                         if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                             name_emp = empl.name
-    #                                                             exist += 1
-    #                                                             wage = ll.amount2
-    #                                                             total_dep = wage * rec.hours_r
-    #                                                             total_dep2 += wage * rec.hours_r
-    #                                                         else:
-    #                                                             name_emp = empl.name
-    #                                                             exist += 1
-    #                                                             wage = ll.amount2
-    #                                                             total_dep = wage * rec.poteau_r
-    #                                                             total_dep2 += wage * rec.poteau_r
-    #                                                         work_line.write(cr, uid, rec.id, {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                         context=context)
-    #                                                     break
-    #
-    #                             if wage == 0:
-    #                                 # raise osv.except_osv(_('Error !'), _('innnnnnnnn4'))
-    #                                 roles = roles_obj.search(cr, uid, [])
-    #                                 for gp in roles:
-    #                                     ro = roles_obj.browse(cr, uid, gp, context=context)
-    #                                     if rec.employee_id.id in ro.employee_ids.ids:
-    #                                         aca = academic_obj.search(cr, uid, [('role_id', '=', ro.id)])
-    #                                         if aca:
-    #                                             for list in aca:
-    #                                                 if list:
-    #                                                     ligne = academic_obj.browse(cr, uid, list, context=context)
-    #                                                     if ligne.curr_ids:
-    #                                                         for ll in ligne.curr_ids:
-    #                                                             if ligne.project_id and ll.project_id.id == ligne.project_id.id:
-    #                                                                 if ll.product_id and ll.uom_id:
-    #                                                                     if ll.product_id.id == rec.product_id.id:
-    #                                                                         if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                                             if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                                 name_emp = ligne.name
-    #                                                                                 exist += 1
-    #                                                                                 wage = ll.amount
-    #                                                                                 total_dep2 += wage * rec.hours_r
-    #                                                                                 total_dep = wage * rec.hours_r
-    #                                                                             else:
-    #                                                                                 name_emp = ligne.name
-    #                                                                                 exist += 1
-    #                                                                                 wage = ll.amount
-    #                                                                                 total_dep = wage * rec.poteau_r
-    #                                                                                 total_dep2 += wage * rec.poteau_r
-    #                                                                             work_line.write(cr, uid, rec.id,
-    #                                                                                             {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                                             context=context)
-    #                                                                             break
-    #                                                                     elif ll.product_id and ll.uom_id2:
-    #                                                                         if ll.product_id.id == rec.product_id.id:
-    #                                                                             if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                                                 if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                                     name_emp = ligne.name
-    #                                                                                     exist += 1
-    #                                                                                     wage = ll.amount2
-    #                                                                                     total_dep = wage * rec.hours_r
-    #                                                                                     total_dep2 += wage * rec.hours_r
-    #                                                                                 else:
-    #                                                                                     name_emp = ligne.name
-    #                                                                                     exist += 1
-    #                                                                                     wage = ll.amount2
-    #                                                                                     total_dep = wage * rec.poteau_r
-    #                                                                                     total_dep2 += wage * rec.poteau_r
-    #                                                                                 work_line.write(cr, uid, rec.id,
-    #                                                                                                 {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                                                 context=context)
-    #
-    #                                                                                 break
-    #
-    #                                                                 elif ll.product_id and ll.uom_id2:
-    #                                                                     if ll.product_id.id == rec.product_id.id:
-    #                                                                         if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                                             if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                                 name_emp = ligne.name
-    #                                                                                 exist += 1
-    #                                                                                 wage = ll.amount2
-    #                                                                                 total_dep = wage * rec.hours_r
-    #                                                                                 total_dep2 += wage * rec.hours_r
-    #                                                                             else:
-    #                                                                                 name_emp = ligne.name
-    #                                                                                 exist += 1
-    #                                                                                 wage = ll.amount2
-    #                                                                                 total_dep = wage * rec.poteau_r
-    #                                                                                 total_dep2 += wage * rec.poteau_r
-    #                                                                             work_line.write(cr, uid, rec.id,
-    #                                                                                             {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                                             context=context)
-    #
-    #                                                                             break
-    #                                                                 elif ll.categ_id and ll.uom_id:
-    #                                                                     if ll.categ_id.id == rec.categ_id.id:
-    #                                                                         if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                                             if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                                 name_emp = ligne.name
-    #                                                                                 exist += 1
-    #                                                                                 wage = ll.amount
-    #                                                                                 total_dep = wage * rec.hours_r
-    #                                                                                 total_dep2 += wage * rec.hours_r
-    #                                                                             else:
-    #                                                                                 name_emp = ligne.name
-    #                                                                                 exist += 1
-    #                                                                                 wage = ll.amount
-    #                                                                                 total_dep =0
-    #                                                                             work_line.write(cr, uid, rec.id,
-    #                                                                                             {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                                             context=context)
-    #
-    #                                                                             break
-    #                                                                     elif ll.categ_id and ll.uom_id2:
-    #                                                                         if ll.categ_id.id == this.categ_id.id:
-    #                                                                             if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                                                 if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                                     name_emp = ligne.name
-    #                                                                                     exist += 1
-    #                                                                                     wage = ll.amount2
-    #                                                                                     total_dep = wage * rec.hours_r
-    #                                                                                     total_dep2 += wage * rec.hours_r
-    #                                                                                 else:
-    #                                                                                     name_emp = ligne.name
-    #                                                                                     exist += 1
-    #                                                                                     wage = ll.amount2
-    #                                                                                     total_dep = wage * rec.poteau_r
-    #                                                                                     total_dep2 += wage * rec.poteau_r
-    #                                                                                 work_line.write(cr, uid, rec.id,
-    #                                                                                                 {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                                                 context=context)
-    #
-    #                                                                                 break
-    #
-    #                                                                 elif ll.categ_id and ll.uom_id2:
-    #                                                                     if ll.categ_id.id == rec.categ_id.id:
-    #                                                                         if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                                             if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                                 name_emp = ligne.name
-    #                                                                                 exist += 1
-    #                                                                                 wage = ll.amount2
-    #                                                                                 total_dep = wage * rec.hours_r
-    #                                                                                 total_dep2 += wage * rec.hours_r
-    #                                                                             else:
-    #                                                                                 name_emp = ligne.name
-    #                                                                                 exist += 1
-    #                                                                                 wage = ll.amount2
-    #                                                                                 total_dep = wage * rec.poteau_r
-    #                                                                                 total_dep2 += wage * rec.poteau_r
-    #                                                                             work_line.write(cr, uid, rec.id,
-    #                                                                                             {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                                             context=context)
-    #
-    #                                                                             break
-    #                                                     if ligne.curr_ids:
-    #                                                         for ll in ligne.curr_ids:
-    #                                                             if ligne.project_id is False and ll.partner_id.id == ligne.partner_id.id:
-    #                                                                 if ll.product_id and ll.uom_id:
-    #                                                                     if ll.product_id.id == rec.product_id.id:
-    #                                                                         if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                                             if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                                 name_emp = ligne.name
-    #                                                                                 exist += 1
-    #                                                                                 wage = ll.amount
-    #                                                                                 total_dep = wage * rec.hours_r
-    #                                                                                 total_dep2 += wage * rec.hours_r
-    #                                                                             else:
-    #                                                                                 name_emp = ligne.name
-    #                                                                                 exist += 1
-    #                                                                                 wage = ll.amount
-    #                                                                                 total_dep = wage * rec.poteau_r
-    #                                                                                 total_dep2 += wage * rec.poteau_r
-    #                                                                             work_line.write(cr, uid, rec.id,
-    #                                                                                             {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                                             context=context)
-    #
-    #                                                                             break
-    #                                                                     elif ll.product_id and ll.uom_id2:
-    #                                                                         if ll.product_id.id == rec.product_id.id:
-    #                                                                             if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                                                 if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                                     name_emp = ligne.name
-    #                                                                                     exist += 1
-    #                                                                                     wage = ll.amount2
-    #                                                                                     total_dep = wage * rec.hours_r
-    #                                                                                     total_dep2 += wage * rec.hours_r
-    #                                                                                 else:
-    #                                                                                     name_emp = ligne.name
-    #                                                                                     exist += 1
-    #                                                                                     wage = ll.amount2
-    #                                                                                     total_dep = wage * rec.poteau_r
-    #                                                                                     total_dep2 += wage * rec.poteau_r
-    #                                                                                 work_line.write(cr, uid, rec.id,
-    #                                                                                                 {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                                                 context=context)
-    #
-    #                                                                                 break
-    #
-    #                                                                 elif ll.product_id and ll.uom_id2:
-    #                                                                     if ll.product_id.id == rec.product_id.id:
-    #                                                                         if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                                             if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                                 name_emp = ligne.name
-    #                                                                                 exist += 1
-    #                                                                                 wage = ll.amount2
-    #                                                                                 total_dep = wage * rec.hours_r
-    #                                                                                 total_dep2 += wage * rec.hours_r
-    #                                                                             else:
-    #                                                                                 name_emp = ligne.name
-    #                                                                                 exist += 1
-    #                                                                                 wage = ll.amount2
-    #                                                                                 total_dep = wage * rec.poteau_r
-    #                                                                                 total_dep2 += wage * rec.poteau_r
-    #                                                                             work_line.write(cr, uid, rec.id,
-    #                                                                                             {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                                             context=context)
-    #
-    #                                                                             break
-    #
-    #                                                                 elif ll.categ_id and ll.uom_id:
-    #                                                                     if ll.categ_id.id == rec.categ_id.id:
-    #                                                                         if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                                             if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                                 name_emp = ligne.name
-    #                                                                                 exist += 1
-    #                                                                                 wage = ll.amount
-    #                                                                                 total_dep = wage * rec.hours_r
-    #                                                                                 total_dep2 += wage * rec.hours_r
-    #                                                                             else:
-    #                                                                                 name_emp = ligne.name
-    #                                                                                 exist += 1
-    #                                                                                 wage = ll.amount
-    #                                                                                 total_dep = 0
-    #                                                                             work_line.write(cr, uid, rec.id,
-    #                                                                                             {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                                             context=context)
-    #
-    #                                                                             break
-    #                                                                     elif ll.categ_id and ll.uom_id2:
-    #                                                                         if ll.categ_id.id == rec.categ_id.id:
-    #                                                                             if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                                                 if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                                     name_emp = ligne.name
-    #                                                                                     exist += 1
-    #                                                                                     wage = ll.amount2
-    #                                                                                     total_dep = wage * rec.hours_r
-    #                                                                                     total_dep2 += wage * rec.hours_r
-    #                                                                                 else:
-    #                                                                                     name_emp = ligne.name
-    #                                                                                     exist += 1
-    #                                                                                     wage = ll.amount2
-    #                                                                                     total_dep = wage * rec.poteau_r
-    #                                                                                     total_dep2 += wage * rec.poteau_r
-    #                                                                                 work_line.write(cr, uid, rec.id,
-    #                                                                                                 {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                                                 context=context)
-    #
-    #                                                                                 break
-    #
-    #                                                                 elif ll.categ_id and ll.uom_id2:
-    #                                                                     if ll.categ_id.id == rec.categ_id.id:
-    #                                                                         if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                                             if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                                 name_emp = ligne.name
-    #                                                                                 exist += 1
-    #                                                                                 wage = ll.amount2
-    #                                                                                 total_dep = wage * rec.hours_r
-    #                                                                                 total_dep2 += wage * rec.hours_r
-    #                                                                             else:
-    #                                                                                 name_emp = ligne.name
-    #                                                                                 exist += 1
-    #                                                                                 wage = ll.amount2
-    #                                                                                 total_dep = wage * rec.poteau_r
-    #                                                                                 total_dep2 += wage * rec.poteau_r
-    #                                                                             work_line.write(cr, uid, rec.id,
-    #                                                                                             {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                                             context=context)
-    #
-    #                                                                             break
-    #                                                     if ligne.curr_ids:
-    #                                                         for ll in ligne.curr_ids:
-    #                                                             if ll.product_id and ll.uom_id:
-    #                                                                 if ll.product_id.id == rec.product_id.id:
-    #                                                                     if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                                         if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                             name_emp = ligne.name
-    #                                                                             exist += 1
-    #                                                                             wage = ll.amount
-    #                                                                             total_dep = wage * rec.hours_r
-    #                                                                             total_dep2 += wage * rec.hours_r
-    #                                                                         else:
-    #                                                                             name_emp = ligne.name
-    #                                                                             exist += 1
-    #                                                                             wage = ll.amount
-    #                                                                             total_dep = wage * rec.poteau_r
-    #                                                                             total_dep2 += wage * rec.poteau_r
-    #                                                                         work_line.write(cr, uid, rec.id,
-    #                                                                                         {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                                         context=context)
-    #                                                                         break
-    #                                                                 elif ll.product_id and ll.uom_id2:
-    #                                                                     if ll.product_id.id == rec.product_id.id:
-    #                                                                         if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                                             if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                                 name_emp = ligne.name
-    #                                                                                 exist += 1
-    #                                                                                 wage = ll.amount2
-    #                                                                                 total_dep = wage * rec.hours_r
-    #                                                                                 total_dep2 += wage * rec.hours_r
-    #                                                                             else:
-    #                                                                                 name_emp = ligne.name
-    #                                                                                 exist += 1
-    #                                                                                 wage = ll.amount2
-    #                                                                                 total_dep = wage * rec.poteau_r
-    #                                                                                 total_dep2 += wage * rec.poteau_r
-    #                                                                             work_line.write(cr, uid, rec.id,
-    #                                                                                             {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                                             context=context)
-    #
-    #                                                                             break
-    #                                                             elif ll.product_id and ll.uom_id2:
-    #                                                                 if ll.product_id.id == rec.product_id.id:
-    #                                                                     if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                                         if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                             name_emp = ligne.name
-    #                                                                             exist += 1
-    #                                                                             wage = ll.amount2
-    #                                                                             total_dep = wage * rec.hours_r
-    #                                                                             total_dep2 += wage * rec.hours_r
-    #                                                                         else:
-    #                                                                             name_emp = ligne.name
-    #                                                                             exist += 1
-    #                                                                             wage = ll.amount2
-    #                                                                             total_dep = wage * rec.poteau_r
-    #                                                                             total_dep2 += wage * rec.poteau_r
-    #                                                                         work_line.write(cr, uid, rec.id,
-    #                                                                                         {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                                         context=context)
-    #                                                                         break
-    #                                                             elif ll.categ_id and ll.uom_id:
-    #                                                                 if ll.categ_id.id == rec.categ_id.id:
-    #                                                                     if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                                         if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                             name_emp = ligne.name
-    #                                                                             exist += 1
-    #                                                                             wage = ll.amount
-    #                                                                             total_dep = wage * rec.hours_r
-    #                                                                             total_dep2 += wage * rec.hours_r
-    #                                                                         else:
-    #                                                                             name_emp = ligne.name
-    #                                                                             exist += 1
-    #                                                                             wage = ll.amount
-    #                                                                             total_dep = 0
-    #                                                                         work_line.write(cr, uid, rec.id,
-    #                                                                                         {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                                         context=context)
-    #                                                                         break
-    #
-    #                                                                 elif ll.categ_id and ll.uom_id2:
-    #
-    #                                                                     if ll.categ_id.id == rec.categ_id.id:
-    #                                                                         if datetime.strptime(ll.start_date, "%Y-%m-%d") <= datetime.strptime(rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(ll.end_date, "%Y-%m-%d"):
-    #                                                                             if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                                 name_emp = ligne.name
-    #                                                                                 exist += 1
-    #                                                                                 wage = ll.amount2
-    #                                                                                 total_dep2 += wage * rec.hours_r
-    #                                                                                 total_dep = wage * rec.hours_r
-    #                                                                             else:
-    #                                                                                 name_emp = ligne.name
-    #                                                                                 exist += 1
-    #                                                                                 wage = ll.amount2
-    #                                                                                 total_dep2 += wage * rec.poteau_r
-    #                                                                                 total_dep = wage * rec.poteau_r
-    #                                                                             work_line.write(cr, uid, rec.id,
-    #                                                                                             {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                                             context=context)
-    #                                                                             break
-    #
-    #                                                             elif ll.categ_id and ll.uom_id2:
-    #                                                                 if ll.categ_id.id == rec.categ_id.id:
-    #                                                                     if str(ll.start_date) <= str(datetime.now()) <=str(ll.end_date):
-    #                                                                         if empl.job_id.id == 1 or ll.uom_id.id == 5:
-    #                                                                             name_emp = ligne.name
-    #                                                                             exist += 1
-    #                                                                             wage = ll.amount2
-    #                                                                             total_dep2 += wage * rec.hours_r
-    #                                                                             total_dep = wage * rec.hours_r
-    #                                                                         else:
-    #                                                                             name_emp = ligne.name
-    #                                                                             exist += 1
-    #                                                                             wage = ll.amount2
-    #                                                                             total_dep = wage * rec.poteau_r
-    #                                                                             total_dep2 += wage * rec.poteau_r
-    #                                                                         work_line.write(cr, uid, rec.id,
-    #                                                                                         {'rentability': total_dep,'taux_horaire':wage},
-    #                                                                                         context=context)
-    #
-    #                                                                         break
-    #                         if wage == 0:
-    #                             employee = employee_obj.search(cr, uid, [('id', '=', empl.id)])
-    #                             if employee:
-    #                                 for list in employee:
-    #                                     if list:
-    #                                         ligne_emp = employee_obj.browse(cr, uid, list, context=context)
-    #                                         contract = self.pool.get('hr.contract').search(cr, uid, [('employee_id','=',list),('trial_date_start','<=',rec.date_start_r)], order="id desc")
-    #                                         if len(contract)> 1:
-    #                                             raise osv.except_osv(_('Error !'), _('Vous devez avoir un seul contrat valide pour Mr/Mme %s !')%ligne_emp.name)
-    #                                         else:
-    #                                             contract_valid = self.pool.get('hr.contract').browse(cr, uid, contract, context=context)
-    #                                             if ligne_emp.job_id.id == 1 or rec.uom_id_r.id == 5:
-    #                                                 wage = contract_valid.wage
-    #                                                 total_dep2 += wage * rec.hours_r
-    #                                                 total_dep = wage * rec.hours_r
-    #                                             else:
-    #                                                 wage = contract_valid.wage
-    #                                                 total_dep = wage * rec.poteau_r
-    #                                                 total_dep2 += wage * rec.poteau_r
-    #                                             work_line.write(cr, uid, rec.id, {'rentability': total_dep,'taux_horaire':wage},
-    #                                                     context=context)
-    #             if update == False and tarif_client == 0:
-    #                 cr.execute("""  UPDATE project_profitability
-    #                                                SET total_depenses = %s,
-    #                                                 montant_total = %s,
-    #                                                 diference = %s,
-    #                                                 taux = %s
-    #                                                WHERE project_id = %s AND invoice_id = %s
-    #                                           """,
-    #                            (tuple([total_dep2]),
-    #                             tuple([tarif_client]), tuple([tarif_client - total_dep2]),
-    #                             tuple([0]), tuple([line.project_id.id]), ids[0]))
-    #             elif update == False and tarif_client != 0:
-    #                 cr.execute("""  UPDATE project_profitability
-    #                                                    SET total_depenses = %s,
-    #                                                     montant_total = %s,
-    #                                                     diference = %s,
-    #                                                     taux = %s
-    #                                                    WHERE project_id = %s AND invoice_id = %s
-    #                                            """,
-    #                            (tuple([total_dep2]),
-    #                             tuple([tarif_client]), tuple([tarif_client - total_dep2]),
-    #                             tuple([((tarif_client - total_dep2) / tarif_client) * 100]), tuple([line.project_id.id]),
-    #                             ids[0]))
-    #         # if exist > 1:
-    #         #     raise osv.except_osv(_('Error !'),
-    #         #                          _("Vous devez avoir au plus un seul ligne de rénumération valide pour : %s") % name_emp)
-    #         if this.line_ids and this.amount_untaxed == 0:
-    #             raise osv.except_osv(_('Error !'), _('Vous ne pouvez pas diviser par 0 !!!'))
-    #         else:
-    #             return {
-    #                 'name': _("Création Facture"),
-    #                 'res_id': ids[0],
-    #                 'view_mode': 'form',
-    #                 'view_id': False,
-    #                 'view_type': 'form',
-    #                 'res_model': 'base.facture.wizard',
-    #                 'type': 'ir.actions.act_window',
-    #                 'nodestroy': True,
-    #                 'target': 'current',
-    #                 'context': {}
-    #             }
+    def rentabilite_projet(self):
+        this = self.browse(self.ids[0])
+        self.env.cr.execute("delete from project_profitability")
+        for rec_project in this.project_ids.ids:
+            self.env.cr.execute("INSERT INTO project_profitability (project_id,invoice_id) VALUES (%s,%s)",
+                                ((tuple([rec_project])), self.ids[0]))
+        line_work_ids = self.env['base.facture.wizard']
+        work_line = self.env['project.task.work.line']
+        for line in this.work_ids:
+            work_line.write(line.id, {'rentability': 0, 'taux_horaire': 0})
+        for line in this.project_profitability:
+            tarif_client = 0
+            total_dep2 = 0
+            update = False
+            for kk in this:
+                for rec in this.work_ids:
+                    wage = 0
+                    exist = 0
+                    if rec.project_id.id == line.project_id.id:
+                        employee_obj = self.env['hr.employee']
+                        academic_obj = self.env['hr.academic']
+                        roles_obj = self.env['res.users.role']
+                        empl = employee_obj.browse(rec.employee_id.id)
+                        aca = academic_obj.search([('employee_id', '=', empl.id)])
+                        if rec.group_id:
+                            bon_id = self.env['bon.show'].browse(rec.group_id.id)
+                            for line in bon_id.line_ids2:
+                                if rec.product_id.id == line.product_id.id and rec.project_id.id == line.project_id.id and rec.date_start_r == line.date_start_r:
+                                    wage = line.wage
+                                    total_dep = line.amount_line
+                                    total_dep2 += line.amount_line
+                                    work_line.write(rec.id, {'rentability': total_dep, 'taux_horaire': wage})
+                                    break
+                        elif aca:
+                            for list in aca:
+                                if list:
+                                    ligne = academic_obj.browse(list)
+                                    if ligne.curr_ids:
+                                        for ll in ligne.curr_ids:
+                                            if ligne.project_id and ll.project_id.id == ligne.project_id.id:
+                                                if ll.product_id and ll.uom_id:
+                                                    if datetime.strptime(ll.start_date,
+                                                                         "%Y-%m-%d") <= datetime.strptime(
+                                                        rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(
+                                                        ll.end_date, "%Y-%m-%d"):
+                                                        if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                            wage = ll.amount
+                                                            total_dep = wage * rec.hours_r
+                                                            total_dep2 += wage * rec.hours_r
+                                                        else:
+                                                            wage = ll.amount
+                                                            total_dep = wage * rec.poteau_r
+                                                            total_dep2 += wage * rec.poteau_r
+                                                        work_line.write(rec.id, {'rentability': total_dep,
+                                                                                 'taux_horaire': wage})
+                                                        break
+                                                    elif ll.product_id and ll.uom_id2:
+                                                        if ll.product_id.id == rec.product_id.id:
+                                                            if datetime.strptime(ll.start_date,
+                                                                                 "%Y-%m-%d") <= datetime.strptime(
+                                                                rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(
+                                                                ll.end_date, "%Y-%m-%d"):
+                                                                if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                    exist += 1
+                                                                    wage = ll.amount2
+                                                                    total_dep = wage * rec.hours_r
+                                                                    total_dep2 += wage * rec.hours_r
+                                                                else:
+                                                                    exist += 1
+                                                                    wage = ll.amount2
+                                                                    total_dep = wage * rec.poteau_r
+                                                                    total_dep2 += wage * rec.poteau_r
+                                                                work_line.write(rec.id,
+                                                                                {'rentability': total_dep,
+                                                                                 'taux_horaire': wage})
+                                                                break
+                                                elif ll.product_id and ll.uom_id2:
+                                                    if ll.product_id.id == rec.product_id.id:
+                                                        if datetime.strptime(ll.start_date,
+                                                                             "%Y-%m-%d") <= datetime.strptime(
+                                                            rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(
+                                                            ll.end_date, "%Y-%m-%d"):
+                                                            if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                exist += 1
+                                                                wage = ll.amount2
+                                                                total_dep = wage * rec.hours_r
+                                                                total_dep2 += wage * rec.hours_r
+                                                            else:
+                                                                exist += 1
+                                                                wage = ll.amount2
+                                                                total_dep = wage * rec.poteau_r
+                                                                total_dep2 += wage * rec.poteau_r
+                                                            work_line.write(rec.id, {'rentability': total_dep,
+                                                                                     'taux_horaire': wage})
+                                                            break
+                                                elif ll.categ_id and ll.uom_id:
+                                                    if ll.categ_id.id == rec.categ_id.id:
+                                                        if datetime.strptime(ll.start_date,
+                                                                             "%Y-%m-%d") <= datetime.strptime(
+                                                            rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(
+                                                            ll.end_date, "%Y-%m-%d"):
+                                                            if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                name_emp = empl.name
+                                                                exist += 1
+                                                                wage = ll.amount
+                                                                total_dep = wage * rec.hours_r
+                                                                total_dep2 += wage * rec.hours_r
+                                                            else:
+                                                                name_emp = empl.name
+                                                                exist += 1
+                                                                wage = ll.amount
+                                                                total_dep = wage * rec.poteau_r
+                                                                total_dep2 += wage * rec.poteau_r
+                                                            work_line.write(rec.id, {'rentability': total_dep,
+                                                                                     'taux_horaire': wage})
+                                                            break
+                                                    elif ll.categ_id and ll.uom_id2:
+                                                        if ll.categ_id.id == rec.categ_id.id:
+                                                            if datetime.strptime(ll.start_date,
+                                                                                 "%Y-%m-%d") <= datetime.strptime(
+                                                                rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(
+                                                                ll.end_date, "%Y-%m-%d"):
+                                                                if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                    exist += 1
+                                                                    wage = ll.amount2
+                                                                    total_dep = wage * rec.hours_r
+                                                                    total_dep2 += wage * rec.hours_r
+                                                                else:
+                                                                    exist += 1
+                                                                    wage = ll.amount2
+                                                                    total_dep = wage * rec.poteau_r
+                                                                    total_dep2 += wage * rec.poteau_r
+                                                                work_line.write(rec.id,
+                                                                                {'rentability': total_dep,
+                                                                                 'taux_horaire': wage})
+                                                                break
+                                                elif ll.categ_id and ll.uom_id2:
+                                                    if ll.categ_id.id == rec.categ_id.id:
+                                                        if datetime.strptime(ll.start_date,
+                                                                             "%Y-%m-%d") <= datetime.strptime(
+                                                            rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(
+                                                            ll.end_date, "%Y-%m-%d"):
+                                                            if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                wage = ll.amount2
+                                                                total_dep = wage * rec.hours_r
+                                                                total_dep2 += wage * rec.hours_r
+                                                            else:
+                                                                wage = ll.amount2
+                                                                total_dep = wage * rec.poteau_r
+                                                                total_dep2 += wage * rec.poteau_r
+                                                            work_line.write(rec.id, {'rentability': total_dep,
+                                                                                     'taux_horaire': wage})
+                                                            break
+                                    if ligne.curr_ids:
+                                        for ll in ligne.curr_ids:
+                                            if ll.partner_id.id == ligne.partner_id.id:
+                                                if ll.product_id and ll.uom_id:
+                                                    if ll.product_id.id == rec.product_id.id:
+                                                        if datetime.strptime(ll.start_date,
+                                                                             "%Y-%m-%d") <= datetime.strptime(
+                                                            rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(
+                                                            ll.end_date, "%Y-%m-%d"):
+                                                            if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                wage = ll.amount
+                                                                total_dep = wage * rec.hours_r
+                                                                total_dep2 += wage * rec.hours_r
+                                                            else:
+                                                                wage = ll.amount
+                                                                total_dep = wage * rec.poteau_r
+                                                                total_dep2 += wage * rec.poteau_r
+                                                            work_line.write(rec.id, {'rentability': total_dep,
+                                                                                     'taux_horaire': wage})
+                                                            break
+                                                    elif ll.product_id and ll.uom_id2:
+                                                        if ll.product_id.id == rec.product_id.id:
+                                                            if datetime.strptime(ll.start_date,
+                                                                                 "%Y-%m-%d") <= datetime.strptime(
+                                                                rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(
+                                                                ll.end_date, "%Y-%m-%d"):
+                                                                if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                    exist += 1
+                                                                    wage = ll.amount2
+                                                                    total_dep = wage * rec.hours_r
+                                                                    total_dep2 += wage * rec.hours_r
+                                                                else:
+                                                                    exist += 1
+                                                                    wage = ll.amount2
+                                                                    total_dep = wage * rec.poteau_r
+                                                                    total_dep2 += wage * rec.poteau_r
+                                                                work_line.write(rec.id,
+                                                                                {'rentability': total_dep,
+                                                                                 'taux_horaire': wage})
+                                                                break
+                                                elif ll.product_id and ll.uom_id2:
+                                                    if ll.product_id.id == rec.product_id.id:
+                                                        if datetime.strptime(ll.start_date,
+                                                                             "%Y-%m-%d") <= datetime.strptime(
+                                                            rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(
+                                                            ll.end_date, "%Y-%m-%d"):
+                                                            if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                exist += 1
+                                                                wage = ll.amount2
+                                                                total_dep = wage * rec.hours_r
+                                                                total_dep2 += wage * rec.hours_r
+                                                            else:
+                                                                exist += 1
+                                                                wage = ll.amount2
+                                                                total_dep = wage * rec.poteau_r
+                                                                total_dep2 += wage * rec.poteau_r
+                                                            work_line.write(rec.id, {'rentability': total_dep,
+                                                                                     'taux_horaire': wage})
+                                                            break
+                                                elif ll.categ_id and ll.uom_id:
+                                                    if ll.categ_id.id == rec.categ_id.id:
+                                                        if datetime.strptime(ll.start_date,
+                                                                             "%Y-%m-%d") <= datetime.strptime(
+                                                            rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(
+                                                            ll.end_date, "%Y-%m-%d"):
+                                                            if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                wage = ll.amount
+                                                                total_dep = wage * rec.hours_r
+                                                                total_dep2 += wage * rec.hours_r
+                                                            else:
+                                                                wage = ll.amount
+                                                                total_dep = wage * rec.poteau_r
+                                                                total_dep2 += wage * rec.poteau_r
+                                                            work_line.write(rec.id, {'rentability': total_dep,
+                                                                                     'taux_horaire': wage})
+                                                            break
+                                                    elif ll.categ_id and ll.uom_id2:
+                                                        if ll.categ_id.id == rec.categ_id.id:
+                                                            if datetime.strptime(ll.start_date,
+                                                                                 "%Y-%m-%d") <= datetime.strptime(
+                                                                rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(
+                                                                ll.end_date, "%Y-%m-%d"):
+                                                                if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                    exist += 1
+                                                                    wage = ll.amount2
+                                                                    total_dep = wage * rec.hours_r
+                                                                    total_dep2 += wage * rec.hours_r
+                                                                else:
+                                                                    exist += 1
+                                                                    wage = ll.amount2
+                                                                    total_dep = wage * rec.poteau_r
+                                                                    total_dep2 += wage * rec.poteau_r
+                                                                work_line.write(rec.id,
+                                                                                {'rentability': total_dep,
+                                                                                 'taux_horaire': wage})
+
+                                                                break
+
+                                                elif ll.categ_id and ll.uom_id2:
+                                                    if ll.categ_id.id == rec.categ_id.id:
+                                                        if datetime.strptime(ll.start_date,
+                                                                             "%Y-%m-%d") <= datetime.strptime(
+                                                            rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(
+                                                            ll.end_date, "%Y-%m-%d"):
+                                                            if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                exist += 1
+                                                                wage = ll.amount2
+                                                                total_dep = wage * rec.hours_r
+                                                                total_dep2 += wage * rec.hours_r
+                                                            else:
+                                                                exist += 1
+                                                                wage = ll.amount2
+                                                                total_dep = wage * rec.poteau_r
+                                                                total_dep2 += wage * rec.poteau_r
+                                                            work_line.write(rec.id, {'rentability': total_dep,
+                                                                                     'taux_horaire': wage})
+                                                            break
+                                        continue
+                                    if ligne.curr_ids:
+                                        for ll in ligne.curr_ids:
+                                            if ll.product_id and ll.uom_id:
+                                                if ll.product_id.id == rec.product_id.id:
+                                                    if datetime.strptime(ll.start_date,
+                                                                         "%Y-%m-%d") <= datetime.strptime(
+                                                        rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(
+                                                        ll.end_date, "%Y-%m-%d"):
+                                                        if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                            wage = ll.amount
+                                                            total_dep = wage * rec.hours_r
+                                                            total_dep2 += wage * rec.hours_r
+                                                        else:
+                                                            exist += 1
+                                                            wage = ll.amount
+                                                            total_dep = wage * rec.poteau_r
+                                                            total_dep2 += wage * rec.poteau_r
+                                                        work_line.write(rec.id, {'rentability': total_dep,
+                                                                                 'taux_horaire': wage})
+                                                        break
+                                                elif ll.product_id and ll.uom_id2:
+                                                    if ll.product_id.id == rec.product_id.id:
+                                                        if datetime.strptime(ll.start_date,
+                                                                             "%Y-%m-%d") <= datetime.strptime(
+                                                            rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(
+                                                            ll.end_date, "%Y-%m-%d"):
+                                                            if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                exist += 1
+                                                                wage = ll.amount2
+                                                                total_dep = wage * rec.hours_r
+                                                                total_dep2 += wage * rec.hours_r
+                                                            else:
+                                                                exist += 1
+                                                                wage = ll.amount2
+                                                                total_dep = wage * rec.poteau_r
+                                                                total_dep2 += wage * rec.poteau_r
+                                                            work_line.write(rec.id, {'rentability': total_dep,
+                                                                                     'taux_horaire': wage})
+                                                            break
+                                            elif ll.product_id and ll.uom_id2:
+                                                if ll.product_id.id == rec.product_id.id:
+                                                    if datetime.strptime(ll.start_date,
+                                                                         "%Y-%m-%d") <= datetime.strptime(
+                                                        rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(
+                                                        ll.end_date, "%Y-%m-%d"):
+                                                        if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                            exist += 1
+                                                            wage = ll.amount2
+                                                            total_dep = wage * rec.hours_r
+                                                            total_dep2 += wage * rec.hours_r
+                                                        else:
+                                                            exist += 1
+                                                            wage = ll.amount2
+                                                            total_dep = wage * rec.poteau_r
+                                                            total_dep2 += wage * rec.poteau_r
+                                                        work_line.write(rec.id, {'rentability': total_dep,
+                                                                                 'taux_horaire': wage})
+                                                        break
+                                            elif ll.categ_id and ll.uom_id:
+                                                if ll.categ_id.id == rec.categ_id.id:
+                                                    if datetime.strptime(ll.start_date,
+                                                                         "%Y-%m-%d") <= datetime.strptime(
+                                                        rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(
+                                                        ll.end_date, "%Y-%m-%d"):
+                                                        if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                            exist += 1
+                                                            wage = ll.amount
+                                                            total_dep = wage * rec.hours_r
+                                                            total_dep2 += wage * rec.hours_r
+                                                        else:
+                                                            exist += 1
+                                                            wage = ll.amount
+                                                            total_dep = wage * rec.poteau_r
+                                                            total_dep2 += wage * rec.poteau_r
+                                                        work_line.write(rec.id, {'rentability': total_dep,
+                                                                                 'taux_horaire': wage})
+                                                        break
+                                                elif ll.categ_id and ll.uom_id2:
+                                                    if ll.categ_id.id == rec.categ_id.id:
+                                                        if datetime.strptime(ll.start_date,
+                                                                             "%Y-%m-%d") <= datetime.strptime(
+                                                            rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(
+                                                            ll.end_date, "%Y-%m-%d"):
+                                                            if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                exist += 1
+                                                                wage = ll.amount2
+                                                                total_dep = wage * rec.hours_r
+                                                                total_dep2 += wage * rec.hours_r
+                                                            else:
+                                                                exist += 1
+                                                                wage = ll.amount2
+                                                                total_dep = wage * rec.poteau_r
+                                                                total_dep2 += wage * rec.poteau_r
+                                                            work_line.write(rec.id, {'rentability': total_dep,
+                                                                                     'taux_horaire': wage})
+
+                                                            break
+
+                                            elif ll.categ_id and ll.uom_id2:
+                                                if ll.categ_id.id == rec.categ_id.id:
+                                                    if datetime.strptime(ll.start_date,
+                                                                         "%Y-%m-%d") <= datetime.strptime(
+                                                        rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(
+                                                        ll.end_date, "%Y-%m-%d"):
+                                                        if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                            exist += 1
+                                                            wage = ll.amount2
+                                                            total_dep = wage * rec.hours_r
+                                                            total_dep2 += wage * rec.hours_r
+                                                        else:
+                                                            exist += 1
+                                                            wage = ll.amount2
+                                                            total_dep = wage * rec.poteau_r
+                                                            total_dep2 += wage * rec.poteau_r
+                                                        work_line.write(rec.id, {'rentability': total_dep,
+                                                                                 'taux_horaire': wage})
+                                                    break
+
+                            if wage == 0:
+                                roles = roles_obj.search([])
+                                for gp in roles:
+                                    ro = roles_obj.browse(gp)
+                                    if rec.employee_id.id in ro.employee_ids.ids:
+                                        aca = academic_obj.search([('role_id', '=', ro.id)])
+                                        if aca:
+                                            for list in aca:
+                                                if list:
+                                                    ligne = academic_obj.browse(list)
+                                                    if ligne.curr_ids:
+                                                        for ll in ligne.curr_ids:
+                                                            if ligne.project_id and ll.project_id.id == ligne.project_id.id:
+                                                                if ll.product_id and ll.uom_id:
+                                                                    if ll.product_id.id == rec.product_id.id:
+                                                                        if datetime.strptime(ll.start_date,
+                                                                                             "%Y-%m-%d") <= datetime.strptime(
+                                                                            rec.date_start_r,
+                                                                            "%Y-%m-%d") <= datetime.strptime(
+                                                                            ll.end_date, "%Y-%m-%d"):
+                                                                            if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                                exist += 1
+                                                                                wage = ll.amount
+                                                                                total_dep2 += wage * rec.hours_r
+                                                                                total_dep = wage * rec.hours_r
+                                                                            else:
+                                                                                exist += 1
+                                                                                wage = ll.amount
+                                                                                total_dep = wage * rec.poteau_r
+                                                                                total_dep2 += wage * rec.poteau_r
+                                                                            work_line.write(rec.id,
+                                                                                            {'rentability': total_dep,
+                                                                                             'taux_horaire': wage})
+                                                                            break
+                                                                    elif ll.product_id and ll.uom_id2:
+                                                                        if ll.product_id.id == rec.product_id.id:
+                                                                            if datetime.strptime(ll.start_date,
+                                                                                                 "%Y-%m-%d") <= datetime.strptime(
+                                                                                rec.date_start_r,
+                                                                                "%Y-%m-%d") <= datetime.strptime(
+                                                                                ll.end_date, "%Y-%m-%d"):
+                                                                                if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                                    exist += 1
+                                                                                    wage = ll.amount2
+                                                                                    total_dep = wage * rec.hours_r
+                                                                                    total_dep2 += wage * rec.hours_r
+                                                                                else:
+                                                                                    exist += 1
+                                                                                    wage = ll.amount2
+                                                                                    total_dep = wage * rec.poteau_r
+                                                                                    total_dep2 += wage * rec.poteau_r
+                                                                                work_line.write(rec.id,
+                                                                                                {
+                                                                                                    'rentability': total_dep,
+                                                                                                    'taux_horaire': wage})
+
+                                                                                break
+
+                                                                elif ll.product_id and ll.uom_id2:
+                                                                    if ll.product_id.id == rec.product_id.id:
+                                                                        if datetime.strptime(ll.start_date,
+                                                                                             "%Y-%m-%d") <= datetime.strptime(
+                                                                            rec.date_start_r,
+                                                                            "%Y-%m-%d") <= datetime.strptime(
+                                                                            ll.end_date, "%Y-%m-%d"):
+                                                                            if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                                exist += 1
+                                                                                wage = ll.amount2
+                                                                                total_dep = wage * rec.hours_r
+                                                                                total_dep2 += wage * rec.hours_r
+                                                                            else:
+                                                                                exist += 1
+                                                                                wage = ll.amount2
+                                                                                total_dep = wage * rec.poteau_r
+                                                                                total_dep2 += wage * rec.poteau_r
+                                                                            work_line.write(rec.id,
+                                                                                            {'rentability': total_dep,
+                                                                                             'taux_horaire': wage})
+
+                                                                            break
+                                                                elif ll.categ_id and ll.uom_id:
+                                                                    if ll.categ_id.id == rec.categ_id.id:
+                                                                        if datetime.strptime(ll.start_date,
+                                                                                             "%Y-%m-%d") <= datetime.strptime(
+                                                                            rec.date_start_r,
+                                                                            "%Y-%m-%d") <= datetime.strptime(
+                                                                            ll.end_date, "%Y-%m-%d"):
+                                                                            if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                                exist += 1
+                                                                                wage = ll.amount
+                                                                                total_dep = wage * rec.hours_r
+                                                                                total_dep2 += wage * rec.hours_r
+                                                                            else:
+                                                                                exist += 1
+                                                                                wage = ll.amount
+                                                                                total_dep = 0
+                                                                            work_line.write(rec.id,
+                                                                                            {'rentability': total_dep,
+                                                                                             'taux_horaire': wage})
+
+                                                                            break
+                                                                    elif ll.categ_id and ll.uom_id2:
+                                                                        if ll.categ_id.id == this.categ_id.id:
+                                                                            if datetime.strptime(ll.start_date,
+                                                                                                 "%Y-%m-%d") <= datetime.strptime(
+                                                                                rec.date_start_r,
+                                                                                "%Y-%m-%d") <= datetime.strptime(
+                                                                                ll.end_date, "%Y-%m-%d"):
+                                                                                if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                                    exist += 1
+                                                                                    wage = ll.amount2
+                                                                                    total_dep = wage * rec.hours_r
+                                                                                    total_dep2 += wage * rec.hours_r
+                                                                                else:
+                                                                                    exist += 1
+                                                                                    wage = ll.amount2
+                                                                                    total_dep = wage * rec.poteau_r
+                                                                                    total_dep2 += wage * rec.poteau_r
+                                                                                work_line.write(rec.id,
+                                                                                                {
+                                                                                                    'rentability': total_dep,
+                                                                                                    'taux_horaire': wage})
+
+                                                                                break
+
+                                                                elif ll.categ_id and ll.uom_id2:
+                                                                    if ll.categ_id.id == rec.categ_id.id:
+                                                                        if datetime.strptime(ll.start_date,
+                                                                                             "%Y-%m-%d") <= datetime.strptime(
+                                                                            rec.date_start_r,
+                                                                            "%Y-%m-%d") <= datetime.strptime(
+                                                                            ll.end_date, "%Y-%m-%d"):
+                                                                            if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                                exist += 1
+                                                                                wage = ll.amount2
+                                                                                total_dep = wage * rec.hours_r
+                                                                                total_dep2 += wage * rec.hours_r
+                                                                            else:
+                                                                                exist += 1
+                                                                                wage = ll.amount2
+                                                                                total_dep = wage * rec.poteau_r
+                                                                                total_dep2 += wage * rec.poteau_r
+                                                                            work_line.write(rec.id,
+                                                                                            {'rentability': total_dep,
+                                                                                             'taux_horaire': wage})
+
+                                                                            break
+                                                    if ligne.curr_ids:
+                                                        for ll in ligne.curr_ids:
+                                                            if ligne.project_id is False and ll.partner_id.id == ligne.partner_id.id:
+                                                                if ll.product_id and ll.uom_id:
+                                                                    if ll.product_id.id == rec.product_id.id:
+                                                                        if datetime.strptime(ll.start_date,
+                                                                                             "%Y-%m-%d") <= datetime.strptime(
+                                                                            rec.date_start_r,
+                                                                            "%Y-%m-%d") <= datetime.strptime(
+                                                                            ll.end_date, "%Y-%m-%d"):
+                                                                            if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                                exist += 1
+                                                                                wage = ll.amount
+                                                                                total_dep = wage * rec.hours_r
+                                                                                total_dep2 += wage * rec.hours_r
+                                                                            else:
+                                                                                exist += 1
+                                                                                wage = ll.amount
+                                                                                total_dep = wage * rec.poteau_r
+                                                                                total_dep2 += wage * rec.poteau_r
+                                                                            work_line.write(rec.id,
+                                                                                            {'rentability': total_dep,
+                                                                                             'taux_horaire': wage})
+
+                                                                            break
+                                                                    elif ll.product_id and ll.uom_id2:
+                                                                        if ll.product_id.id == rec.product_id.id:
+                                                                            if datetime.strptime(ll.start_date,
+                                                                                                 "%Y-%m-%d") <= datetime.strptime(
+                                                                                rec.date_start_r,
+                                                                                "%Y-%m-%d") <= datetime.strptime(
+                                                                                ll.end_date, "%Y-%m-%d"):
+                                                                                if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                                    exist += 1
+                                                                                    wage = ll.amount2
+                                                                                    total_dep = wage * rec.hours_r
+                                                                                    total_dep2 += wage * rec.hours_r
+                                                                                else:
+                                                                                    exist += 1
+                                                                                    wage = ll.amount2
+                                                                                    total_dep = wage * rec.poteau_r
+                                                                                    total_dep2 += wage * rec.poteau_r
+                                                                                work_line.write(rec.id,
+                                                                                                {
+                                                                                                    'rentability': total_dep,
+                                                                                                    'taux_horaire': wage})
+
+                                                                                break
+
+                                                                elif ll.product_id and ll.uom_id2:
+                                                                    if ll.product_id.id == rec.product_id.id:
+                                                                        if datetime.strptime(ll.start_date,
+                                                                                             "%Y-%m-%d") <= datetime.strptime(
+                                                                            rec.date_start_r,
+                                                                            "%Y-%m-%d") <= datetime.strptime(
+                                                                            ll.end_date, "%Y-%m-%d"):
+                                                                            if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                                exist += 1
+                                                                                wage = ll.amount2
+                                                                                total_dep = wage * rec.hours_r
+                                                                                total_dep2 += wage * rec.hours_r
+                                                                            else:
+                                                                                exist += 1
+                                                                                wage = ll.amount2
+                                                                                total_dep = wage * rec.poteau_r
+                                                                                total_dep2 += wage * rec.poteau_r
+                                                                            work_line.write(rec.id,
+                                                                                            {'rentability': total_dep,
+                                                                                             'taux_horaire': wage})
+
+                                                                            break
+
+                                                                elif ll.categ_id and ll.uom_id:
+                                                                    if ll.categ_id.id == rec.categ_id.id:
+                                                                        if datetime.strptime(ll.start_date,
+                                                                                             "%Y-%m-%d") <= datetime.strptime(
+                                                                            rec.date_start_r,
+                                                                            "%Y-%m-%d") <= datetime.strptime(
+                                                                            ll.end_date, "%Y-%m-%d"):
+                                                                            if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                                exist += 1
+                                                                                wage = ll.amount
+                                                                                total_dep = wage * rec.hours_r
+                                                                                total_dep2 += wage * rec.hours_r
+                                                                            else:
+                                                                                exist += 1
+                                                                                wage = ll.amount
+                                                                                total_dep = 0
+                                                                            work_line.write(rec.id,
+                                                                                            {'rentability': total_dep,
+                                                                                             'taux_horaire': wage})
+
+                                                                            break
+                                                                    elif ll.categ_id and ll.uom_id2:
+                                                                        if ll.categ_id.id == rec.categ_id.id:
+                                                                            if datetime.strptime(ll.start_date,
+                                                                                                 "%Y-%m-%d") <= datetime.strptime(
+                                                                                rec.date_start_r,
+                                                                                "%Y-%m-%d") <= datetime.strptime(
+                                                                                ll.end_date, "%Y-%m-%d"):
+                                                                                if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                                    exist += 1
+                                                                                    wage = ll.amount2
+                                                                                    total_dep = wage * rec.hours_r
+                                                                                    total_dep2 += wage * rec.hours_r
+                                                                                else:
+                                                                                    exist += 1
+                                                                                    wage = ll.amount2
+                                                                                    total_dep = wage * rec.poteau_r
+                                                                                    total_dep2 += wage * rec.poteau_r
+                                                                                work_line.write(rec.id,
+                                                                                                {
+                                                                                                    'rentability': total_dep,
+                                                                                                    'taux_horaire': wage})
+
+                                                                                break
+
+                                                                elif ll.categ_id and ll.uom_id2:
+                                                                    if ll.categ_id.id == rec.categ_id.id:
+                                                                        if datetime.strptime(ll.start_date,
+                                                                                             "%Y-%m-%d") <= datetime.strptime(
+                                                                            rec.date_start_r,
+                                                                            "%Y-%m-%d") <= datetime.strptime(
+                                                                            ll.end_date, "%Y-%m-%d"):
+                                                                            if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                                exist += 1
+                                                                                wage = ll.amount2
+                                                                                total_dep = wage * rec.hours_r
+                                                                                total_dep2 += wage * rec.hours_r
+                                                                            else:
+                                                                                exist += 1
+                                                                                wage = ll.amount2
+                                                                                total_dep = wage * rec.poteau_r
+                                                                                total_dep2 += wage * rec.poteau_r
+                                                                            work_line.write(rec.id,
+                                                                                            {'rentability': total_dep,
+                                                                                             'taux_horaire': wage})
+
+                                                                            break
+                                                    if ligne.curr_ids:
+                                                        for ll in ligne.curr_ids:
+                                                            if ll.product_id and ll.uom_id:
+                                                                if ll.product_id.id == rec.product_id.id:
+                                                                    if datetime.strptime(ll.start_date,
+                                                                                         "%Y-%m-%d") <= datetime.strptime(
+                                                                        rec.date_start_r,
+                                                                        "%Y-%m-%d") <= datetime.strptime(
+                                                                        ll.end_date, "%Y-%m-%d"):
+                                                                        if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                            exist += 1
+                                                                            wage = ll.amount
+                                                                            total_dep = wage * rec.hours_r
+                                                                            total_dep2 += wage * rec.hours_r
+                                                                        else:
+                                                                            exist += 1
+                                                                            wage = ll.amount
+                                                                            total_dep = wage * rec.poteau_r
+                                                                            total_dep2 += wage * rec.poteau_r
+                                                                        work_line.write(rec.id,
+                                                                                        {'rentability': total_dep,
+                                                                                         'taux_horaire': wage})
+                                                                        break
+                                                                elif ll.product_id and ll.uom_id2:
+                                                                    if ll.product_id.id == rec.product_id.id:
+                                                                        if datetime.strptime(ll.start_date,
+                                                                                             "%Y-%m-%d") <= datetime.strptime(
+                                                                            rec.date_start_r,
+                                                                            "%Y-%m-%d") <= datetime.strptime(
+                                                                            ll.end_date, "%Y-%m-%d"):
+                                                                            if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                                exist += 1
+                                                                                wage = ll.amount2
+                                                                                total_dep = wage * rec.hours_r
+                                                                                total_dep2 += wage * rec.hours_r
+                                                                            else:
+                                                                                exist += 1
+                                                                                wage = ll.amount2
+                                                                                total_dep = wage * rec.poteau_r
+                                                                                total_dep2 += wage * rec.poteau_r
+                                                                            work_line.write(rec.id,
+                                                                                            {'rentability': total_dep,
+                                                                                             'taux_horaire': wage})
+
+                                                                            break
+                                                            elif ll.product_id and ll.uom_id2:
+                                                                if ll.product_id.id == rec.product_id.id:
+                                                                    if datetime.strptime(ll.start_date,
+                                                                                         "%Y-%m-%d") <= datetime.strptime(
+                                                                        rec.date_start_r,
+                                                                        "%Y-%m-%d") <= datetime.strptime(
+                                                                        ll.end_date, "%Y-%m-%d"):
+                                                                        if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                            exist += 1
+                                                                            wage = ll.amount2
+                                                                            total_dep = wage * rec.hours_r
+                                                                            total_dep2 += wage * rec.hours_r
+                                                                        else:
+                                                                            exist += 1
+                                                                            wage = ll.amount2
+                                                                            total_dep = wage * rec.poteau_r
+                                                                            total_dep2 += wage * rec.poteau_r
+                                                                        work_line.write(rec.id,
+                                                                                        {'rentability': total_dep,
+                                                                                         'taux_horaire': wage})
+                                                                        break
+                                                            elif ll.categ_id and ll.uom_id:
+                                                                if ll.categ_id.id == rec.categ_id.id:
+                                                                    if datetime.strptime(ll.start_date,
+                                                                                         "%Y-%m-%d") <= datetime.strptime(
+                                                                        rec.date_start_r,
+                                                                        "%Y-%m-%d") <= datetime.strptime(
+                                                                        ll.end_date, "%Y-%m-%d"):
+                                                                        if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                            exist += 1
+                                                                            wage = ll.amount
+                                                                            total_dep = wage * rec.hours_r
+                                                                            total_dep2 += wage * rec.hours_r
+                                                                        else:
+                                                                            exist += 1
+                                                                            wage = ll.amount
+                                                                            total_dep = 0
+                                                                        work_line.write(rec.id,
+                                                                                        {'rentability': total_dep,
+                                                                                         'taux_horaire': wage})
+                                                                        break
+
+                                                                elif ll.categ_id and ll.uom_id2:
+
+                                                                    if ll.categ_id.id == rec.categ_id.id:
+                                                                        if datetime.strptime(ll.start_date,
+                                                                                             "%Y-%m-%d") <= datetime.strptime(
+                                                                            rec.date_start_r,
+                                                                            "%Y-%m-%d") <= datetime.strptime(
+                                                                            ll.end_date, "%Y-%m-%d"):
+                                                                            if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                                exist += 1
+                                                                                wage = ll.amount2
+                                                                                total_dep2 += wage * rec.hours_r
+                                                                                total_dep = wage * rec.hours_r
+                                                                            else:
+                                                                                exist += 1
+                                                                                wage = ll.amount2
+                                                                                total_dep2 += wage * rec.poteau_r
+                                                                                total_dep = wage * rec.poteau_r
+                                                                            work_line.write(rec.id,
+                                                                                            {'rentability': total_dep,
+                                                                                             'taux_horaire': wage})
+                                                                            break
+
+                                                            elif ll.categ_id and ll.uom_id2:
+                                                                if ll.categ_id.id == rec.categ_id.id:
+                                                                    if str(ll.start_date) <= str(datetime.now()) <= str(
+                                                                            ll.end_date):
+                                                                        if empl.job_id.id == 1 or ll.uom_id.id == 5:
+                                                                            exist += 1
+                                                                            wage = ll.amount2
+                                                                            total_dep2 += wage * rec.hours_r
+                                                                            total_dep = wage * rec.hours_r
+                                                                        else:
+                                                                            exist += 1
+                                                                            wage = ll.amount2
+                                                                            total_dep = wage * rec.poteau_r
+                                                                            total_dep2 += wage * rec.poteau_r
+                                                                        work_line.write(rec.id,
+                                                                                        {'rentability': total_dep,
+                                                                                         'taux_horaire': wage})
+
+                                                                        break
+                        if wage == 0:
+                            employee = employee_obj.search([('id', '=', empl.id)])
+                            if employee:
+                                for list in employee:
+                                    if list:
+                                        ligne_emp = employee_obj.browse(list)
+                                        contract = self.env['hr.contract'].search([('employee_id', '=', list), (
+                                            'trial_date_start', '<=',
+                                            rec.date_start_r)],
+                                                                                  order="id desc")
+                                        if len(contract) > 1:
+                                            raise UserError(_('Error !\nVous devez avoir un seul contrat valide pour Mr/Mme %s !') % ligne_emp.name)
+
+                                        else:
+                                            contract_valid = self.env['hr.contract'].browse(contract)
+                                            if ligne_emp.job_id.id == 1 or rec.uom_id_r.id == 5:
+                                                wage = contract_valid.wage
+                                                total_dep2 += wage * rec.hours_r
+                                                total_dep = wage * rec.hours_r
+                                            else:
+                                                wage = contract_valid.wage
+                                                total_dep = wage * rec.poteau_r
+                                                total_dep2 += wage * rec.poteau_r
+                                            work_line.write(rec.id,
+                                                            {'rentability': total_dep, 'taux_horaire': wage})
+            if update == False and tarif_client == 0:
+                self.env.cr.execute("""  UPDATE project_profitability
+                                               SET total_depenses = %s,
+                                                montant_total = %s,
+                                                diference = %s,
+                                                taux = %s
+                                               WHERE project_id = %s AND invoice_id = %s
+                                          """,
+                           (tuple([total_dep2]),
+                            tuple([tarif_client]), tuple([tarif_client - total_dep2]),
+                            tuple([0]), tuple([line.project_id.id]), self.ids[0]))
+            elif update == False and tarif_client != 0:
+                self.env.cr.execute("""  UPDATE project_profitability
+                                                   SET total_depenses = %s,
+                                                    montant_total = %s,
+                                                    diference = %s,
+                                                    taux = %s
+                                                   WHERE project_id = %s AND invoice_id = %s
+                                           """,
+                           (tuple([total_dep2]),
+                            tuple([tarif_client]), tuple([tarif_client - total_dep2]),
+                            tuple([((tarif_client - total_dep2) / tarif_client) * 100]), tuple([line.project_id.id]),
+                            self.ids[0]))
+        if this.line_ids and this.amount_untaxed == 0:
+            raise UserError(_('Error !\nVous ne pouvez pas diviser par 0 !!!'))
+
+        else:
+            return {
+                'name': _("Création Facture"),
+                'res_id': self.ids[0],
+                'view_mode': 'form',
+                'view_id': False,
+                'view_type': 'form',
+                'res_model': 'base.facture.wizard',
+                'type': 'ir.actions.act_window',
+                'nodestroy': True,
+                'target': 'current',
+                'context': {}
+            }
+
     #
     #     def rentabilite_projet_total(self, cr, uid, ids, context=None):
     #         this = self.browse(cr, uid, ids[0], context=context)
@@ -1320,37 +1326,33 @@ class EbMergeFactures(models.Model):
     #             if record.clos is True:
     #                 raise Warning('Attention, Vous aller cloturer le projet d"une façon définitive!!!')
     #
-    #     def button_save_(self, cr, uid, ids, context={}):
-    #         work_ = self.pool.get('project.task.work')
-    #         work_line = self.pool.get('project.task.work.line')
-    #         line_obj1 = self.pool.get('bon.show.line2')
-    #         sum1 = 0
-    #         tvq_ = self.pool.get('account.tax').browse(cr, uid, 7, context=context)
-    #         tps_ = self.pool.get('account.tax').browse(cr, uid, 8, context=context)
-    #         for current in self.browse(cr, uid, ids, context=context):
-    #             for tt in current.line_ids:
-    #                 sum1 = sum1 + tt.total
-    #
-    #         self.write(cr, uid, ids[0], {'amount_untaxed': sum1, 'tps': tps_.amount * sum1, 'tvq': tvq_.amount * sum1},
-    #                    context=context)
-    #         return True
-    #
-    #     @api.one
-    #     def merge_lines(self):
-    #         to_delete = []
-    #         itered = []
-    #         for line in self.line_ids:
-    #             itered.append(line.id)
-    #             line_to_merge = self.line_ids.search([('wizard_id', '=', self.id),
-    #
-    #                                                   ('code', '=', line.code),
-    #                                                   ('uom_id', '=', line.uom_id.id),
-    #                                                   ('id', 'not in', itered)], limit=1)
-    #             if line_to_merge:
-    #                 to_delete.append(line.id)
-    #                 line_to_merge.write({'poteau_t': line_to_merge.poteau_t + line.poteau_t})
-    #         self.write({'line_ids': [(2, x, 0) for x in to_delete]})
-    #
+    def button_save_(self):
+
+        sum1 = 0
+        tvq_ = self.env['account.tax'].browse(7)
+        tps_ = self.env['account.tax'].browse(8)
+        for current in self:
+            for tt in current.line_ids:
+                sum1 = sum1 + tt.total
+
+        self.write({'amount_untaxed': sum1, 'tps': tps_.amount * sum1, 'tvq': tvq_.amount * sum1})
+        return True
+
+    def merge_lines(self):
+        to_delete = []
+        itered = []
+        for line in self.line_ids:
+            itered.append(line.id)
+            line_to_merge = self.line_ids.search([('wizard_id', '=', self.id),
+
+                                                  ('code', '=', line.code),
+                                                  ('uom_id', '=', line.uom_id.id),
+                                                  ('id', 'not in', itered)], limit=1)
+            if line_to_merge:
+                to_delete.append(line.id)
+                line_to_merge.write({'poteau_t': line_to_merge.poteau_t + line.poteau_t})
+        self.write({'line_ids': [(2, x, 0) for x in to_delete]})
+
     #     @api.multi
     #     def button_merge(self):
     #
@@ -1378,239 +1380,236 @@ class EbMergeFactures(models.Model):
     #
     #         return res
     #
-    #     @api.multi
-    #     def button_accept1(self):
-    #         sequence = 0
-    #         total = 0
-    #         vv = []
-    #         if self.work_ids:
-    #             for zz in self.work_ids.ids:
-    #                 kk = self.env['project.task.work.line'].browse(zz)
-    #                 if kk.auto is False:
-    #                     self.env.cr.execute(
-    #                         'select id from agreement_fees where partner_id= %s and date_init<=%s and date_end>=%s',
-    #                         (self.partner_id.id, self.date_inv, self.date_inv,))
-    #                     oo = self.env.cr.fetchone()
-    #                     if oo:
-    #                         for ll in self.env['agreement.fees'].browse(oo[0]).line_ids:
-    #                             for nn in ll.ids:
-    #                                 tt = self.env['agreement.fees.amortization_line'].browse(nn)
-    #                                 sequence = 0
-    #                                 for product in tt.product_ids1.ids:
-    #                                     jj = self.env['product.product'].browse(product)
-    #                                     if jj.id == kk.product_id.id:
-    #                                         if kk.uom_id.id == 5:
-    #                                             qty = kk.hours_r
-    #                                         else:
-    #                                             qty = kk.hours_r
-    #                                         self.env['base.facture.merge.line'].create({
-    #                                             'wizard_id': self.id,
-    #                                             'poteau_t': qty,
-    #                                             'code': tt.name,
-    #                                             'name': tt.desc,
-    #                                             'uom_id': tt.uom_id.id,
-    #                                             'partner_id': self.partner_id.id,
-    #
-    #                                             'product_id': jj.id,
-    #                                             'categ_id': jj.categ_id.id,
-    #                                             'qte': qty,
-    #                                             'price': tt.amount_total,
-    #                                             'total': qty * tt.amount_total,
-    #
-    #                                         })
-    #                                         self.env.cr.execute('update project_task_work_line set auto=True where id= %s ',
-    #                                                             (kk.id,))
-    #
-    #                                     sequence = 1
-    #                                 for product in tt.product_ids2.ids:
-    #
-    #                                     jj = self.env['product.product'].browse(product)
-    #                                     if jj.id == kk.product_id.id:
-    #                                         if kk.uom_id.id == 5:
-    #                                             qty = kk.hours_r
-    #                                         else:
-    #                                             qty = kk.hours_r
-    #                                         self.env['base.facture.merge.line'].create({
-    #                                             'wizard_id': self.id,
-    #                                             'poteau_t': qty,
-    #                                             'code': tt.name,
-    #                                             'name': tt.desc,
-    #                                             'uom_id': tt.uom_id.id,
-    #                                             'partner_id': self.partner_id.id,
-    #
-    #                                             'product_id': jj.id,
-    #                                             'categ_id': jj.categ_id.id,
-    #                                             'qte': qty,
-    #                                             'price': tt.amount_total,
-    #                                             'total': qty * tt.amount_total,
-    #
-    #                                         })
-    #
-    #                                         self.env.cr.execute('update project_task_work_line set auto=True where id= %s ',
-    #                                                             (kk.id,))
-    #                                     sequence = 1
-    #                                 for product in tt.product_ids7.ids:
-    #
-    #                                     jj = self.env['product.product'].browse(product)
-    #                                     if jj.id == kk.product_id.id:
-    #                                         if kk.uom_id.id == 5:
-    #                                             qty = kk.hours_r
-    #                                         else:
-    #                                             qty = kk.hours_r
-    #                                         self.env['base.facture.merge.line'].create({
-    #                                             'wizard_id': self.id,
-    #                                             'poteau_t': qty,
-    #                                             'code': tt.name,
-    #                                             'name': tt.desc,
-    #                                             'uom_id': tt.uom_id.id,
-    #                                             'partner_id': self.partner_id.id,
-    #
-    #                                             'product_id': jj.id,
-    #                                             'categ_id': jj.categ_id.id,
-    #                                             'qte': qty,
-    #                                             'price': tt.amount_total,
-    #                                             'total': qty * tt.amount_total,
-    #
-    #                                         })
-    #
-    #                                         self.env.cr.execute('update project_task_work_line set auto=True where id= %s ',
-    #                                                             (kk.id,))
-    #                                     sequence = 1
-    #                                 for product in tt.product_ids3.ids:
-    #
-    #                                     jj = self.env['product.product'].browse(product)
-    #                                     if jj.id == kk.product_id.id:
-    #                                         if kk.uom_id.id == 5:
-    #                                             qty = kk.hours_r
-    #                                         else:
-    #                                             qty = kk.hours_r
-    #                                         self.env['base.facture.merge.line'].create({
-    #                                             'wizard_id': self.id,
-    #                                             'poteau_t': qty,
-    #                                             'code': tt.name,
-    #                                             'name': tt.desc,
-    #                                             'uom_id': tt.uom_id.id,
-    #                                             'partner_id': self.partner_id.id,
-    #
-    #                                             'product_id': jj.id,
-    #                                             'categ_id': jj.categ_id.id,
-    #                                             'qte': qty,
-    #                                             'price': tt.amount_total,
-    #                                             'total': qty * tt.amount_total,
-    #
-    #                                         })
-    #
-    #                                         self.env.cr.execute('update project_task_work_line set auto=True where id= %s ',
-    #                                                             (kk.id,))
-    #                                     sequence = 1
-    #                                 for product in tt.product_ids4.ids:
-    #
-    #                                     jj = self.env['product.product'].browse(product)
-    #                                     if jj.id == kk.product_id.id:
-    #                                         if kk.uom_id.id == 5:
-    #                                             qty = kk.hours_r
-    #                                         else:
-    #                                             qty = kk.hours_r
-    #                                         self.env['base.facture.merge.line'].create({
-    #                                             'wizard_id': self.id,
-    #                                             'poteau_t': qty,
-    #                                             'code': tt.name,
-    #                                             'name': tt.desc,
-    #                                             'uom_id': tt.uom_id.id,
-    #                                             'partner_id': self.partner_id.id,
-    #
-    #                                             'product_id': jj.id,
-    #                                             'categ_id': jj.categ_id.id,
-    #                                             'qte': qty,
-    #                                             'price': tt.amount_total,
-    #                                             'total': qty * tt.amount_total,
-    #
-    #                                         })
-    #
-    #                                         self.env.cr.execute('update project_task_work_line set auto=True where id= %s ',
-    #                                                             (kk.id,))
-    #                                     sequence = 1
-    #                                 for product in tt.product_ids5.ids:
-    #
-    #                                     jj = self.env['product.product'].browse(product)
-    #                                     if jj.id == kk.product_id.id:
-    #                                         if kk.uom_id.id == 5:
-    #                                             qty = kk.hours_r
-    #                                         else:
-    #                                             qty = kk.hours_r
-    #                                         self.env['base.facture.merge.line'].create({
-    #                                             'wizard_id': self.id,
-    #                                             'poteau_t': qty,
-    #                                             'code': tt.name,
-    #                                             'name': tt.desc,
-    #                                             'uom_id': tt.uom_id.id,
-    #                                             'partner_id': self.partner_id.id,
-    #
-    #                                             'product_id': jj.id,
-    #                                             'categ_id': jj.categ_id.id,
-    #                                             'qte': qty,
-    #                                             'price': tt.amount_total,
-    #                                             'total': qty * tt.amount_total,
-    #
-    #                                         })
-    #                                         self.env.cr.execute('update project_task_work_line set auto=True where id= %s ',
-    #                                                             (kk.id,))
-    #                                     sequence = 1
-    #                                 for product in tt.product_ids6.ids:
-    #
-    #                                     jj = self.env['product.product'].browse(product)
-    #                                     if jj.id == kk.product_id.id:
-    #                                         if kk.uom_id.id == 5:
-    #                                             qty = kk.hours_r
-    #                                         else:
-    #                                             qty = kk.hours_r
-    #                                         self.env['base.facture.merge.line'].create({
-    #                                             'wizard_id': self.id,
-    #                                             'poteau_t': qty,
-    #                                             'code': tt.name,
-    #                                             'name': tt.desc,
-    #                                             'uom_id': tt.uom_id.id,
-    #                                             'partner_id': self.partner_id.id,
-    #
-    #                                             'product_id': jj.id,
-    #                                             'categ_id': jj.categ_id.id,
-    #                                             'qte': qty,
-    #                                             'price': tt.amount_total,
-    #                                             'total': qty * tt.amount_total,
-    #
-    #                                         })
-    #
-    #                                         self.env.cr.execute('update project_task_work_line set auto=True where id= %s ',
-    #                                                             (kk.id,))
-    #
-    #                                     sequence = 1
-    #                                 if sequence == 0:
-    #                                     if kk.uom_id.id == 5:
-    #                                         qty = kk.hours_r
-    #                                     else:
-    #                                         qty = kk.hours_r
-    #                                     at = self.env['base.facture.merge.line'].create({
-    #                                         'wizard_id': self.id,
-    #                                         'poteau_t': qty,
-    #                                         'code': tt.name,
-    #                                         'name': tt.desc,
-    #                                         'uom_id': tt.uom_id.id,
-    #                                         'partner_id': self.partner_id.id,
-    #
-    #                                         'product_id': kk.product_id.id,
-    #                                         'categ_id': kk.product_id.categ_id.id,
-    #                                         'qte': qty,
-    #                                         'price': tt.amount_total,
-    #                                         'total': qty * tt.amount_total,
-    #
-    #                                     })
-    #                                     self.env.cr.execute('update project_task_work_line set auto=True where id= %s ',
-    #                                                         (kk.id,))
-    #                     else:
-    #                         raise osv.except_osv(_('Info !'), _('Pas de contrat lié au projet!'))
-    #
-    #         return True
-    #
+    def button_accept1(self):
+
+        if self.work_ids:
+            for zz in self.work_ids.ids:
+                kk = self.env['project.task.work.line'].browse(zz)
+                if kk.auto is False:
+                    self.env.cr.execute(
+                        'select id from agreement_fees where partner_id= %s and date_init<=%s and date_end>=%s',
+                        (self.partner_id.id, self.date_inv, self.date_inv,))
+                    oo = self.env.cr.fetchone()
+                    if oo:
+                        for ll in self.env['agreement.fees'].browse(oo[0]).line_ids:
+                            for nn in ll.ids:
+                                tt = self.env['agreement.fees.amortization_line'].browse(nn)
+                                sequence = 0
+                                for product in tt.product_ids1.ids:
+                                    jj = self.env['product.product'].browse(product)
+                                    if jj.id == kk.product_id.id:
+                                        if kk.uom_id.id == 5:
+                                            qty = kk.hours_r
+                                        else:
+                                            qty = kk.hours_r
+                                        self.env['base.facture.merge.line'].create({
+                                            'wizard_id': self.id,
+                                            'poteau_t': qty,
+                                            'code': tt.name,
+                                            'name': tt.desc,
+                                            'uom_id': tt.uom_id.id,
+                                            'partner_id': self.partner_id.id,
+
+                                            'product_id': jj.id,
+                                            'categ_id': jj.categ_id.id,
+                                            'qte': qty,
+                                            'price': tt.amount_total,
+                                            'total': qty * tt.amount_total,
+
+                                        })
+                                        self.env.cr.execute('update project_task_work_line set auto=True where id= %s ',
+                                                            (kk.id,))
+
+                                    sequence = 1
+                                for product in tt.product_ids2.ids:
+
+                                    jj = self.env['product.product'].browse(product)
+                                    if jj.id == kk.product_id.id:
+                                        if kk.uom_id.id == 5:
+                                            qty = kk.hours_r
+                                        else:
+                                            qty = kk.hours_r
+                                        self.env['base.facture.merge.line'].create({
+                                            'wizard_id': self.id,
+                                            'poteau_t': qty,
+                                            'code': tt.name,
+                                            'name': tt.desc,
+                                            'uom_id': tt.uom_id.id,
+                                            'partner_id': self.partner_id.id,
+
+                                            'product_id': jj.id,
+                                            'categ_id': jj.categ_id.id,
+                                            'qte': qty,
+                                            'price': tt.amount_total,
+                                            'total': qty * tt.amount_total,
+
+                                        })
+
+                                        self.env.cr.execute('update project_task_work_line set auto=True where id= %s ',
+                                                            (kk.id,))
+                                    sequence = 1
+                                for product in tt.product_ids7.ids:
+
+                                    jj = self.env['product.product'].browse(product)
+                                    if jj.id == kk.product_id.id:
+                                        if kk.uom_id.id == 5:
+                                            qty = kk.hours_r
+                                        else:
+                                            qty = kk.hours_r
+                                        self.env['base.facture.merge.line'].create({
+                                            'wizard_id': self.id,
+                                            'poteau_t': qty,
+                                            'code': tt.name,
+                                            'name': tt.desc,
+                                            'uom_id': tt.uom_id.id,
+                                            'partner_id': self.partner_id.id,
+
+                                            'product_id': jj.id,
+                                            'categ_id': jj.categ_id.id,
+                                            'qte': qty,
+                                            'price': tt.amount_total,
+                                            'total': qty * tt.amount_total,
+
+                                        })
+
+                                        self.env.cr.execute('update project_task_work_line set auto=True where id= %s ',
+                                                            (kk.id,))
+                                    sequence = 1
+                                for product in tt.product_ids3.ids:
+
+                                    jj = self.env['product.product'].browse(product)
+                                    if jj.id == kk.product_id.id:
+                                        if kk.uom_id.id == 5:
+                                            qty = kk.hours_r
+                                        else:
+                                            qty = kk.hours_r
+                                        self.env['base.facture.merge.line'].create({
+                                            'wizard_id': self.id,
+                                            'poteau_t': qty,
+                                            'code': tt.name,
+                                            'name': tt.desc,
+                                            'uom_id': tt.uom_id.id,
+                                            'partner_id': self.partner_id.id,
+
+                                            'product_id': jj.id,
+                                            'categ_id': jj.categ_id.id,
+                                            'qte': qty,
+                                            'price': tt.amount_total,
+                                            'total': qty * tt.amount_total,
+
+                                        })
+
+                                        self.env.cr.execute('update project_task_work_line set auto=True where id= %s ',
+                                                            (kk.id,))
+                                    sequence = 1
+                                for product in tt.product_ids4.ids:
+
+                                    jj = self.env['product.product'].browse(product)
+                                    if jj.id == kk.product_id.id:
+                                        if kk.uom_id.id == 5:
+                                            qty = kk.hours_r
+                                        else:
+                                            qty = kk.hours_r
+                                        self.env['base.facture.merge.line'].create({
+                                            'wizard_id': self.id,
+                                            'poteau_t': qty,
+                                            'code': tt.name,
+                                            'name': tt.desc,
+                                            'uom_id': tt.uom_id.id,
+                                            'partner_id': self.partner_id.id,
+
+                                            'product_id': jj.id,
+                                            'categ_id': jj.categ_id.id,
+                                            'qte': qty,
+                                            'price': tt.amount_total,
+                                            'total': qty * tt.amount_total,
+
+                                        })
+
+                                        self.env.cr.execute('update project_task_work_line set auto=True where id= %s ',
+                                                            (kk.id,))
+                                    sequence = 1
+                                for product in tt.product_ids5.ids:
+
+                                    jj = self.env['product.product'].browse(product)
+                                    if jj.id == kk.product_id.id:
+                                        if kk.uom_id.id == 5:
+                                            qty = kk.hours_r
+                                        else:
+                                            qty = kk.hours_r
+                                        self.env['base.facture.merge.line'].create({
+                                            'wizard_id': self.id,
+                                            'poteau_t': qty,
+                                            'code': tt.name,
+                                            'name': tt.desc,
+                                            'uom_id': tt.uom_id.id,
+                                            'partner_id': self.partner_id.id,
+
+                                            'product_id': jj.id,
+                                            'categ_id': jj.categ_id.id,
+                                            'qte': qty,
+                                            'price': tt.amount_total,
+                                            'total': qty * tt.amount_total,
+
+                                        })
+                                        self.env.cr.execute('update project_task_work_line set auto=True where id= %s ',
+                                                            (kk.id,))
+                                    sequence = 1
+                                for product in tt.product_ids6.ids:
+
+                                    jj = self.env['product.product'].browse(product)
+                                    if jj.id == kk.product_id.id:
+                                        if kk.uom_id.id == 5:
+                                            qty = kk.hours_r
+                                        else:
+                                            qty = kk.hours_r
+                                        self.env['base.facture.merge.line'].create({
+                                            'wizard_id': self.id,
+                                            'poteau_t': qty,
+                                            'code': tt.name,
+                                            'name': tt.desc,
+                                            'uom_id': tt.uom_id.id,
+                                            'partner_id': self.partner_id.id,
+
+                                            'product_id': jj.id,
+                                            'categ_id': jj.categ_id.id,
+                                            'qte': qty,
+                                            'price': tt.amount_total,
+                                            'total': qty * tt.amount_total,
+
+                                        })
+
+                                        self.env.cr.execute('update project_task_work_line set auto=True where id= %s ',
+                                                            (kk.id,))
+
+                                    sequence = 1
+                                if sequence == 0:
+                                    if kk.uom_id.id == 5:
+                                        qty = kk.hours_r
+                                    else:
+                                        qty = kk.hours_r
+                                    at = self.env['base.facture.merge.line'].create({
+                                        'wizard_id': self.id,
+                                        'poteau_t': qty,
+                                        'code': tt.name,
+                                        'name': tt.desc,
+                                        'uom_id': tt.uom_id.id,
+                                        'partner_id': self.partner_id.id,
+
+                                        'product_id': kk.product_id.id,
+                                        'categ_id': kk.product_id.categ_id.id,
+                                        'qte': qty,
+                                        'price': tt.amount_total,
+                                        'total': qty * tt.amount_total,
+
+                                    })
+                                    self.env.cr.execute('update project_task_work_line set auto=True where id= %s ',
+                                                        (kk.id,))
+                    else:
+                        raise UserError(_('Info !\nPas de contrat lié au projet !'))
+
+        return True
+
     #     def onchange_week_(self, cr, uid, ids, year_no, week_no, context=None):
     #         result = {'value': {}}
     #
@@ -1949,15 +1948,14 @@ class EbMergeFactures(models.Model):
             'target': 'new',
         }
 
+    #
+    #     @api.one
+    #     def action_copy3(self):
+    #         packaging_obj = self.pool.get('project.task')
+    #         packaging_copy = packaging_obj.copy_data(self._cr, self._uid, self.dst_task_id.id)
+    #         packaging_obj.write({'name': 'dfsdf'})
+    #         return True
 
-#
-#     @api.one
-#     def action_copy3(self):
-#         packaging_obj = self.pool.get('project.task')
-#         packaging_copy = packaging_obj.copy_data(self._cr, self._uid, self.dst_task_id.id)
-#         packaging_obj.write({'name': 'dfsdf'})
-#         return True
-#
     def cancel_(self):
 
         """

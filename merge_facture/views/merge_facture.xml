@@ -111,12 +111,12 @@
                         <group>
                             <group colspan="4">
                                 <newline/>
-                                <!--                                    <button name="button_accept1" string="Générer à partir du contrat" type="object"-->
-                                <!--                                            class="oe_highlight" icon="gtk-execute"-->
-                                <!--                                            confirm="Génération automatique des Lignes de Factures?"/>-->
-                                <!--                                    <button name="merge_lines" string="Fusionner les Lignes" type="object"-->
-                                <!--                                            class="oe_highlight" icon="STOCK_UNINDENT"-->
-                                <!--                                            confirm="Voulez vous fusionner les lignes avec des articles similaires?"/>-->
+                                <button name="button_accept1" string="Générer à partir du contrat" type="object"
+                                        class="oe_highlight" icon="fa-thin fa-file-import"
+                                        confirm="Génération automatique des Lignes de Factures?"/>
+                                <button name="merge_lines" string="Fusionner les Lignes" type="object"
+                                        class="oe_highlight" icon="fa-thin fa-merge"
+                                        confirm="Voulez vous fusionner les lignes avec des articles similaires?"/>
                             </group>
                             <newline/>
                             <field name="line_ids" nolabel="1"
@@ -137,8 +137,9 @@
                                 </tree>
                             </field>
                             <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
-                                <!--                                    <button name="button_save_" type="object" string="Calculer" icon="STOCK_EXECUTE"-->
-                                <!--                                            class="oe_highlight"/>-->
+                                <button name="button_save_" type="object" string="Calculer"
+                                        icon="fa-light fa-calculator"
+                                        class="oe_highlight"/>
                                 <newline/>
                                 <field name="amount_untaxed" widget="monetary" options="{'currency_field': '5'}"
                                        string="Total H.T"/>
@@ -157,8 +158,8 @@
                         </group>
                     </page>
                     <page string="Rentabilité du projet">
-                        <!--                            <button name="rentabilite_projet" type="object" string="Calculer" icon="STOCK_EXECUTE"-->
-                        <!--                                    class="oe_highlight"/>-->
+                        <button name="rentabilite_projet" type="object" string="Calculer" icon="fa-light fa-calculator"
+                                class="oe_highlight"/>
                         <newline/>
                         <field name="project_profitability">
                             <tree>
