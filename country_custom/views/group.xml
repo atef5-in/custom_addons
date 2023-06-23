@@ -1,6 +1,6 @@
 <odoo>
 
-    <record id="view_country_tree" model="ir.ui.view">
+    <record id="view_country_state_tree" model="ir.ui.view">
         <field name="name">res.country.state.tree</field>
         <field name="model">res.country.state</field>
         <field name="arch" type="xml">
@@ -53,6 +53,9 @@
         <field name="res_model">res.country.state</field>
         <field name="view_mode">tree,form</field>
         <field name="context">{}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('country_custom.view_country_state_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('country_custom.view_country_state_form')})]"/>
     </record>
 
     <menuitem id="menu_region" name="Parcs et Municipalités" parent="menu_country_root" sequence="30"

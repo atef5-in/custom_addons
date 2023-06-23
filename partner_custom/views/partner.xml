@@ -1,6 +1,6 @@
 <odoo>
     <data>
-        <record id="view_product_form" model="ir.ui.view">
+        <record id="view_partner_form" model="ir.ui.view">
             <field name="name">partner.form</field>
             <field name="model">res.partner</field>
             <field name="arch" type="xml">
@@ -334,7 +334,7 @@
             </field>
         </record>
 
-        <record id="view_product_tree" model="ir.ui.view">
+        <record id="view_partner_tree" model="ir.ui.view">
             <field name="name">partner.tree</field>
             <field name="model">res.partner</field>
             <field name="arch" type="xml">
@@ -360,11 +360,9 @@
             <field name="res_model">res.partner</field>
             <field name="view_mode">tree,form</field>
             <field name="context">{}</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Create your first Partner record !
-                </p>
-            </field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('partner_custom.view_partner_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('partner_custom.view_partner_form')})]"/>
         </record>
 
         <menuitem id="menu_partner" name="Gestion des Clients" sequence="-500" action="action_partner"/>
