@@ -26,6 +26,7 @@
         'security/ir.model.access.csv',
         'views/employee.xml',
         'views/contract.xml',
+        'views/remuneration_av.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

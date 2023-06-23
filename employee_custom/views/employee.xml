@@ -134,7 +134,7 @@
                                 </group>
                             </group>
                         </page>
-                        <page string="Rénumération">
+                        <page string="Rémunération">
                             <group>
                                 <field name="remuneration_ids">
                                     <tree editable="bottom">

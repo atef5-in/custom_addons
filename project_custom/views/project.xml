@@ -66,9 +66,9 @@
                             <field name="name" string="Nom" invisible="1"/>
                             <newline/>
                             <field name="partner_id" string="Client" required="1"
-                                   domain="[('company_id','=','company_id')]"
-                                   attrs="{'readonly':[('state','!=','draft')]}"/>
-                            <!--                                   options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>-->
+                                   domain="[('customer','=',True)]"
+                                   attrs="{'readonly':[('state','!=','draft')]}"
+                                   options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
                             <newline/>
                             <field name="resp_id" string="Chef du Project"
                                    domain="[('is_resp','=',True)]"

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
-from datetime import datetime, date
-
+from datetime import datetime as dt, date
+from odoo.exceptions import UserError
+from odoo.tools.translate import _
+import math
 
 class TaskWork(models.Model):
     _name = 'project.task.work'
@@ -22,7 +24,7 @@ class TaskWork(models.Model):
 
                     if datas and datas[0] > 1:
                         ##tt=time.strftime("%Y-%m-%d", time.localtime(int(datas[0]))) ()
-                        temp = datetime.fromtimestamp(int(datas[0])).strftime('%Y-%m-%d')
+                        temp = dt.fromtimestamp(int(datas[0])).strftime('%Y-%m-%d')
 
                         self.env.cr.execute('update project_task_work set date_start=%s where id=%s', (temp, rec.id))
                         ##cr.execute('update project_task_work set  date_start=%s where  id = %s ' , (date_start,ids[0]))
@@ -32,7 +34,7 @@ class TaskWork(models.Model):
 
                     if datas1 and datas1[0] > 1:
                         ##tt=time.strftime("%Y-%m-%d", time.localtime(int(datas[0]))) ()
-                        temp1 = datetime.fromtimestamp(int(datas1[0])).strftime('%Y-%m-%d')
+                        temp1 = dt.fromtimestamp(int(datas1[0])).strftime('%Y-%m-%d')
                         ##raise osv.except_osv(_('Error !'), _('No period defined for this date: %s !\nPlease create one.')%tt)
                         self.env.cr.execute('update project_task_work set date_end=%s where id=%s', (temp1, rec.id))
                     sql2 = ("select field_269 from app_entity_26 WHERE id = %s")
@@ -787,6 +789,97 @@ class TaskWorkLine(models.Model):
     total = fields.Integer(string='Total')
     rentability = fields.Float(string='Rentabilité')
     taux_horaire = fields.Float(string='T.H')
+
+    @api.onchange('date_end_r', 'date_start_r', 'employee_id', 'task_id')
+    def onchange_date_to_(self):
+        """
+        Update the number_of_days.
+        """
+        date_to = self.date_end_r
+        date_from = self.date_start_r
+        # date_to has to be greater than date_from
+        result = {'value': {}}
+        if (date_from and date_to):
+            if (date_from and date_to) and (date_from > date_to):
+                raise UserError(_('Warning!\nThe start date must be anterior to the end date.'))
+
+            result = {'value': {}}
+            holiday_obj = self.env['hr.holidays']
+            hours_obj = self.env['training.holiday.year']
+
+            # Compute and update the number of days
+            if (date_to and date_from) and (date_from <= date_to):
+                diff_day = holiday_obj._get_number_of_days(date_from, date_to, self.employee_id)
+                year = hours_obj.search([('year', '=', str(date_from.year))])
+                if year:
+                    hr = hours_obj.browse(year[0]).hours
+                else:
+                    hr = 7
+                result['value']['color1'] = round(math.floor(diff_day)) + 1
+                result['value']['hours_r'] = (round(math.floor(diff_day)) + 1) * hr
+            else:
+                result['value']['color1'] = 0
+                result['value']['total_r'] = 0
+        return result
+
+    @api.onchange('hours_r', 'employee_id')
+    def onchange_hours_(self):
+        """
+        Update the number_of_days.
+        """
+
+        academic_obj = self.env['hr.academic']
+
+        result = {'value': {}}
+        # Compute and update the number of days
+        if self.hours_r:
+            wage = 0
+            aca = academic_obj.search([('employee_id', '=', self.employee_id)])
+            if aca:
+                for list in aca:
+                    if list:
+                        ligne = academic_obj.browse(list)
+                        if ligne.curr_ids:
+                            for ll in ligne.curr_ids:
+                                if ll.product_id and ll.uom_id:
+                                    if (ll.product_id.id == self.product_id and ll.uom_id.id == self.uom_id):
+                                        wage = ll.amount
+                                    elif ll.product_id and ll.uom_id2:
+                                        if (ll.product_id.id == self.product_id and ll.uom_id2.id == self.uom_id):
+                                            wage = ll.amount2
+
+
+                                elif ll.product_id and ll.uom_id2:
+                                    if (ll.product_id.id == self.product_id and ll.uom_id2.id == self.uom_id):
+                                        wage = ll.amount2
+
+                                elif ll.categ_id and ll.uom_id:
+                                    if (ll.categ_id.id == self.categ_id and ll.uom_id.id == self.uom_id):
+                                        wage = ll.amount
+                                    elif ll.categ_id and ll.uom_id2:
+                                        if (ll.categ_id.id == self.categ_id and ll.uom_id2.id == self.uom_id):
+                                            wage = ll.amount2
+
+                                elif ll.categ_id and ll.uom_id2:
+                                    if (ll.categ_id.id == self.categ_id and ll.uom_id2.id == self.uom_id):
+                                        wage = ll.amount2
+
+                                else:
+                                    raise UserError(_('Errour!\nTaux horaire Non Défini pour cette configuration, Veuillez consulter le Superviseur SVP!'))
+                        else:
+                            raise UserError(_('Errour!\nTaux horaire Non Défini pour cette configuration, Veuillez consulter le Superviseur SVP!'))
+                    else:
+                        raise UserError(_('Errour!\nTaux horaire Non Défini pour cette configuration, Veuillez consulter le Superviseur SVP!'))
+            else:
+                raise UserError(_('Errour!\nTaux horaire Non Défini pour cette configuration, Veuillez consulter le Superviseur SVP!'))
+
+            if wage == 0:
+                raise UserError(_('Errour!\nTaux horaire Non Défini pour cette configuration, Veuillez consulter le Superviseur SVP!'))
+            if self.uom_id == 5:
+                result['value']['total_r'] = self.hours_r * wage
+            else:
+                result['value']['total_r'] = self.poteau_r * wage
+        return result
 
 
 class ProjectIssueVersion(models.Model):

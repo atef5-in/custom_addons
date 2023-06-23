@@ -70,10 +70,8 @@
                                     <field name="categ_id" string="département"/>
                                     <field name="date" invisible="0" string="Date" readonly="1"/>
                                     <field name="date_start_r" string="Date Début" widget="date"
-                                           on_change="onchange_date_to_(date_end_r,date_start_r,employee_id,task_id)"
                                            attrs="{'required': [('state', '=', 'affect')]}" readonly="1"/>
                                     <field name="date_end_r" string="Date Fin" widget="date"
-                                           on_change="onchange_date_to_(date_end_r,date_start_r,employee_id,task_id)"
                                            attrs="{'required': [('state', '=', 'draft')]}" readonly="1"/>
                                     <field name="product_id" invisible="0" string="Type Service" readonly="1"
                                            options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
@@ -81,12 +79,10 @@
                                            options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
                                     <field name="color1" string="Durée(Jours)"
                                            attrs="{'required': [('state', '=', 'draft')]}" sum="Prev Hours"
-                                           on_change="onchange_date_to_(date_end_r,date_start_r,employee_id,task_id)"
                                            readonly="1"/>
                                     <field name="hours_r" string="Durée(Heurs)"
                                            attrs="{'required': [('state', '=', 'draft')]}" widget="float_time"
-                                           sum="Prev Hours" on_change="onchange_hours_(hours_r,employee_id)"
-                                           readonly="1"/>
+                                           sum="Prev Hours" readonly="1"/>
                                     <field name="poteau_r" string="Qté/Unité"
                                            attrs="{'required': [('state', '=', 'draft')]}" sum="Prev Hours"
                                            readonly="1"/>
@@ -122,16 +118,14 @@
                             <field name="line_ids" nolabel="1"
                                    options="{'no_create': True, 'no_create_edit':True,'no_open':True}">
                                 <tree editable="bottom">
-                                    <field name="poteau_t" string="Qté" change="onchange_qty(poteau_t,price)"/>
+                                    <field name="poteau_t" string="Qté"/>
                                     <field name="product_id" string="Type Sercice"
-                                           change="onchange_product_id(product_id)"
                                            options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
                                     <field name="uom_id" string="Unité"
                                            options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
                                     <field name="code" string="Code"/>
                                     <field name="name" string="Decription"/>
-                                    <field name="price" string="Prix Unitaire"
-                                           change="onchange_qty(poteau_t,price)"/>
+                                    <field name="price" string="Prix Unitaire"/>
                                     <field name="total" string="Total"/>
                                     <field name="wizard_id" string="Total" invisible="1"/>
                                 </tree>

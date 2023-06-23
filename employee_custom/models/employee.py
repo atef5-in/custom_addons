@@ -480,7 +480,7 @@ class HrCurriculum(models.Model):
     #     # even if it's a diploma, degree...
 
     name = fields.Char('Name')
-    employee_id = fields.Many2one('hr.employee', string='Employee', default="employee_id.id", )
+    employee_id = fields.Many2one('hr.employee', string='Employee', )
     start_date = fields.Date('Start date')
     end_date = fields.Date('End date')
     description = fields.Text('Description')
@@ -491,8 +491,8 @@ class HrCurriculum(models.Model):
     product_id = fields.Many2one('product.product', string=' Professional Experiences', )
     project_id = fields.Many2one('project.project', string=' Professional Experiences', )
     categ_id = fields.Many2one('product.category', string=' Professional Experiences', )
-    amount = fields.Float(string='Diploma', translate=True)
-    amount2 = fields.Float(string='Diploma', translate=True)
+    amount = fields.Float(string='Diploma', )
+    amount2 = fields.Float(string='Diploma', )
     currency_id = fields.Many2one('res.currency', string=' Professional Experiences', default=5, )
     uom_id = fields.Many2one('product.uom', string=' Professional Experiences', )
     uom_id2 = fields.Many2one('product.uom', string=' Professional Experiences', )

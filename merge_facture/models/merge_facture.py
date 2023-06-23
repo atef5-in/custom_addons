@@ -40,21 +40,16 @@ class MergeFacturesLine(models.Model):
     price = fields.Float(string='Wizard')
     total = fields.Float(string='Wizard', store=True, readonly=True, compute='_compute_amount')
 
-    # def onchange_qty(self, cr, uid, ids, poteau_t, price, context=None):
-    #     result = {'value': {}}
-    #     ##this=self.browse(cr, uid, ids[0])
-    #     raise osv.except_osv(_('Error !'), _('No period defined for this date: %s ') % price)
-    #
-    #     result['value']['total'] = poteau_t * price
-    #
-    #     return result
-    #
-    # @api.onchange('product_id')
-    # def onchange_product_id(self):
-    #
-    #     self.code = self.product_id.default_code
-    #     self.name = self.product_id.name
-    #     self.uom_id = self.product_id.uom_id.id
+    # verify this onchange
+    @api.onchange('poteau_t', 'price')
+    def onchange_qty(self):
+        raise UserError(_('Error !\nNo period defined for this date: %s ') % self.price)
+
+    @api.onchange('product_id')
+    def onchange_product_id(self):
+        self.code = self.product_id.default_code
+        self.name = self.product_id.name
+        self.uom_id = self.product_id.uom_id.id
     #
     # def onchange_plans(self, cr, uid, ids, plans, context=None):
     #     result = {'value': {}}
@@ -1101,7 +1096,8 @@ class EbMergeFactures(models.Model):
                                             rec.date_start_r)],
                                                                                   order="id desc")
                                         if len(contract) > 1:
-                                            raise UserError(_('Error !\nVous devez avoir un seul contrat valide pour Mr/Mme %s !') % ligne_emp.name)
+                                            raise UserError(
+                                                _('Error !\nVous devez avoir un seul contrat valide pour Mr/Mme %s !') % ligne_emp.name)
 
                                         else:
                                             contract_valid = self.env['hr.contract'].browse(contract)
@@ -1123,9 +1119,9 @@ class EbMergeFactures(models.Model):
                                                 taux = %s
                                                WHERE project_id = %s AND invoice_id = %s
                                           """,
-                           (tuple([total_dep2]),
-                            tuple([tarif_client]), tuple([tarif_client - total_dep2]),
-                            tuple([0]), tuple([line.project_id.id]), self.ids[0]))
+                                    (tuple([total_dep2]),
+                                     tuple([tarif_client]), tuple([tarif_client - total_dep2]),
+                                     tuple([0]), tuple([line.project_id.id]), self.ids[0]))
             elif update == False and tarif_client != 0:
                 self.env.cr.execute("""  UPDATE project_profitability
                                                    SET total_depenses = %s,
@@ -1134,10 +1130,11 @@ class EbMergeFactures(models.Model):
                                                     taux = %s
                                                    WHERE project_id = %s AND invoice_id = %s
                                            """,
-                           (tuple([total_dep2]),
-                            tuple([tarif_client]), tuple([tarif_client - total_dep2]),
-                            tuple([((tarif_client - total_dep2) / tarif_client) * 100]), tuple([line.project_id.id]),
-                            self.ids[0]))
+                                    (tuple([total_dep2]),
+                                     tuple([tarif_client]), tuple([tarif_client - total_dep2]),
+                                     tuple([((tarif_client - total_dep2) / tarif_client) * 100]),
+                                     tuple([line.project_id.id]),
+                                     self.ids[0]))
         if this.line_ids and this.amount_untaxed == 0:
             raise UserError(_('Error !\nVous ne pouvez pas diviser par 0 !!!'))
 
@@ -1588,7 +1585,7 @@ class EbMergeFactures(models.Model):
                                         qty = kk.hours_r
                                     else:
                                         qty = kk.hours_r
-                                    at = self.env['base.facture.merge.line'].create({
+                                    self.env['base.facture.merge.line'].create({
                                         'wizard_id': self.id,
                                         'poteau_t': qty,
                                         'code': tt.name,
