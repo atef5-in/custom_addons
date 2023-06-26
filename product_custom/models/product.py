@@ -374,8 +374,8 @@ class ProductTemplate(models.Model):
                              help='Coefficient to convert default Unit of Measure to Unit of Sale\n'
                                   ' uos = uom * coeff')
     # digits_compute = dp.get_precision('Product UoS'),
-    mes_type = fields.Selection((('fixed', 'Fixed'), ('variable', 'Variable')), string='Measure Type',
-                                default='fixed', )
+    # mes_type = fields.Selection((('fixed', 'Fixed'), ('variable', 'Variable')), string='Measure Type',
+    #                             default='fixed', )
     company_id = fields.Many2one('res.company', string='Company', select=1)
     # image: all image fields are base64 encoded and PIL-supported
     image = fields.Binary(string='Image',

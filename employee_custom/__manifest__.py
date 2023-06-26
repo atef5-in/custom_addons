@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 {
     'name': "employee_custom",
 
@@ -24,8 +23,8 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-        'views/employee.xml',
         'views/contract.xml',
+        'views/employee.xml',
         'views/remuneration_av.xml',
     ],
     # only loaded in demonstration mode
@@ -34,3 +33,4 @@
     ],
     'application': True,
 }
+# -*- coding: utf-8 -*-
