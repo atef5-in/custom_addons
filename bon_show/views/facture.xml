@@ -1,0 +1,40 @@
+<odoo>
+    <data>
+        <record id="view_facture_form" model="ir.ui.view">
+            <field name="name">facture.form</field>
+            <field name="model">bon.show</field>
+            <field name="arch" type="xml">
+                <form>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_facture_tree" model="ir.ui.view">
+            <field name="name">facture.tree</field>
+            <field name="model">bon.show</field>
+            <field name="arch" type="xml">
+                <tree string="Groups">
+                    <field name="name" string="N° Facture"/>
+                    <field name="date" string="Date Doc"/>
+                    <field name="employee_id" string="Intervenant"/>
+                    <field name="state" string="Etat"/>
+                    <button name="action_open" string="Consulter/Editer Facture/F.T" type="object" icon="gtk-edit"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_facture" model="ir.actions.act_window">
+            <field name="name">Factures</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">bon.show</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('bon_show.view_facture_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('bon_show.view_facture_form')})]"/>
+        </record>
+
+        <menuitem id="menu_facture" name="Factures" sequence="-100" action="action_facture"/>
+
+    </data>
+</odoo>

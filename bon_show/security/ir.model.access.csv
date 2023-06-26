@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access.bon.show,access_bon_show,bon_show.model_bon_show,base.group_user,1,1,1,1
+access.bon.show.line2,access_bon_show_line2,bon_show.model_bon_show_line2,base.group_user,1,1,1,1
+access.bon.show.line1,access_bon_show_line1,bon_show.model_bon_show_line1,base.group_user,1,1,1,1
