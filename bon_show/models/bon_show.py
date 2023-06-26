@@ -2,6 +2,8 @@
 
 from odoo import models, fields, api
 import time
+from odoo.exceptions import UserError
+from odoo.tools.translate import _
 
 
 class BonShow(models.Model):
@@ -64,11 +66,18 @@ class BonShow(models.Model):
             else:
                 book.done1 = True
 
+    def _get_user1(self):
+
+        employee_id = self.env['res.users'].browse(self.env.uid).employee_id
+        if employee_id:
+            return employee_id.id
+        else:
+            return False
+
     @api.depends_context('uid')
     def _super_admin(self):
         for record in self:
             record._super_admin = self.env.user.has_group('project_custom.group_super_admin')
-
 
     categ_id = fields.Many2one('product.category', string='Tags', readonly=True,
                                states={'draft': [('readonly', False)]}, )
@@ -80,7 +89,7 @@ class BonShow(models.Model):
     partner_id = fields.Many2one('res.partner', 'Nationality', readonly=True,
                                  states={'draft': [('readonly', False)]}, )
     employee_id = fields.Many2one('hr.employee', string='Task', readonly=True,
-                                  states={'draft': [('readonly', False)]}, )
+                                  states={'draft': [('readonly', False)]}, default=lambda self: self._get_user1(), )
     # _get_user1
     gest_id = fields.Many2one('hr.employee', string='Task', readonly=True, states={'draft': [('readonly', False)]}, )
     project_id = fields.Many2one('project.project', string='Project', readonly=True,
@@ -97,7 +106,7 @@ class BonShow(models.Model):
     tps = fields.Char(string='tps', readonly=True, states={'draft': [('readonly', False)]}, )
     tvq = fields.Char(string='tvq', readonly=True, states={'draft': [('readonly', False)]}, )
     line_ids1 = fields.One2many('bon.show.line1', 'bon_id', string='Work done', readonly=True,
-                                 states={'draft': [('readonly', False)]}, )
+                                states={'draft': [('readonly', False)]}, )
     line_ids2 = fields.One2many('bon.show.line2', 'bon_id', string='Work done')
     pay_id = fields.Many2one('hr.payslip', string='Wizard', readonly=True,
                              states={'draft': [('readonly', False)]}, )
@@ -231,74 +240,428 @@ class BonShow(models.Model):
             'type': 'ir.actions.act_window',
             'view_type': 'form',
             'view_mode': 'form',
-            'target': 'new',
+            'target': 'current',
             'res_model': 'bon.show',
-            ##   'view_id': 1616,
+            'view_id': 1168,
             'res_id': self.ids[0],
             'context': {'active_id': self.ids[0]},
         }
+
+    def button_save_(self):
+
+        line_obj1 = self.env['bon.show.line2']
+        this = self[0]
+        for kk in this.line_ids2:
+            work = line_obj1.browse(kk.id)
+
+            employee_obj = self.env['hr.employee']
+            academic_obj = self.env['hr.academic']
+            roles_obj = self.env['res.users.role']
+
+            empl = employee_obj.browse(this.employee_id.id)
+
+            wage = 0
+            aca = academic_obj.search([('employee_id', '=', empl.id)])
+
+            if aca:
+                for list in aca:
+
+                    if list:
+                        ligne = academic_obj.browse(list)
+                        if ligne.curr_ids:
+
+                            for ll in ligne.curr_ids:
+                                if ligne.project_id and ll.project_id.id == ligne.project_id.id:
+                                    if ll.product_id and ll.uom_id:
+                                        if (ll.product_id.id == work.product_id.id):
+                                            wage = ll.amount
+                                            line_obj1.write(kk.id, {'wage': wage, 'uom_id_r': ll.uom_id.id,
+                                                                    'total_r': work.poteau_r * wage,
+                                                                    'amount_line': work.poteau_r * wage})
+
+                                            break
+                                        elif ll.product_id and ll.uom_id2:
+                                            if (ll.product_id.id == work.product_id.id):
+                                                wage = ll.amount2
+                                                line_obj1.write(kk.id,
+                                                                {'wage': wage, 'uom_id_r': ll.uom_id2.id,
+                                                                 'total_r': work.poteau_r * wage,
+                                                                 'amount_line': work.poteau_r * wage})
+                                                break
+
+                                    elif ll.product_id and ll.uom_id2:
+                                        if (ll.product_id.id == work.product_id.id):
+                                            wage = ll.amount2
+                                            line_obj1.write(kk.id, {'wage': wage, 'uom_id_r': ll.uom_id2.id,
+                                                                    'total_r': work.poteau_r * wage,
+                                                                    'amount_line': work.poteau_r * wage})
+                                            break
+
+                                    elif ll.categ_id and ll.uom_id:
+                                        if (ll.categ_id.id == work.categ_id.id):
+                                            wage = ll.amount
+                                            line_obj1.write(kk.id, {'wage': wage, 'uom_id_r': ll.uom_id.id,
+                                                                    'total_r': work.poteau_r * wage,
+                                                                    'amount_line': work.poteau_r * wage})
+                                            break
+                                        elif ll.categ_id and ll.uom_id2:
+                                            if (ll.categ_id.id == work.categ_id.id):
+                                                wage = ll.amount2
+                                                line_obj1.write(kk.id,
+                                                                {'wage': wage, 'total_r': work.poteau_r * wage,
+                                                                 'uom_id_r': ll.uom_id2.id,
+                                                                 'amount_line': work.poteau_r * wage})
+                                                break
+
+                                    elif ll.categ_id and ll.uom_id2:
+                                        if (ll.categ_id.id == work.categ_id.id):
+                                            wage = ll.amount2
+                                            line_obj1.write(kk.id, {'wage': wage, 'uom_id_r': ll.uom_id2.id,
+                                                                    'total_r': work.poteau_r * wage,
+                                                                    'amount_line': work.poteau_r * wage})
+                                            break
+                        if ligne.curr_ids:
+
+                            for ll in ligne.curr_ids:
+                                if ll.partner_id.id == ligne.partner_id.id:
+                                    if ll.product_id and ll.uom_id:
+                                        if (ll.product_id.id == work.product_id.id):
+                                            wage = ll.amount
+                                            line_obj1.write(kk.id, {'wage': wage, 'uom_id_r': ll.uom_id.id,
+                                                                    'total_r': work.poteau_r * wage,
+                                                                    'amount_line': work.poteau_r * wage})
+                                            break
+                                        elif ll.product_id and ll.uom_id2:
+                                            if (ll.product_id.id == work.product_id.id):
+                                                wage = ll.amount2
+                                                line_obj1.write(kk.id,
+                                                                {'wage': wage, 'uom_id_r': ll.uom_id2.id,
+                                                                 'total_r': work.poteau_r * wage,
+                                                                 'amount_line': work.poteau_r * wage})
+                                                break
+
+                                    elif ll.product_id and ll.uom_id2:
+                                        if (ll.product_id.id == work.product_id.id):
+                                            wage = ll.amount2
+                                            line_obj1.write(kk.id, {'wage': wage, 'uom_id_r': ll.uom_id2.id,
+                                                                    'total_r': work.poteau_r * wage,
+                                                                    'amount_line': work.poteau_r * wage})
+                                            break
+
+                                    elif ll.categ_id and ll.uom_id:
+                                        if (ll.categ_id.id == work.categ_id.id):
+                                            wage = ll.amount
+                                            line_obj1.write(kk.id, {'wage': wage, 'uom_id_r': ll.uom_id.id,
+                                                                    'total_r': work.poteau_r * wage,
+                                                                    'amount_line': work.poteau_r * wage})
+                                            break
+                                        elif ll.categ_id and ll.uom_id2:
+                                            if (ll.categ_id.id == work.categ_id.id):
+                                                wage = ll.amount2
+                                                line_obj1.write(kk.id,
+                                                                {'wage': wage, 'uom_id_r': ll.uom_id2.id,
+                                                                 'total_r': work.poteau_r * wage,
+                                                                 'amount_line': work.poteau_r * wage})
+                                                break
+
+                                    elif ll.categ_id and ll.uom_id2:
+                                        if (ll.categ_id.id == work.categ_id.id):
+                                            wage = ll.amount2
+                                            line_obj1.write(kk.id, {'wage': wage, 'uom_id_r': ll.uom_id2.id,
+                                                                    'total_r': work.poteau_r * wage,
+                                                                    'amount_line': work.poteau_r * wage})
+                                            break
+                        if ligne.curr_ids:
+
+                            for ll in ligne.curr_ids:
+
+                                if ll.product_id and ll.uom_id:
+                                    if (ll.product_id.id == work.product_id.id):
+                                        wage = ll.amount
+                                        line_obj1.write(kk.id, {'wage': wage, 'uom_id_r': ll.uom_id.id,
+                                                                'total_r': work.poteau_r * wage,
+                                                                'amount_line': work.poteau_r * wage})
+                                        break
+                                    elif ll.product_id and ll.uom_id2:
+                                        if (ll.product_id.id == work.product_id.id):
+                                            wage = ll.amount2
+                                            line_obj1.write(kk.id, {'wage': wage, 'uom_id_r': ll.uom_id2.id,
+                                                                    'total_r': work.poteau_r * wage,
+                                                                    'amount_line': work.poteau_r * wage})
+                                            break
+
+                                elif ll.product_id and ll.uom_id2:
+                                    if (ll.product_id.id == work.product_id.id):
+                                        wage = ll.amount2
+                                        line_obj1.write(kk.id, {'wage': wage, 'uom_id_r': ll.uom_id2.id,
+                                                                'total_r': work.poteau_r * wage,
+                                                                'amount_line': work.poteau_r * wage})
+                                        break
+
+                                elif ll.categ_id and ll.uom_id:
+                                    if (ll.categ_id.id == work.categ_id.id):
+                                        wage = ll.amount
+                                        line_obj1.write(kk.id, {'wage': wage, 'uom_id_r': ll.uom_id.id,
+                                                                'total_r': work.poteau_r * wage,
+                                                                'amount_line': work.poteau_r * wage})
+                                        break
+                                    elif ll.categ_id and ll.uom_id2:
+                                        if (ll.categ_id.id == work.categ_id.id):
+                                            wage = ll.amount2
+                                            line_obj1.write(kk.id, {'wage': wage, 'uom_id_r': ll.uom_id2.id,
+                                                                    'total_r': work.poteau_r * wage,
+                                                                    'amount_line': work.poteau_r * wage})
+                                            break
+
+                                elif ll.categ_id and ll.uom_id2:
+                                    if (ll.categ_id.id == work.categ_id.id):
+                                        wage = ll.amount2
+                                        line_obj1.write(kk.id, {'wage': wage, 'uom_id_r': ll.uom_id2.id,
+                                                                'total_r': work.poteau_r * wage,
+                                                                'amount_line': work.poteau_r * wage})
+                                        break
+
+                if wage == 0:
+
+                    roles = roles_obj.search([])
+                    for gp in roles:
+                        ro = roles_obj.browse(gp)
+                        if this.employee_id.id in ro.employee_ids.ids:
+                            aca = academic_obj.search([('role_id', '=', ro.id)])
+
+                            if aca:
+                                for list in aca:
+
+                                    if list:
+                                        ligne = academic_obj.browse(list)
+
+                                        if ligne.curr_ids:
+                                            for ll in ligne.curr_ids:
+                                                if ligne.project_id and ll.project_id.id == ligne.project_id.id:
+                                                    if ll.product_id and ll.uom_id:
+                                                        if (ll.product_id.id == work.product_id.id):
+                                                            wage = ll.amount
+                                                            line_obj1.write(kk.id,
+                                                                            {'wage': wage, 'uom_id_r': ll.uom_id.id,
+                                                                             'total_r': work.poteau_r * wage,
+                                                                             'amount_line': work.poteau_r * wage})
+                                                            break
+                                                        elif ll.product_id and ll.uom_id2:
+                                                            if (ll.product_id.id == work.product_id.id):
+                                                                wage = ll.amount2
+                                                                line_obj1.write(kk.id, {'wage': wage,
+                                                                                        'uom_id_r': ll.uom_id2.id,
+                                                                                        'total_r': work.poteau_r * wage,
+                                                                                        'amount_line': work.poteau_r * wage})
+                                                                break
+
+                                                    elif ll.product_id and ll.uom_id2:
+                                                        if (ll.product_id.id == work.product_id.id):
+                                                            wage = ll.amount2
+                                                            line_obj1.write(kk.id,
+                                                                            {'wage': wage, 'uom_id_r': ll.uom_id2.id,
+                                                                             'total_r': work.poteau_r * wage,
+                                                                             'amount_line': work.poteau_r * wage})
+                                                            break
+
+                                                    elif ll.categ_id and ll.uom_id:
+                                                        if (ll.categ_id.id == work.categ_id.id):
+                                                            wage = ll.amount
+                                                            line_obj1.write(kk.id,
+                                                                            {'wage': wage, 'uom_id_r': ll.uom_id.id,
+                                                                             'total_r': work.poteau_r * wage,
+                                                                             'amount_line': work.poteau_r * wage})
+                                                            break
+                                                        elif ll.categ_id and ll.uom_id2:
+                                                            if (ll.categ_id.id == work.categ_id.id):
+                                                                wage = ll.amount2
+                                                                line_obj1.write(kk.id, {'wage': wage,
+                                                                                        'uom_id_r': ll.uom_id2.id,
+                                                                                        'total_r': work.poteau_r * wage,
+                                                                                        'amount_line': work.poteau_r * wage})
+                                                                break
+
+                                                    elif ll.categ_id and ll.uom_id2:
+                                                        if (ll.categ_id.id == work.categ_id.id):
+                                                            wage = ll.amount2
+                                                            line_obj1.write(kk.id,
+                                                                            {'wage': wage, 'uom_id_r': ll.uom_id2.id,
+                                                                             'total_r': work.poteau_r * wage,
+                                                                             'amount_line': work.poteau_r * wage})
+                                                            break
+                                        if ligne.curr_ids:
+
+                                            for ll in ligne.curr_ids:
+                                                if ligne.project_id is False and ll.partner_id.id == ligne.partner_id.id:
+                                                    if ll.product_id and ll.uom_id:
+                                                        if (ll.product_id.id == work.product_id.id):
+                                                            wage = ll.amount
+                                                            line_obj1.write(kk.id,
+                                                                            {'wage': wage, 'uom_id_r': ll.uom_id.id,
+                                                                             'total_r': work.poteau_r * wage,
+                                                                             'amount_line': work.poteau_r * wage})
+                                                            break
+                                                        elif ll.product_id and ll.uom_id2:
+                                                            if (ll.product_id.id == work.product_id.id):
+                                                                wage = ll.amount2
+                                                                line_obj1.write(kk.id, {'wage': wage,
+                                                                                        'uom_id_r': ll.uom_id2.id,
+                                                                                        'total_r': work.poteau_r * wage,
+                                                                                        'amount_line': work.poteau_r * wage})
+                                                                break
+
+                                                    elif ll.product_id and ll.uom_id2:
+                                                        if (ll.product_id.id == work.product_id.id):
+                                                            wage = ll.amount2
+                                                            line_obj1.write(kk.id,
+                                                                            {'wage': wage, 'uom_id_r': ll.uom_id2.id,
+                                                                             'total_r': work.poteau_r * wage,
+                                                                             'amount_line': work.poteau_r * wage})
+                                                            break
+
+                                                    elif ll.categ_id and ll.uom_id:
+                                                        if (ll.categ_id.id == work.categ_id.id):
+                                                            wage = ll.amount
+                                                            line_obj1.write(kk.id,
+                                                                            {'wage': wage, 'uom_id_r': ll.uom_id.id,
+                                                                             'total_r': work.poteau_r * wage,
+                                                                             'amount_line': work.poteau_r * wage})
+                                                            break
+                                                        elif ll.categ_id and ll.uom_id2:
+                                                            if (ll.categ_id.id == work.categ_id.id):
+                                                                wage = ll.amount2
+                                                                line_obj1.write(kk.id, {'wage': wage,
+                                                                                        'uom_id_r': ll.uom_id2.id,
+                                                                                        'total_r': work.poteau_r * wage,
+                                                                                        'amount_line': work.poteau_r * wage})
+                                                                break
+
+                                                    elif ll.categ_id and ll.uom_id2:
+                                                        if (ll.categ_id.id == work.categ_id.id):
+                                                            wage = ll.amount2
+                                                            line_obj1.write(kk.id,
+                                                                            {'wage': wage, 'uom_id_r': ll.uom_id2.id,
+                                                                             'total_r': work.poteau_r * wage,
+                                                                             'amount_line': work.poteau_r * wage})
+                                                            break
+                                        if ligne.curr_ids:
+
+                                            for ll in ligne.curr_ids:
+
+                                                if ll.product_id and ll.uom_id:
+                                                    if (ll.product_id.id == work.product_id.id):
+                                                        wage = ll.amount
+                                                        line_obj1.write(kk.id,
+                                                                        {'wage': wage, 'uom_id_r': ll.uom_id.id,
+                                                                         'total_r': work.poteau_r * wage,
+                                                                         'amount_line': work.poteau_r * wage})
+                                                        break
+
+                                                    elif ll.product_id and ll.uom_id2:
+                                                        if (ll.product_id.id == work.product_id.id):
+                                                            wage = ll.amount2
+                                                            line_obj1.write(kk.id,
+                                                                            {'wage': wage, 'uom_id_r': ll.uom_id2.id,
+                                                                             'total_r': work.poteau_r * wage,
+                                                                             'amount_line': work.poteau_r * wage})
+                                                            break
+
+                                                elif ll.product_id and ll.uom_id2:
+                                                    if (ll.product_id.id == work.product_id.id):
+                                                        wage = ll.amount2
+                                                        line_obj1.write(kk.id,
+                                                                        {'wage': wage, 'uom_id_r': ll.uom_id2.id,
+                                                                         'total_r': work.poteau_r * wage,
+                                                                         'amount_line': work.poteau_r * wage})
+                                                        break
+
+                                                elif ll.categ_id and ll.uom_id:
+                                                    if (ll.categ_id.id == work.categ_id.id):
+
+                                                        wage = ll.amount
+                                                        line_obj1.write(kk.id,
+                                                                        {'wage': wage, 'uom_id_r': ll.uom_id.id,
+                                                                         'total_r': work.poteau_r * wage,
+                                                                         'amount_line': work.poteau_r * wage})
+                                                        break
+
+                                                    elif ll.categ_id and ll.uom_id2:
+                                                        if (ll.categ_id.id == work.categ_id.id):
+                                                            wage = ll.amount2
+                                                            line_obj1.write(kk.id,
+                                                                            {'wage': wage, 'uom_id_r': ll.uom_id2.id,
+                                                                             'total_r': work.poteau_r * wage,
+                                                                             'amount_line': work.poteau_r * wage})
+                                                            break
+
+                                                elif ll.categ_id and ll.uom_id2:
+                                                    if (ll.categ_id.id == work.categ_id.id):
+                                                        wage = ll.amount2
+                                                        line_obj1.write(kk.id,
+                                                                        {'wage': wage, 'uom_id_r': ll.uom_id2.id,
+                                                                         'total_r': work.poteau_r * wage,
+                                                                         'amount_line': work.poteau_r * wage})
+                                                        break
+
+            if work.uom_id_r.id == 5:
+                line_obj1.write(kk.id, {'total_r': work.hours_r * wage, 'amount_line': work.hours_r * wage})
+
+        return True
 
     def button_approve(self):
 
         line_obj1 = self.env['bon.show.line2']
         emp_obj = self.env['hr.employee']
-        this = self.browse(cr, uid, ids[0], context)
+        this = self[0]
         self.button_save_()
         for tt in this.line_ids2:
             this_line = line_obj1.browse(tt.id)
 
             if this_line.line_id:
                 if this_line.line_id.done1 is True:
-                    raise osv.except_osv(_('Erreur'), _('Les Lignes sont déja facturées!'))
+                    raise UserError(_('Erreur\nLes Lignes sont déja facturées!'))
 
             if this_line.send is False:
                 valid = 0
         if this.mail_send is False:
-            raise osv.except_osv(_('Erreur'),
-                                 _('Vous devez choisir OUI ou NON pour l"envoi de courriel!(Onglet Informations Mail)'))
+            raise UserError(
+                _('Erreur\nVous devez choisir OUI ou NON pour l"envoi de courriel!(Onglet Informations Mail)'))
         if this.mail_send == 'yes':
             if this.notes is False:
-                self.write(cr, uid, ids, {'notes': ' '}, context=context)
+                self.write({'notes': ' '})
             if not this.employee_ids:
-                raise osv.except_osv(_('Erreur !'), _('Vous devez sélectionner un destinataire.'))
+                raise UserError(_('Erreur !\nVous devez sélectionner un destinataire.'))
             else:
                 kk = ''
                 for line in this.employee_ids.ids:
-                    emp = emp_obj.browse(cr, uid, line)
+                    emp = emp_obj.browse(line)
                     kk = kk + emp.work_email + ','
-                    ##raise osv.except_osv(_('Error !'), _('No period defined for this date: %s !\nPlease create one.')%kk)
-                self.write(cr, uid, ids, {'to': kk}, context=context)
+                self.write({'to': kk})
                 if this.employee_ids1:
 
                     ll = ''
                     for line in this.employee_ids1.ids:
-                        emp = emp_obj.browse(cr, uid, line)
+                        emp = emp_obj.browse(line)
                         ll = ll + emp.work_email + ','
-                        ##raise osv.except_osv(_('Error !'), _('No period defined for this date: %s !\nPlease create one.')%kk)
-                    self.write(cr, uid, ids, {'cc': ll}, context=context)
+                    self.write({'cc': ll})
                 if this.employee_ids2:
 
                     mm = ''
                     for line in this.employee_ids2.ids:
-                        emp = emp_obj.browse(cr, uid, line)
+                        emp = emp_obj.browse(line)
                         mm = mm + emp.work_email + ','
-                        ##raise osv.except_osv(_('Error !'), _('No period defined for this date: %s !\nPlease create one.')%kk)
-                    self.write(cr, uid, ids, {'cci': mm}, context=context)
+                    self.write({'cci': mm})
 
-            self.pool.get('email.template').send_mail(cr, uid, 29, ids[0], force_send=True, context=context)
+            self.env['email.template'].send_mail(29, force_send=True)
 
-        ## if valid==0:
-        self.write(cr, uid, ids[0], {'state': 'waiting'}, context=context)
+        self.write({'state': 'waiting'})
         if this.type == 'Facture':
-            dep1 = self.pool.get('bon.show').search(cr, uid, [('employee_id', '=', this.employee_id.id),
-                                                              ('name', '=', this.name.replace(" ", "")),
-                                                              ('id', '!=', this.id)])
+            dep1 = self.env['bon.show'].search([('employee_id', '=', this.employee_id.id),
+                                                ('name', '=', this.name.replace(" ", "")),
+                                                ('id', '!=', this.id)])
             if dep1:
-                raise osv.except_osv(_('Action Impossible!'),
-                                     _('Une Facture avec le même numéro existe déjà! Facture N°:%s') % this.name)
-
-        ##        else:
-        ##            self.button_approve_s(cr, uid, ids, context)
+                raise UserError(
+                    _('Action Impossible!\nUne Facture avec le même numéro existe déjà! Facture N°:%s') % this.name)
 
         return {
             'name': ('Préparation Feuille de Temps/Facture'),
@@ -307,14 +670,228 @@ class BonShow(models.Model):
             'view_mode': 'form',
             'target': 'current',
             'res_model': 'bon.show',
-            'res_id': ids[0],
+            'res_id': self.ids[0],
             'context': {},
             'domain': []
         }
 
+    def button_approve_s(self):
+
+        hr_payslip = self.env['hr.payslip']
+        hr_payslip_line = self.env['hr.payslip.line']
+        bgl_obj = self.env['base.group.merge.line']
+        line_obj1 = self.env['bon.show.line2']
+        work_line = self.env['project.task.work.line']
+
+        employee_obj = self.pool.get('hr.employee')
+        task_obj_line = self.pool.get('project.task.work.line')
+        this = self[0]
+
+        line = this.employee_id.id
+        empl = employee_obj.browse(line)
+        if empl.job_id.id == 1:
+            name = 'Feuille de Temps'
+        else:
+            name = 'Facture'
+
+        self.env.cr.execute(
+            "select cast(substr(number, 6, 8) as integer) from hr_payslip where number is not Null and name=%s and EXTRACT(YEAR FROM date_from)=%s  order by number desc limit 1",
+            (name, this.date_from.year))
+        q3 = self.env.cr.fetchone()
+        if q3:
+            res1 = q3[0] + 1
+        else:
+            res1 = '001'
+
+        pay_id = hr_payslip.create({'employee_id': line,
+                                    'date_from': this.date_from,
+                                    'date_to': this.date_to,
+                                    'contract_id': this.employee_id.contract_id.id,
+                                    'name': name,
+                                    'number': str(str(this.date_from[:4]) + '-' + str(str(res1).zfill(3))),
+                                    'struct_id': 1,
+                                    'currency_id': 5,
+                                    })
+
+        for tt in this.line_ids2:
+
+            this_line = line_obj1.browse(tt.id)
+            if tt.work_id:
+                name = tt.work_id.name
+                code = tt.work_id.product_id.default_code
+                unit = tt.uom_id_r.id
+            else:
+                name = tt.product_id.name
+                code = tt.product_id.default_code
+                unit = tt.uom_id_r.id
+            hr_payslip_line.create({'employee_id': this.employee_id.id,
+                                    'contract_id': this.employee_id.contract_id.id,
+                                    'name': name,
+                                    'code': code,
+                                    'category_id': 1,
+                                    'quantity': tt.hours_r,
+                                    'slip_id': pay_id,
+                                    'rate': 100,
+                                    'work_id': tt.work_id.id,
+                                    'uom_id': unit,
+                                    'salary_rule_id': 1,
+                                    'amount': tt.wage,
+                                    })
+            if this_line.send is False:
+                work_line.create({'employee_id': this.employee_id.id,
+                                  'name': name,
+                                  'categ_id': this_line.product_id.categ_id.id,
+                                  'project_id': this_line.project_id.id or False,
+                                  'partner_id': this_line.partner_id.id or False,
+                                  'zo': str(this_line.zone),
+                                  'sect': str(this_line.secteur),
+                                  'date_start_r': this_line.date_start_r,
+                                  'hours_r': this_line.hours_r,
+                                  'note': this_line.note,
+                                  'state': 'close',
+                                  'sequence': 1,
+                                  'poteau_r': this_line.poteau_r,
+                                  'uom_id_r': this_line.uom_id_r.id or False,
+                                  'uom_id': this_line.uom_id_r.id or False,
+                                  'date': this.date,
+                                  'done1': True,
+                                  'done3': True,
+                                  })
+
+            task_obj_line.write(this_line.line_id.id,
+                                {'state': 'valid', 'paylist_id': pay_id, 'done1': True, 'group_id': this.id})
+            if task_obj_line.browse(this_line.line_id.id).group_id2:
+                tt = bgl_obj.search([('line_id', '=', this_line.line_id.id)])
+                if tt:
+                    self.env.cr.execute('update base_group_merge_automatic_wizard set  state=%s where id=%s', (
+                        'invoiced', task_obj_line.browse(this_line.line_id.id).group_id2.id), )
+        if empl.job_id.id == 1:
+            self.env['email.template'].send_mail(32, force_send=True)
+
+        self.write({'state': 'close', 'pay_id': pay_id})
+
+        return True
+
+    def button_reopen(self):
+
+        self.write({'state': 'draft'})
+        return {
+            'name': ('Préparation Feuille de Temps/Facture'),
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'target': 'new',
+            'res_model': 'bon.show',
+            'res_id': self.ids[0],
+            'context': {},
+            'domain': []
+        }
+
+    def button_preview(self):
+
+        list = []
+        current = self[0]
+
+        self.env.cr.execute(
+            'select id from project_task_work_line where employee_id= %s and date>=%s and date <=%s and done3 is True and done1 is False',
+            (current.employee_id.id, current.date_from, current.date_to))
+        project_id = self.env.cr.fetchall()
+
+        if current.state != 'draft':
+            raise UserError(_("Action Impossible!\nAction possible qu'en statut brouillon!"))
+
+        if project_id:
+            for tt in project_id:
+                list.append(tt)
+
+        return {
+            'name': ('Préparation Feuille de Temps/Facture'),
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'target': 'popup',
+            'res_model': 'base.work_line.wizard',
+            'context': {'default_work_line_ids': list, 'work_line_ids': list},
+            'domain': [('default_work_line_ids', 'in', list)]
+        }
+
+    def load_(self):
+
+        """
+        Action that shows the list of (non-draft) account moves from
+        the selected journals and periods, so the user can review
+        the renumbered account moves.
+        """
+
+        current = self[0]
+
+        self.env.cr.execute(
+            'select id from project_task_work_line where employee_id= %s and date>=%s and date <=%s and done3 is True and done1 is False',
+            (current.employee_id.id, current.date_from, current.date_to))
+        project_id = self.env.cr.fetchall()
+
+        if current.state != 'draft':
+            raise UserError(_("Action Impossible!\nAction possible qu'en statut brouillon!"))
+        if project_id:
+            for tt in project_id:
+                s2 = self.env['project.task.work.line'].browse(tt)
+                s3 = self.env['bon.show.line2'].search([('line_id', '=', s2.id)])
+                if not s3:
+                    if current.employee_id.job_id.name in u'Employé':
+                        uom = 5
+                        self.write({'type': 'Feuille de Temps'})
+                    else:
+                        uom = s2.uom_id_r.id
+                        self.write({'type': 'Facture'})
+                    self.env['bon.show.line2'].create({
+                        'task_id': s2.task_id.id,
+                        'categ_id': s2.work_id.categ_id.id,
+                        'product_id': s2.product_id.id,
+                        'name': s2.name,
+                        'date_start': s2.date_start,
+                        'date_end': s2.date_end,
+                        'date_start_r': s2.date_start_r,
+                        'date_end_r': s2.date_end_r,
+                        'poteau_t': s2.poteau_t,
+                        'poteau_r': s2.poteau_r,
+                        'color': s2.color,
+                        'color1': s2.color1,
+                        'hours_r': s2.hours_r,
+                        'total_t': s2.total_t,
+                        'project_id': s2.work_id.project_id.id,
+                        'partner_id': s2.work_id.project_id.partner_id.id,
+                        'bon_id': current.id,
+                        'gest_id': s2.gest_id.id or False,
+                        'employee_id': s2.employee_id.id or False,
+                        'uom_id': uom or s2.uom_id.id,
+                        'uom_id_r': uom or s2.uom_id.id,
+                        'ftp': s2.ftp,
+                        'state': s2.state,
+                        'work_id': s2.work_id.id,
+                        'line_id': s2.id,
+                        'zone': s2.zone,
+                        'done': True,
+                        'send': True,
+                        'secteur': s2.secteur,
+
+                    })
+
+        return True
+
 
 class BonShowLine2(models.Model):
     _name = "bon.show.line2"
+
+    def _disponible(self):
+
+        for book in self:
+            if self.uid == 1:
+                book.done = True
+
+            elif book.bon_id.state == 'draft' and book.send is False:
+                book.done = True
+            else:
+                book.done = False
 
     bon_id = fields.Many2one('bon.show', string='Task')
     name = fields.Char(string='Work summary', )
