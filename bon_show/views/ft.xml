@@ -25,11 +25,11 @@
                                        readonly="1"/>
                                 <field name="gest_id" required="1"
                                        options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
-                                       string="Superviseur" on_change="onchange_gest_id(gest_id,employee_id)"/>
+                                       string="Superviseur"/>
                                 <field name="mail_send" string="Envoi Email?"/>
                                 <field name="id" string="ID"/>
                                 <field name="type" string="Type" invisible="1"/>
-                                <field name="date" string="Date Doc" on_change="onchange_date_(date,employee_id)"/>
+                                <field name="date" string="Date Doc"/>
                                 <field name="date_p" string="Echéance Paiement" readonly="1"/>
                                 <field name="project_id" string="Projet"
                                        options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
@@ -61,12 +61,10 @@
                                     <field name="line_ids2" nolabel="1" context="{'default_employee_id':employee_id}">
                                         <tree editable="Bottom" colors="purple:done== True;">
                                             <field name="employee_id" string="min_id"
-                                                   on_change="onchange_employee_id(employee_id,parent.type)"
                                                    invisible="1"/>
                                             <field name="product_id"
                                                    options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
-                                                   on_change="onchange_product_id(product_id)" string="Type de Service"
-                                                   attrs="{'readonly': [('done','=', False)]}"/>
+                                                   string="Type de Service" attrs="{'readonly': [('done','=', False)]}"/>
                                             <field name="work_id" string="Travaux" readonly="1"
                                                    options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
                                                    invisible="1"/>
@@ -140,8 +138,8 @@
                                         <field name="employee_ids" string="A" widget='many2many_tags'
                                                options="{'no_create': True}"/>
                                         <newline/>
-<!--                                        <button name="button_load_mail" type="object" string=""-->
-<!--                                                icon="gtk-leave-fullscreen" class="btn-primary"/>-->
+                                        <button name="button_load_mail" type="object" string=""
+                                                icon="gtk-leave-fullscreen" class="btn-primary"/>
                                         <newline/>
                                         <field name="employee_ids1" string="CC" widget='many2many_tags'
                                                options="{'no_create': True}"/>

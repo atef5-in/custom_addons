@@ -4,10 +4,12 @@ from odoo import models, fields, api
 import time
 from odoo.exceptions import UserError
 from odoo.tools.translate import _
+from datetime import datetime, date, timedelta
 
 
 class BonShow(models.Model):
     _name = 'bon.show'
+    _rec_name = 'name'
 
     def _amount_all(self):
 
@@ -48,7 +50,7 @@ class BonShow(models.Model):
 
         for book in self:
             if book.gest_id and book.gest_id.user_id:
-                if book.gest_id.user_id.id == self.uid or self.uid == 1:
+                if book.gest_id.user_id.id == self.env.user.id or self.env.user.id == 1:
                     book.done = True
                 else:
                     book.done = False
@@ -59,7 +61,7 @@ class BonShow(models.Model):
 
         for book in self:
             if book.employee_id and book.employee_id.user_id:
-                if book.employee_id.user_id.id == self.uid or self.uid == 1:
+                if book.employee_id.user_id.id == self.env.user.id or self.env.user.id == 1:
                     book.done1 = True
                 else:
                     book.done1 = False
@@ -83,14 +85,13 @@ class BonShow(models.Model):
                                states={'draft': [('readonly', False)]}, )
     date_from = fields.Date(string='date de', select=True, readonly=True, states={'draft': [('readonly', False)]},
                             default=time.strftime('%Y-01-01'))
-    date_to = fields.Date(string=u'date a', select=True, readonly=True, states={'draft': [('readonly', False)]}, )
-    # fields.date.context_today
+    date_to = fields.Date(string=u'date a', select=True, readonly=True, states={'draft': [('readonly', False)]},
+                          default=lambda *a: time.strftime('%Y-%m-%d'), )
     send = fields.Boolean(string='Litigation', readonly=True, states={'draft': [('readonly', False)]}, )
     partner_id = fields.Many2one('res.partner', 'Nationality', readonly=True,
                                  states={'draft': [('readonly', False)]}, )
     employee_id = fields.Many2one('hr.employee', string='Task', readonly=True,
                                   states={'draft': [('readonly', False)]}, default=lambda self: self._get_user1(), )
-    # _get_user1
     gest_id = fields.Many2one('hr.employee', string='Task', readonly=True, states={'draft': [('readonly', False)]}, )
     project_id = fields.Many2one('project.project', string='Project', readonly=True,
                                  states={'draft': [('readonly', False)]}, )
@@ -189,7 +190,7 @@ class BonShow(models.Model):
         ('Cheepest', 'Moins Couteux '),
     ],
         string='Status', copy=False, readonly=True, states={'draft': [('readonly', False)]}, )
-    date = fields.Date(string=u'date a')
+    date = fields.Date(string=u'date a', default=lambda *a: time.strftime('%Y-%m-%d'))
     # fields.date.context_today
     date_p = fields.Date(string=u'date a', select=True, readonly=True, states={'draft': [('readonly', False)]}, )
     amount_untaxed = fields.Float(compute='_amount_all', string='Company Currency',
@@ -668,6 +669,7 @@ class BonShow(models.Model):
             'type': 'ir.actions.act_window',
             'view_type': 'form',
             'view_mode': 'form',
+            'view_id': 1168,
             'target': 'current',
             'res_model': 'bon.show',
             'res_id': self.ids[0],
@@ -683,8 +685,8 @@ class BonShow(models.Model):
         line_obj1 = self.env['bon.show.line2']
         work_line = self.env['project.task.work.line']
 
-        employee_obj = self.pool.get('hr.employee')
-        task_obj_line = self.pool.get('project.task.work.line')
+        employee_obj = self.env['hr.employee']
+        task_obj_line = self.env['project.task.work.line']
         this = self[0]
 
         line = this.employee_id.id
@@ -878,6 +880,84 @@ class BonShow(models.Model):
 
         return True
 
+    def button_load_mail(self):
+
+        this = self[0]
+
+        self.env.cr.execute("INSERT INTO bon_show_hr_employee_rel  VALUES (%s,%s)"
+                            % (this.id, this.gest_id.id))
+
+        return {
+            'name': ('Préparation Feuille de Temps/Facture'),
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'target': 'current',
+            'res_model': 'bon.show',
+            'res_id': self.ids[0],
+            'context': {},
+            'domain': []
+        }
+
+    @api.onchange('gest_id', 'employee_id')
+    def onchange_gest_id(self):
+        result = {'value': {}}
+        if self.gest_id and self.employee_id:
+            gest_user = self.env['hr.employee'].search([('id', '=', self.gest_id.id)]).user_id.id
+            emp_user = self.env['hr.employee'].search([('id', '=', self.employee_id.id)]).user_id.id
+            if emp_user == self.env.user.id or self.env.user.id == 1:
+                result['value']['done1'] = True
+
+            else:
+                result['value']['done1'] = False
+            if gest_user == self.env.user.id or self.env.user.id == 1:
+                result['value']['done'] = True
+            else:
+                result['value']['done'] = False
+            result['value']['tps'] = self.env['hr.employee'].search([('id', '=', self.employee_id.id)]).tps
+            result['value']['tvq'] = self.env['hr.employee'].search([('id', '=', self.employee_id.id)]).tvq
+        return result
+
+    @api.onchange('date', 'employee_id')
+    def onchange_date_(self):
+
+        result = {'value': {}}
+        emp_user = self.env['hr.employee'].search([('id', '=', self.employee_id.id)]).contract_id.schedule_pay
+
+        if self.employee_id and self.date:
+            days = {'mon': 0, 'tue': 1, 'wed': 2, 'thu': 3, 'fri': 4, 'sat': 5, 'sun': 6}
+            delta_day = timedelta(days=1)
+            day_count = 0
+            if emp_user == 'monthly':
+                date_2 = datetime.strptime(str(self.date), "%Y-%m-%d")
+
+                end_date = date_2 + timedelta(days=30)
+                df = end_date
+                while df.weekday() == days['sun'] or df.weekday() == days['sat']:
+                    day_count += 1
+                    df += delta_day
+
+            elif emp_user == 'biweekly':
+                date_2 = datetime.strptime(str(self.date), "%Y-%m-%d")
+
+                end_date = date_2 + timedelta(days=15)
+                df = end_date
+                while df.weekday() == days['sun'] or df.weekday() == days['sat']:
+                    day_count += 1
+                    df += delta_day
+            else:
+                date_2 = datetime.strptime(str(self.date), "%Y-%m-%d")
+
+                end_date = date_2 + timedelta(days=7)
+                df = end_date
+                while df.weekday() == days['sun'] or df.weekday() == days['sat']:
+                    day_count += 1
+                    df += delta_day
+
+            result['value']['date_p'] = df
+
+        return result
+
 
 class BonShowLine2(models.Model):
     _name = "bon.show.line2"
@@ -947,6 +1027,41 @@ class BonShowLine2(models.Model):
     line_id = fields.Many2one('project.task.work.line', string='Tags')
     categ_id = fields.Many2one('product.category', string='Tags')
     done = fields.Boolean(compute='_disponible', string='done', default=1)
+
+    @api.onchange('employee_id', 'bon_id.type')
+    def onchange_employee_id(self):
+        res = {}
+        r = []
+        dep1 = self.env['hr.academic'].search([('employee_id', '=', self.employee_id.id)]).ids
+        if dep1:
+            for ll in dep1:
+                c = self.env['hr.academic'].browse(ll).categ_id.id
+                r.append(c)
+                print(r)
+                if r:
+                    for nn in r:
+                        if self.bon_id.type == 'Feuille de Temps':
+                            dep = self.env['product.product'].search([('categ_id', '=', nn), ('is_ft', '=', True)])
+                        else:
+
+                            dep = self.env['product.product'].search([('categ_id', '=', nn), ('is_invoice', '=', True)])
+
+                        if dep:
+                            for jj in dep:
+                                r.append(jj)
+            res['domain'] = {'product_id': [('id', 'in', r)]}
+        return res
+
+    @api.onchange('product_id')
+    def onchange_product_id(self):
+        product_obj = self.env['product.product']
+        vals = {}
+
+        if self.product_id:
+            prod = product_obj.browse(self.product_id)
+            vals.update({'categ_id': prod.categ_id.id, 'uom_id_r': prod.uos_id.id, 'uom_id': prod.uos_id.id})
+
+        return {'value': vals}
 
 
 class BonShowLine1(models.Model):
