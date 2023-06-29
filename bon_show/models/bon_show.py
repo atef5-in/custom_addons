@@ -234,6 +234,15 @@ class BonShow(models.Model):
     employee_ids2 = fields.Many2many('hr.employee', 'bon_show_hr_employee_rel2', 'bon_show_id', 'hr_employee_id',
                                      string='Legumes', readonly=True, states={'draft': [('readonly', False)]}, )
 
+    def unlink(self):
+        for rec in self:
+            if rec.state not in ['draft']:
+                raise UserError(_('Warning!\nImpossible de supprimer une Facture ou F/T si le statut n"est pas brouillon!'))
+            for kk in rec.line_ids2:
+                self.env.cr.execute("DELETE FROM bon_show_line2 WHERE bon_id=%s ", (rec.id,))
+
+        return super(BonShow, self).unlink()
+
     def action_open(self):
 
         return {
