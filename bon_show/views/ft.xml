@@ -36,7 +36,7 @@
                             </group>
                             <group>
                                 <field name="year_no" string="Année"/>
-                                <field name="week_no" string="Semaine" on_change="onchange_week_(year_no,week_no)"/>
+                                <field name="week_no" string="Semaine"/>
                                 <field name="date_from" string="Date de" help="Date de Réalisation Prévue"/>
                                 <field name="date_to" string="Date A" help="Date de Réalisation Prévue"/>
                             </group>
@@ -80,10 +80,8 @@
                                             <field name="secteur" string="Secteur"
                                                    attrs="{'readonly': [('done','=', False)]}"/>
                                             <field name="date_start_r" string="Date Début" widget="date"
-                                                   on_change="onchange_date_to_(date_end_r,date_start_r,employee_id)"
                                                    attrs="{'readonly': [('done','=', False)]}"/>
                                             <field name="date_end_r" string="Date Fin" widget="date"
-                                                   on_change="onchange_date_to_(date_end_r,date_start_r,employee_id)"
                                                    invisible="1"/>
                                             <field name="categ_id" string="département" invisible="1"/>
                                             <field name="name" string="Notes"

@@ -5,6 +5,8 @@ import time
 from odoo.exceptions import UserError
 from odoo.tools.translate import _
 from datetime import datetime, date, timedelta
+import datetime as dt
+import math
 
 
 class BonShow(models.Model):
@@ -13,7 +15,6 @@ class BonShow(models.Model):
 
     def _amount_all(self):
 
-        res = {}
         tax_obj = self.env['account.tax']
 
         tvp_obj = tax_obj.browse(8)
@@ -79,7 +80,7 @@ class BonShow(models.Model):
     @api.depends_context('uid')
     def _super_admin(self):
         for record in self:
-            record._super_admin = self.env.user.has_group('project_custom.group_super_admin')
+            record.sadmin = self.env.user.has_group('project_custom.group_super_admin')
 
     categ_id = fields.Many2one('product.category', string='Tags', readonly=True,
                                states={'draft': [('readonly', False)]}, )
@@ -212,8 +213,7 @@ class BonShow(models.Model):
                           states={'draft': [('readonly', False)]}, )
     done1 = fields.Boolean(compute='_disponible1', string='done', readonly=True,
                            states={'draft': [('readonly', False)]}, )
-    sadmin = fields.Boolean(compute='_super_admin', string='done', readonly=True,
-                            states={'draft': [('readonly', False)]}, )
+    sadmin = fields.Boolean(compute='_super_admin', string='done', )
     notes = fields.Text(string='year', readonly=True, states={'draft': [('readonly', False)]}, )
     type = fields.Char(string='Type', readonly=True, states={'draft': [('readonly', False)]}, )
     to = fields.Char(string='year', readonly=True, states={'draft': [('readonly', False)]}, )
@@ -243,7 +243,7 @@ class BonShow(models.Model):
             'view_mode': 'form',
             'target': 'current',
             'res_model': 'bon.show',
-            'view_id': 1168,
+            'view_id': self.env.ref('bon_show.view_ft_form').id,
             'res_id': self.ids[0],
             'context': {'active_id': self.ids[0]},
         }
@@ -669,7 +669,7 @@ class BonShow(models.Model):
             'type': 'ir.actions.act_window',
             'view_type': 'form',
             'view_mode': 'form',
-            'view_id': 1168,
+            'view_id': self.env.ref('bon_show.view_ft_form').id,
             'target': 'current',
             'res_model': 'bon.show',
             'res_id': self.ids[0],
@@ -918,6 +918,25 @@ class BonShow(models.Model):
             result['value']['tvq'] = self.env['hr.employee'].search([('id', '=', self.employee_id.id)]).tvq
         return result
 
+    ##########################################################################
+    # Renumber form/action
+    ##########################################################################
+    @api.onchange('year_no', 'week_no')
+    def onchange_week_(self):
+
+        result = {'value': {}}
+
+        d = date(int(self.year_no), 1, 1)
+        if (d.weekday() <= 3):
+            d = d - dt.timedelta(d.weekday())
+        else:
+            d = d + dt.timedelta(7 - d.weekday())
+        dlt = dt.timedelta(days=(int(self.week_no) - 1) * 7)
+
+        result['value']['date_from'] = d + dlt
+        result['value']['date_to'] = d + dlt + dt.timedelta(days=6)
+        return result
+
     @api.onchange('date', 'employee_id')
     def onchange_date_(self):
 
@@ -1063,6 +1082,36 @@ class BonShowLine2(models.Model):
 
         return {'value': vals}
 
+    @api.onchange('date_end_r', 'date_start_r', 'employee_id')
+    def onchange_date_to_(self):
+        """
+        Update the number_of_days.
+        """
+
+        date_to = self.date_end_r
+        date_from = self.date_start_r
+
+        # date_to has to be greater than date_from
+        if (date_from and date_to) and (date_from > date_to):
+            raise UserError(_('Warning!\nThe start date must be anterior to the end date.'))
+
+        result = {'value': {}}
+        holiday_obj = self.env['hr.holidays']
+
+        # Compute and update the number of days
+
+        if (date_to and date_from) and (date_from <= date_to):
+            diff_day = holiday_obj._get_number_of_days(date_from, date_to)
+            result['value']['color1'] = round(math.floor(diff_day)) + 1
+
+        else:
+
+            result['value']['color1'] = 0
+            result['value']['total_r'] = 0
+            result['value']['amount_line'] = 0
+
+        return result
+
 
 class BonShowLine1(models.Model):
     _name = 'bon.show.line1'
@@ -1147,3 +1196,7 @@ class BonShowLine1(models.Model):
     color1 = fields.Integer(string='Nbdays')
     uom_id = fields.Many2one('product.uom', string='Unit of Measure', required=True)
     uom_id_r = fields.Many2one('product.uom', string='Unit of Measure')
+
+
+class HrHolidays(models.Model):
+    _name = 'hr.holidays'

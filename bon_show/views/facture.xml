@@ -4,7 +4,152 @@
             <field name="name">facture.form</field>
             <field name="model">bon.show</field>
             <field name="arch" type="xml">
-                <form>
+                <form string="Report Options">
+                    <header>
+                        <button name="button_approve" type="object" string="Dde Validation" class="oe_highlight"
+                                confirm="Envoyer au superviseur pour approbation?"
+                                attrs="{'invisible':[ '|' ,('state','in',('waiting','open','cancelled','close')),('done1','=',False)]}"/>
+                        <button name="button_approve_s" type="object" string="Valider Facture/F.T(S)"
+                                class="oe_highlight" confirm="Valider le Traitement?"
+                                attrs="{'invisible':[ '|' ,('state','in',('draft','open','close')),('done','=',False)]}"/>
+                        <button name="button_reopen" type="object" string="Annuler Facture/F.T" class="oe_highlight"
+                                confirm="Annuler la demande de Validation?"
+                                attrs="{'invisible':[ '|' ,('state','in',('draft','open','cancelled','close')),('done','=',False)]}"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,open,close,treat,paid"
+                               statusbar_colors="{&quot;draft&quot;:&quot;blue&quot;}" readonly="1"/>
+                    </header>
+                    <group string="Filtre de Recherche des Factures/F.T">
+                        <group>
+                            <field name="employee_id" string="Bénéficiaire"
+                                   options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                   readonly="1"/>
+                            <field name="gest_id" required="1"
+                                   options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                   string="Superviseur"/>
+                            <field name="mail_send" string="Envoi Email?"/>
+                            <field name="type" string="Type" invisible="1"/>
+                            <field name="date" string="Date Doc"/>
+                            <field name="date_p" string="Echéance Paiement" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="year_no" string="Année"/>
+                            <field name="week_no" string="Semaine"/>
+                            <field name="date_from" string="Date de" help="Date de Réalisation Prévue"/>
+                            <field name="date_to" string="Date A" help="Date de Réalisation Prévue"/>
+                        </group>
+                        <group string="Entete Facture" attrs="{'invisible': [('type','=','Feuille de Temps')]}">
+                            <field name="name" string="N°  Facture" attrs="{'required': [('type','=','Facture')]}"/>
+                            <field name="tps" string="TPS" attrs="{'invisible': [('type','!=','Facture')]}"/>
+                            <field name="tvq" string="TVQ" attrs="{'invisible': [('type','!=','Facture')]}"/>
+                            <field name="done" string="done" invisible="1"/>
+                            <field name="done1" string="done1" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Bons A déclarer">
+                            <group>
+                                <group>
+                                    <button name="button_preview" string="Aperçu" type="object" class="oe_highlight"
+                                            icon="fa-find"/>
+                                    <button name="load_" string="Charger Mes Bons Réalisés" type="object"
+                                            class="oe_highlight" icon="fa-thin fa-arrow-down-to-line"/>
+                                </group>
+                                <newline/>
+                                <field name="line_ids2" nolabel="1" context="{'default_employee_id':employee_id}">
+                                    <tree editable="Bottom" colors="purple:done== True;">
+                                        <field name="employee_id" string="min_id"
+                                               invisible="1"/>
+                                        <field name="product_id"
+                                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                               string="Type de Service" attrs="{'readonly': [('done','=', False)]}"/>
+                                        <field name="work_id" string="Travaux" readonly="1"
+                                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                               invisible="1"/>
+                                        <field name="project_id" string="Projet"
+                                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                               attrs="{'readonly': [('done','=', False)]}"/>
+                                        <field name="partner_id" string="Client" domain="[('customer', '=', True)]"
+                                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                               attrs="{'readonly': [('done','=', False)]}"/>
+                                        <field name="done" string="min_id" invisible="1"/>
+                                        <field name="zone" string="Zone" invisible="0"
+                                               attrs="{'readonly': [('done','=', False)]}"/>
+                                        <field name="secteur" string="Secteur" invisible="0"
+                                               attrs="{'readonly': [('done','=', False)]}"/>
+                                        <field name="date_start_r" string="Date Début" widget="date"
+                                               attrs="{'readonly': [('done','=', False)]}"/>
+                                        <field name="date_end_r" string="Date Fin" widget="date"
+                                               invisible="1"/>
+                                        <field name="categ_id" string="département" invisible="1"/>
+                                        <field name="name" string="Notes"
+                                               attrs="{'readonly': [('done','=', False)]}"/>
+                                        <field name="color1" string="Durée(Jours)" sum="Prev Hours" invisible="1"/>
+                                        <field name="hours_r" string="Durée(Heurs)" widget="float_time"
+                                               sum="Prev Hours" attrs="{'readonly': [('done','=', False)]}"/>
+                                        <field name="poteau_r" string="Qté/Unité" sum="Prev Hours" widget="char"
+                                               attrs="{'readonly': [('done','=', False)]}"/>
+                                        <field name="uom_id" invisible="1"/>
+                                        <field name="uom_id_r" string="Unité"
+                                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                               attrs="{'readonly': [('done','=', False)]}"/>
+                                        <field name="wage" string="T.H" readonly="1"/>
+                                        <field name="amount_line" string="Total" sum="Prev Hours" readonly="1"/>
+                                        <field name="state" string="line" invisible="1"/>
+                                        <field name="send" string="Notes" invisible="1"/>
+                                        <button name="" string="Bons Validés" type="object" icon="STOCK_APPLY"
+                                                attrs="{'invisible': [('send','=', False)]}" readonly="1"/>
+                                        <field name="work_id" string="line" invisible="1"/>
+                                        <field name="done" string="T" invisible="1"/>
+                                    </tree>
+                                </field>
+                                <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+                                    <button name="button_save_" type="object" string="Calculer" icon="fa-light fa-calculator"
+                                            class="oe_highlight"/>
+                                    <newline/>
+                                    <field name="amount_untaxed" widget="monetary"
+                                           options="{'currency_field': 'currency_id'}" string="Total H.T"
+                                           attrs="{'invisible': [('type','=','Feuille de Temps')]}"/>
+                                    <field name="amount_tvq" widget="monetary"
+                                           options="{'currency_field': 'currency_id'}" string="TVQ"
+                                           attrs="{'invisible': [('type','=','Feuille de Temps')]}"/>
+                                    <field name="amount_tps" widget="monetary"
+                                           options="{'currency_field': 'currency_id'}" string="TPS"
+                                           attrs="{'invisible': [('type','=','Feuille de Temps')]}"/>
+                                    <div class="oe_subtotal_footer_separator oe_inline">
+                                        <label for="amount_total" string="Total"
+                                               attrs="{'invisible': [('type','=','Feuille de Temps')]}"/>
+                                    </div>
+                                    <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator"
+                                           widget="monetary" options="{'currency_field': 'currency_id'}"
+                                           attrs="{'invisible': [('type','=','Feuille de Temps')]}"/>
+                                </group>
+                                <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Informations Mails">
+                            <group>
+                                <group>
+                                    <field name="employee_ids" string="A" widget='many2many_tags'
+                                           options="{'no_create': True}"/>
+                                    <newline/>
+                                    <button name="button_load_mail" type="object" string=""
+                                            icon="gtk-leave-fullscreen" class="btn-primary"/>
+                                    <newline/>
+                                    <field name="employee_ids1" string="CC" widget='many2many_tags'
+                                           options="{'no_create': True}"/>
+                                    <field name="employee_ids2" string="CCi" widget='many2many_tags'
+                                           options="{'no_create': True}"/>
+                                    <field name="to" string="To" invisible="1"/>
+                                    <field name="cc" string="cc" invisible="1"/>
+                                    <field name="cci" string="cci" invisible="1"/>
+                                </group>
+                                <group>
+                                    <field name="notes" string="Commentaires"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
                 </form>
             </field>
         </record>
@@ -18,7 +163,7 @@
                     <field name="date" string="Date Doc"/>
                     <field name="employee_id" string="Intervenant"/>
                     <field name="state" string="Etat"/>
-                    <button name="action_open" string="Consulter/Editer Facture/F.T" type="object" icon="gtk-edit"/>
+                    <button name="action_open" string="Consulter/Editer Facture/F.T" type="object" icon="fa-edit"/>
                 </tree>
             </field>
         </record>
