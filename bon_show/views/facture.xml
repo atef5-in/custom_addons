@@ -96,8 +96,8 @@
                                         <field name="amount_line" string="Total" sum="Prev Hours" readonly="1"/>
                                         <field name="state" string="line" invisible="1"/>
                                         <field name="send" string="Notes" invisible="1"/>
-                                        <button name="" string="Bons Validés" type="object" icon="STOCK_APPLY"
-                                                attrs="{'invisible': [('send','=', False)]}" readonly="1"/>
+<!--                                        <button name="" string="Bons Validés" type="object" icon="STOCK_APPLY"-->
+<!--                                                attrs="{'invisible': [('send','=', False)]}" readonly="1"/>-->
                                         <field name="work_id" string="line" invisible="1"/>
                                         <field name="done" string="T" invisible="1"/>
                                     </tree>

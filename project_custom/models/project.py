@@ -385,14 +385,12 @@ class ProjectCustom(models.Model):
     def action_open_project(self):
 
         if self.is_kit is True:
-
-            print('true')
             return {
                 'name': ('Consulter Projet'),
                 'type': 'ir.actions.act_window',
                 'view_type': 'form',
                 'view_mode': 'form',
-                'view_id': 1142,
+                'view_id': self.env.ref('project_custom.view_custom_project_form').id,
                 'target': 'current',
                 'res_model': 'project.project',
                 'res_id': self.ids[0],
@@ -401,13 +399,12 @@ class ProjectCustom(models.Model):
                 'domain': []
             }
         else:
-            print('false')
             return {
                 'name': ('Consulter Projet'),
                 'type': 'ir.actions.act_window',
                 'view_type': 'form',
                 'view_mode': 'form',
-                'view_id': 1149,
+                'view_id': self.env.ref('project_custom.view_kit_false').id,
                 'target': 'current',
                 'res_model': 'project.project',
                 'res_id': self.ids[0],
@@ -472,7 +469,7 @@ class ProjectCustom(models.Model):
                 'target': 'current',
                 'res_model': 'project.project',
                 'res_id': self.ids[0],
-                'view_id': 1142,
+                'view_id': self.env.ref('project_custom.view_custom_project_form').id,
                 'context': {},
                 'domain': []
             }
@@ -485,7 +482,7 @@ class ProjectCustom(models.Model):
                 'target': 'current',
                 'res_model': 'project.project',
                 'res_id': self.ids[0],
-                'view_id': 1142,
+                'view_id': self.env.ref('project_custom.view_kit_false').id,
                 'context': {},
                 'domain': []
             }
