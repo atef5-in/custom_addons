@@ -944,3 +944,28 @@ class BaseInvoiceMergeAutomaticWizard(models.Model):
 class BaseFlowMergeLine(models.Model):
     _name = "base.flow.merge.line"
     work_id = fields.Many2one('project.task.work', string='Tache')
+
+
+class BonShowInherit(models.Model):
+    _inherit = 'bon.show'
+
+    work_id = fields.Many2one('project.task.work', 'Nationality', readonly=True,
+                              states={'draft': [('readonly', False)]}, )
+    line_ids = fields.Many2many('project.task.work.line', 'bon_show_project_task_work_line_rel', 'bon_show_id',
+                                'project_task_work_line_id', string='Legumes', readonly=True,
+                                states={'draft': [('readonly', False)]}, )
+
+
+class BonShowLine2Inherit(models.Model):
+    _inherit = 'bon.show.line2'
+
+    work_id = fields.Many2one('project.task.work', string='Nationality')
+    line_id = fields.Many2one('project.task.work.line', string='Tags')
+
+
+class BonShowLine1Inherit(models.Model):
+    _inherit = 'bon.show.line1'
+
+    work_id = fields.Many2one('project.task.work', string='Task')
+    line_id = fields.Many2one('project.task.work.line', string='Task')
+

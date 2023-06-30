@@ -1209,3 +1209,4 @@ class BonShowLine1(models.Model):
 
 class HrHolidays(models.Model):
     _name = 'hr.holidays'
+
