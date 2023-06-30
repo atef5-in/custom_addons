@@ -133,26 +133,28 @@
                                 <field name="secteur" string="Secteur" readonly="1"/>
                             </group>
                             <group readonly="1">
-                                <field name="poteau_r" string="Qté/Unité Réalisée" readonly="1"/>
-                                <field name="progress_qty" string="% Qté" widget="progressbar"/>
-                                <field name="hours" sum="Prev Hours" string="Total Hrs Prévues" invisible="0"
-                                       readonly="1"/>
-                                <field name="hours_r" widget="float_time" sum="Spent Hours" string="Total Hrs Réalisées"
-                                       invisible="0" readonly="1"/>
-                                <field name="progress_me" string="% Délai" widget="progressbar"/>
-                                <field name="total_t" sum="Spent Hours" string="Total à Facturer T" invisible="0"
-                                       readonly="1"/>
-                                <field name="total_r" sum="Spent Hours" string="Total à Facturer R" invisible="0"
-                                       readonly="1"/>
-                                <field name="progress_amount" string="% Montant" widget="progressbar"/>
-                                <field name="user_id" string="USER" invisible="1"/>
-                                <field name="categ_id" string="categ" placeholder="Description..." invisible="1"/>
-                                <field name="note" string="Note" placeholder="Description..."/>
-                                <!--                                <group string="Actions Administrateurs">-->
-                                <!--                                    <field name="display" string="Réalisable" help="Décochoer si irréalisable!"-->
-                                <!--                                           readonly="0"/>-->
-                                <!--                                    <field name="active" string="Actif" help="Décochoer si vous voulez archiver!"/>-->
-                                <!--                                </group>-->
+                                <group>
+                                    <field name="poteau_r" string="Qté/Unité Réalisée" readonly="1"/>
+                                    <field name="progress_qty" string="% Qté" widget="progressbar"/>
+                                    <field name="hours" sum="Prev Hours" string="Total Hrs Prévues" invisible="0"
+                                           readonly="1"/>
+                                    <field name="hours_r" widget="float_time" sum="Spent Hours"
+                                           string="Total Hrs Réalisées"
+                                           invisible="0" readonly="1"/>
+                                    <field name="progress_me" string="% Délai" widget="progressbar"/>
+                                    <field name="total_t" sum="Spent Hours" string="Total à Facturer T" invisible="0"
+                                           readonly="1"/>
+                                    <field name="total_r" sum="Spent Hours" string="Total à Facturer R" invisible="0"
+                                           readonly="1"/>
+                                    <field name="progress_amount" string="% Montant" widget="progressbar"/>
+                                    <field name="user_id" string="USER" invisible="1"/>
+                                    <field name="categ_id" string="categ" placeholder="Description..." invisible="1"/>
+                                    <field name="note" string="Note" placeholder="Description..."/>
+                                </group>
+                                <group string="Actions Administrateurs">
+                                    <field name="display" string="Réalisable" readonly="0"/>
+                                    <field name="active" string="Actif"/>
+                                </group>
                             </group>
                         </group>
                         <group>

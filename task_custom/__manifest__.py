@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Task",
+    'name': "Task Custom",
 
     'summary': """
         Project Task""",

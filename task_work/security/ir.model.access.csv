@@ -7,7 +7,6 @@ access.project.status,access_project_status,task_work.model_project_status,base.
 access.link.type,access_link_type,task_work.model_link_type,base.group_user,1,1,1,1
 access.hr.payslip,access_hr_payslip,task_work.model_hr_payslip,base.group_user,1,1,1,1
 access.project.issue,access_project_issue,task_work.model_project_issue,base.group_user,1,1,1,1
-access.bon.show,access_bon_show,task_work.model_bon_show,base.group_user,1,1,1,1
 access.base.group.merge.automatic.wizard,access_base_group_merge_automatic_wizard,task_work.model_base_group_merge_automatic_wizard,base.group_user,1,1,1,1
 access.base.task.merge.automatic.wizard,access_base_task_merge_automatic_wizard,task_work.model_base_task_merge_automatic_wizard,base.group_user,1,1,1,1
 access.project.issue.version,access_project_issue_version,task_work.model_project_issue_version,base.group_user,1,1,1,1

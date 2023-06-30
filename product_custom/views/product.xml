@@ -34,7 +34,6 @@
                                 <field name="is_devide" string="Est Divisible?"/>
                                 <field name="is_load" string="Est généné?"/>
                                 <field name="ean13" invisible="1"/>
-                                <field name="state" invisible="1"/>
                                 <field name="product_tmpl_id" invisible="1"/>
                                 <field name="is_purchase" invisible="1"/>
                                 <field name="is_gantt" string="Affichable Gantt?"/>
@@ -63,7 +62,6 @@
                     <field name="is_devide" string="Est Divisible?"/>
                     <field name="is_load" string="Est généné?"/>
                     <field name="ean13" invisible="1"/>
-                    <field name="state" invisible="1"/>
                     <field name="product_tmpl_id" invisible="1"/>
                     <field name="is_purchase" invisible="1"/>
                     <field name="is_gantt" string="Affichable Gantt?"/>

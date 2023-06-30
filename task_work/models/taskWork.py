@@ -909,8 +909,8 @@ class ProjectStatus(models.Model):
 
 class LinkType(models.Model):
     _name = "link.type"
-    work_id = fields.Many2one('project.task.work', string='project ID')
 
+    work_id = fields.Many2one('project.task.work', string='project ID')
     ftp = fields.Char()
     name = fields.Char()
     source = fields.Char()
@@ -918,11 +918,6 @@ class LinkType(models.Model):
 
 class HrPayslip(models.Model):
     _name = "hr.payslip"
-    name = fields.Char('Name')
-
-
-class BonShow(models.Model):
-    _name = "bon.show"
     name = fields.Char('Name')
 
 

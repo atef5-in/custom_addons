@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Project",
+    'name': "Project Custom",
 
     'summary': """
         Project Custom""",

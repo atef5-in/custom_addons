@@ -1,5 +1,5 @@
 {
-    'name': "employee_custom",
+    'name': "Employee Custom",
 
     'summary': """
     Employee Custom""",
@@ -18,7 +18,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'project', 'hr'],
+    'depends': ['base', 'project', 'hr', 'partner_custom'],
 
     # always loaded
     'data': [
