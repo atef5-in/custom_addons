@@ -1,0 +1,35 @@
+<odoo>
+
+    <record id="project_status_view_tree" model="ir.ui.view">
+        <field name="name">project.status.tree</field>
+        <field name="model">project.status</field>
+        <field name="arch" type="xml">
+            <tree string="Status Permis">
+                <field name="id"/>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+    <record id="project_status_view_form" model="ir.ui.view">
+        <field name="name">project.status.form</field>
+        <field name="model">project.status</field>
+        <field name="arch" type="xml">
+            <form string="Ajouter Status Permis">
+                <group col="4">
+                    <field name="name"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_project_status" model="ir.actions.act_window">
+        <field name="name">Status Permis</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">project.status</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+    </record>
+
+    <menuitem id="menu_project_status" name="Status Permis" sequence="-10" action="action_project_status"/>
+
+</odoo>

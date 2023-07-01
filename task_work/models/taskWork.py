@@ -898,8 +898,10 @@ class RiskManagementCategory(models.Model):
 
 
 class ProjectStatus(models.Model):
-    _name = "project.status"
-    name = fields.Char('Name')
+    _name = 'project.status'
+    _description = 'Project Status'
+
+    name = fields.Char(String='Status Permis')
 
 
 class LinkType(models.Model):
