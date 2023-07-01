@@ -2,7 +2,6 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access.project.task.work,access_project_task_work,task_work.model_project_task_work,base.group_user,1,1,1,1
 access.project.task.work.line,access_project_task_work_line,task_work.model_project_task_work_line,base.group_user,1,1,1,1
 access.risk.management.category,access_risk_management_category,task_work.model_risk_management_category,base.group_user,1,1,1,1
-access.product.kit,access_product_kit,task_work.model_product_kit,base.group_user,1,1,1,1
 access.project.status,access_project_status,task_work.model_project_status,base.group_user,1,1,1,1
 access.link.type,access_link_type,task_work.model_link_type,base.group_user,1,1,1,1
 access.hr.payslip,access_hr_payslip,task_work.model_hr_payslip,base.group_user,1,1,1,1

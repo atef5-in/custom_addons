@@ -897,11 +897,6 @@ class RiskManagementCategory(models.Model):
     name = fields.Char()
 
 
-class ProductKit(models.Model):
-    _name = "product.kit"
-    name = fields.Char('Name')
-
-
 class ProjectStatus(models.Model):
     _name = "project.status"
     name = fields.Char('Name')

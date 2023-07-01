@@ -407,14 +407,3 @@ class ProjectTaskType(models.Model):
     lines_id = fields.Many2one('agreement.fees.amortization_line', string='Tags')
     qty = fields.Float(string='Quantity')
 
-
-class ProductKit(models.Model):
-    _name = "product.kit"
-    name = fields.Char('Name')
-    type_ids = fields.One2many('product.product', 'rel_id')
-
-
-class Product(models.Model):
-    _inherit = 'product.product'
-    rel_id = fields.Many2one('product.kit')
-    is_load = fields.Boolean(default=1)

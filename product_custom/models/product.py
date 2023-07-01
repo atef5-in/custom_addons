@@ -316,6 +316,13 @@ class ProductAttributeLine(models.Model):
 # Products
 # ----------------------------------------------------------
 
+
+class ProductKit(models.Model):
+    _name = "product.kit"
+    name = fields.Char('Name')
+    type_ids = fields.One2many('product.product', 'rel_id')
+
+
 class ProductProduct(models.Model):
     _inherit = 'product.product'
     # _parent_name = "parent_id"
@@ -454,6 +461,7 @@ class ProductProduct(models.Model):
     #         result[product.id] = price_extra
     #     return result
 
+    rel_id = fields.Many2one('product.kit')
     name = fields.Char(string='Internal Reference', select=True)
     is_devide = fields.Boolean(string='Active')
     is_invoice = fields.Boolean('Active')
