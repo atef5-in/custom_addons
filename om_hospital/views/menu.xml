@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<odoo>
-
-    <menuitem id="menu_hospital_root" name="Hospital" sequence="0" web_icon="om_hospital,static/description/icon.png"/>
-    <menuitem id="menu_patient_master" name="Patients" parent="menu_hospital_root" sequence="0"/>
-    <menuitem id="menu_doctor_master" name="Doctors" parent="menu_hospital_root" sequence="10"/>
-
-</odoo>
