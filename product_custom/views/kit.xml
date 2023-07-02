@@ -1,0 +1,58 @@
+<odoo>
+    <data>
+        <record id="view_kit_form" model="ir.ui.view">
+            <field name="name">kit.form</field>
+            <field name="model">product.kit</field>
+            <field name="arch" type="xml">
+                <form string="Picking Types">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" string="Nom Kit"/>
+                                <field name="description"/>
+                                <field name="type_ids" string="Liste des Articles">
+                                    <tree>
+                                        <field name="default_code" string="code"/>
+                                        <field name="name" string="Nom Service"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group>
+                                <field name="categ_id" string="Département" required="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_kit_tree" model="ir.ui.view">
+            <field name="name">kit.tree</field>
+            <field name="model">product.kit</field>
+            <field name="arch" type="xml">
+                <tree string="Picking Types">
+                    <field name="id" string="ID"/>
+                    <field name="categ_id" string="Département"/>
+                    <field name="name"/>
+                    <field name="description"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_kit" model="ir.actions.act_window">
+            <field name="name">Liste des Kits</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.kit</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first kit !
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_kit" name="Liste des Kits" sequence="-750" action="action_kit"/>
+
+    </data>
+</odoo>

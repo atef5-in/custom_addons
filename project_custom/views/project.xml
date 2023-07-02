@@ -130,8 +130,8 @@
                                            options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
                                            invisible="1"/>
                                     <field name="kit_id" string="Kit"
+                                           domain="[('categ_id','=',categ_id)]"
                                            options="{'no_create': True, 'no_create_edit':True}"/>
-                                    <!--                                     domain="[('categ_id','=',categ_id)]"-->
                                     <field name="name" string="Nom Kit"/>
                                     <field name="date_start" string="Date Début" widget="date"/>
                                     <field name="date_end" string="Date Fin" widget="date"/>

@@ -319,8 +319,73 @@ class ProductAttributeLine(models.Model):
 
 class ProductKit(models.Model):
     _name = "product.kit"
-    name = fields.Char('Name')
-    type_ids = fields.One2many('product.product', 'rel_id')
+    _description = 'Product kit'
+
+    name = fields.Char(string='Nom Kit', required=True)
+    type_ids = fields.Many2many('product.product', string='product', readonly=False)
+    description = fields.Text(string='Description')
+    categ_id = fields.Many2one('product.category', string='product')
+
+    # def button_compute(self, cr, uid, ids, context=None, set_total=False):
+    #     ##self.calculer(self, uid, ids,context)
+    #     this = self.browse(cr, uid, ids[0], context=context)
+    #     proj_t_w_obj = self.pool.get('project.task.work')
+    #     proj_obj = self.pool.get('project.project')
+    #     for inv in self.browse(cr, uid, ids, context=context):
+    #         for dd in inv.type_id.ids:
+    #             pr = self.pool.get('product.product').browse(cr, uid, dd, context=context)
+    #             p1 = proj_obj.search(cr, uid, [('state', '=', 'open'), ('is_kit', '=', True)], limit=0, order='id',
+    #                                  context=context)
+    #             for ss in p1:
+    #                 tt = proj_t_w_obj.search(cr, uid,
+    #                                          [('project_id', '=', ss), ('kit_id', '=', inv.id), ('product_id', '=', dd)],
+    #                                          limit=0, order='id', context=context)
+    #
+    #                 if not tt:
+    #                     tt1 = proj_t_w_obj.search(cr, uid, [('project_id', '=', ss), ('kit_id', '=', inv.id)], limit=0,
+    #                                               order='id', context=context)
+    #                     if tt1:
+    #                         l1 = proj_t_w_obj.browse(cr, uid, tt1[0], context=context)
+    #                         sql = self.pool.get('project.task.work').create(cr, uid, {
+    #                             'task_id': l1.task_id.id,
+    #                             'categ_id': l1.categ_id.id,
+    #                             'product_id': dd,
+    #                             'name': this.name,
+    #                             'date_start': l1.date_start,
+    #                             'date_end': l1.date_end,
+    #                             'poteau_t': l1.poteau_t,
+    #                             'poteau_i': l1.poteau_r,
+    #                             'color': l1.color,
+    #                             'etape': l1.etape,
+    #                             'zone': l1.zone,
+    #                             'secteur': l1.secteur,
+    #                             'total_t': l1.total_t,  ##*work.employee_id.contract_id.wage
+    #                             'hours': l1.hours,
+    #                             'project_id': l1.project_id.id,
+    #                             'partner_id': l1.project_id.partner_id.id,
+    #
+    #                             'state_id': l1.project_id.state_id.id or False,
+    #                             'city': l1.project_id.city,
+    #                             'gest_id': l1.gest_id.id or False,
+    #                             'reviewer_id1': l1.reviewer_id1.id or False,
+    #                             'coordin_id1': l1.coordin_id1.id or False,
+    #                             'coordin_id2': l1.coordin_id2.id or False,
+    #                             'coordin_id3': l1.coordin_id3.id or False,
+    #                             'coordin_id4': l1.coordin_id4.id or False,
+    #                             'uom_id': l1.uom_id.id,
+    #                             'uom_id_r': l1.uom_id_r.id,
+    #                             'ftp': l1.ftp,
+    #                             'state': 'draft',
+    #                             'sequence': l1.sequence,
+    #                             'display': True,
+    #                             'active': True,
+    #                             'gest_id3': l1.gest_id3.id or False,
+    #                             'current_gest': l1.current_gest.id or False,
+    #                             'current_sup': l1.current_sup.id or False
+    #
+    #                         }, context=context)
+    #
+    #     return True
 
 
 class ProductProduct(models.Model):
@@ -461,7 +526,6 @@ class ProductProduct(models.Model):
     #         result[product.id] = price_extra
     #     return result
 
-    rel_id = fields.Many2one('product.kit')
     name = fields.Char(string='Internal Reference', select=True)
     is_devide = fields.Boolean(string='Active')
     is_invoice = fields.Boolean('Active')

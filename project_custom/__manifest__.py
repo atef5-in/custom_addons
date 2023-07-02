@@ -25,7 +25,6 @@
         'security/ir.model.access.csv',
         'security/security.xml',
         'views/project.xml',
-        'views/kit.xml',
         'views/not_kit.xml',
     ],
     # only loaded in demonstration mode
