@@ -291,7 +291,7 @@ class HrEmployee(models.Model):
     def onchange_company(self):
         address_id = False
         if self.company_id:
-            company_id = self.env['res.company'].browse(self.company_id)
+            company_id = self.env['res.company'].browse(self.company_id.id)
             address = self.env['res.partner'].address_get([company_id.partner_id.id], ['default'])
             address_id = address and address['default'] or False
         return {'value': {'address_id': address_id}}
