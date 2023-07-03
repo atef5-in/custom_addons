@@ -201,7 +201,7 @@ class TaskWork(models.Model):
 
         for book in self:
             if book.gest_id and book.gest_id.user_id:
-                if book.gest_id.user_id.id == self.uid or self.uid == 1 or 100 in book.gest_id.user_id.groups_id.ids:  ##or book..user_id.id==uid:
+                if book.gest_id.user_id.id == self.env.user.id or self.env.user.id == 1 or 100 in book.gest_id.user_id.groups_id.ids:  
                     book.done33 = True
                 else:
                     book.done33 = False
