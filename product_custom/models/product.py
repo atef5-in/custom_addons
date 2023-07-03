@@ -316,7 +316,12 @@ class ProductAttributeLine(models.Model):
 # Products
 # ----------------------------------------------------------
 
+class ProductTemplate(models.Model):
+    _inherit = 'product.template'
 
+    name = fields.Char(required=False)
+
+    
 class ProductKit(models.Model):
     _name = "product.kit"
     _description = 'Product kit'
