@@ -321,7 +321,7 @@ class ProductTemplate(models.Model):
 
     name = fields.Char(required=False)
 
-    
+
 class ProductKit(models.Model):
     _name = "product.kit"
     _description = 'Product kit'
