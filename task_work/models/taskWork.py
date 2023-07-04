@@ -201,7 +201,7 @@ class TaskWork(models.Model):
 
         for book in self:
             if book.gest_id and book.gest_id.user_id:
-                if book.gest_id.user_id.id == self.env.user.id or self.env.user.id == 1 or 100 in book.gest_id.user_id.groups_id.ids:  
+                if book.gest_id.user_id.id == self.env.user.id or self.env.user.id == 1 or 100 in book.gest_id.user_id.groups_id.ids:
                     book.done33 = True
                 else:
                     book.done33 = False
@@ -531,8 +531,8 @@ class TaskWork(models.Model):
                              states={'draft': [('readonly', False)]}, )
     uom_id_r = fields.Many2one('product.uom', string='Unité Réelle', readonly=True,
                                states={'affect': [('readonly', False)]}, )
-    w_id = fields.Many2one('base.task.merge.automatic.wizard', string='Company', readonly=True,
-                           states={'draft': [('readonly', False)]}, )
+    # w_id = fields.Many2one('base.task.merge.automatic.wizard', string='Company', readonly=True,
+    #                        states={'draft': [('readonly', False)]}, )
     pourc = fields.Float('Pour C', readonly=True, states={'draft': [('readonly', False)]}, )
     rank = fields.Char('Rank', readonly=True, states={'draft': [('readonly', False)]}, )
     display = fields.Boolean(string='Réalisable')
@@ -923,9 +923,9 @@ class ProjectIssue(models.Model):
     name = fields.Char('Name')
 
 
-class BaseTaskMergeAutomaticWizard(models.Model):
-    _name = "base.task.merge.automatic.wizard"
-    name = fields.Char('Name')
+# class BaseTaskMergeAutomaticWizard(models.Model):
+#     _name = "base.task.merge.automatic.wizard"
+#     name = fields.Char('Name')
 
 
 class BaseGroup(models.Model):
