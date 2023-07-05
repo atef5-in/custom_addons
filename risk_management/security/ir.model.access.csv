@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access.risk.management.category,access_risk_management_category,risk_management.model_risk_management_category,base.group_user,1,1,1,1
+access.risk.management.proximity,access_risk_management_proximity,risk_management.model_risk_management_proximity,base.group_user,1,1,1,1
+access.risk.management.response.category,access_risk_management_response_category,risk_management.model_risk_management_response_category,base.group_user,1,1,1,1

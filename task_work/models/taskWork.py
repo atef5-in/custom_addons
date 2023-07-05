@@ -369,8 +369,6 @@ class TaskWork(models.Model):
     date_end_r = fields.Date(string='Date Fin Réelle', index="1", readonly=True,
                              states={'draft': [('readonly', False)]}, )
     ex_state = fields.Char(string='ex')
-    r_id = fields.Many2one('risk.management.category', string='r ID', readonly=True,
-                           states={'draft': [('readonly', False)]}, )
     project_id = fields.Many2one('project.project', string='Projet', ondelete='set null', select=True, readonly=True,
                                  states={'draft': [('readonly', False)]}, )
     task_id = fields.Many2one('project.task', string='Tache', ondelete='cascade', select="1", readonly=True,
@@ -890,11 +888,6 @@ class ProjectIssueVersion(models.Model):
 class BaseGroupMergeAutomaticWizard(models.Model):
     _name = "base.group.merge.automatic.wizard"
     name = fields.Char('Name')
-
-
-class RiskManagementCategory(models.Model):
-    _name = "risk.management.category"
-    name = fields.Char()
 
 
 class ProjectStatus(models.Model):

@@ -212,7 +212,6 @@
                                     <field name="employee_id" string="Ressource affectée"
                                            domain="[('academic_ids.product_id','=',product_id)]"
                                            options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
-                                    <field name="r_id" string="Libellé " invisible="1"/>
                                     <field name="paylist_id" string="Facture"
                                            options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
                                            invisible="1"/>

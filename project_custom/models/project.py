@@ -314,8 +314,6 @@ class ProjectCustom(models.Model):
                                  states={'draft': [('readonly', False)]}, default=38, )
     fees_id = fields.Many2one('agreement.fees', string='Contrat lié', readonly=True,
                               states={'draft': [('readonly', False)]}, )
-    r_id = fields.Many2one('risk.management.category', string='R ID', readonly=True,
-                           states={'draft': [('readonly', False)]}, )
     state_id = fields.Many2one('res.country.state', string='Municipalités')
     etap = fields.Char(string='Char', readonly=True, states={'draft': [('readonly', False)]}, )
     city = fields.Char(string='Région', readonly=True, states={'draft': [('readonly', False)]}, )
@@ -729,10 +727,6 @@ class AgreementFeesAmortizationLine(models.Model):
 
 class AgreementFees(models.Model):
     _name = "agreement.fees"
-
-
-class RiskManagementCategory(models.Model):
-    _name = "risk.management.category"
 
 
 class ProjectTypeCustom(models.Model):
