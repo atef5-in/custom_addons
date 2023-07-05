@@ -1,15 +1,46 @@
 # -*- coding: utf-8 -*-
+from xml import etree
 
 from odoo import models, fields, api
 from datetime import datetime as dt, date
 from odoo.exceptions import UserError
 from odoo.tools.translate import _
 import math
+import pymysql as py
+
 
 class TaskWork(models.Model):
     _name = 'project.task.work'
     _description = 'Project Task Work'
     _rec_name = 'id'
+
+    @api.model
+    def default_get(self, fields_list):
+        res = super(TaskWork, self).default_get(fields_list)
+        next_sequence = 10000
+        done = 0
+
+        if self.env.cr.dbname == 'TEST95':
+            connection = py.connect(
+                host='localhost',
+                user='root',
+                passwd='',
+                db='rukovoditel_en',
+                use_unicode=True,
+                charset="utf8"
+            )
+            cursor = connection.cursor()
+
+        context = self._context
+        if context:
+            if 'work_ids' in context:
+                if len(context.get('work_ids')) > 0:
+                    next_sequence += len(context.get('work_ids')) * 10
+            done = 1 if self.line_ids.wizard_id else 0
+            done1 = 1 if self.line_ids.paylist_id else 0
+
+        res.update({'sequence': next_sequence, 'done': done})
+        return res
 
     def _default_done(self):
 
@@ -197,6 +228,12 @@ class TaskWork(models.Model):
             else:
                 record.poteau_da = 0
 
+    @api.model
+    def get_domain_useer_id(self):
+        mach = []
+        lids = self.env['hr.employee'].search([('id', '=', 37)])
+        return {'domain': {'employee_id': [('id', 'in', lids.ids)]}}
+
     def _disponible(self):
 
         for book in self:
@@ -285,6 +322,24 @@ class TaskWork(models.Model):
                                 if rec_line.group_id2.id not in tt:
                                     tt.append(rec_line.group_id2.id)
                         book.is_correction = True
+
+    def _invoice_num(self):
+        result = {}
+
+        for rec in self:
+            tt = ''
+            self.env.cr.execute(
+                'SELECT id FROM project_task_work_line WHERE project_task_work_line.work_id = %s order BY work_id',
+                (rec.id,))
+            hours = self.env.cr.fetchall()
+            for jj in hours:
+                pp = self.env['project.task.work.line'].browse(jj)
+
+                if pp.num and pp.num not in tt:
+                    tt = tt + ',' + pp.num
+            result[rec.id] = tt
+
+        return result
 
     def _get_progress(self):
 
@@ -606,7 +661,6 @@ class TaskWork(models.Model):
 
     # need to modify the id of the first condition
     def button_save_(self):
-
         project_ids = self.ids[0]
 
         if self.categ_id.id == 6:
@@ -635,6 +689,50 @@ class TaskWork(models.Model):
                 'context': {'active_id': self.ids[0]},
                 'domain': [('project_id', 'in', [project_ids])]
             }
+
+    def button_save2_(self):
+        this = self
+        project_ids = this.id
+        if this.categ_id.id == 6:
+            return {
+                'name': ('Modification Travaux'),
+                'type': 'ir.actions.act_window',
+                'view_mode': 'form',
+                'view_id': self.env.ref('module_name.view_id_1').id,
+                'target': 'new',
+                'res_model': 'project.task.work',
+                'res_id': this.id,
+                'context': {'active_id': this.id},
+                'domain': [('project_id', 'in', [project_ids])]
+            }
+        else:
+            return {
+                'name': ('Modification Travaux'),
+                'type': 'ir.actions.act_window',
+                'view_mode': 'form',
+                'view_id': self.env.ref('module_name.view_id_2').id,
+                'target': 'new',
+                'res_model': 'project.task.work',
+                'res_id': this.id,
+                'context': {'active_id': this.id},
+                'domain': [('project_id', 'in', [project_ids])]
+            }
+
+    def project_open(self):
+        line_obj = self.env['project.task.work']
+
+        parent = line_obj.browse(self.ids[0])
+
+        return {
+            'name': ('Consultation Projet'),
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': 'project.project',
+            'res_id': parent.project_id.id,
+            'view_id': 1758,
+            'context': {},
+            'domain': []
+        }
 
     # need to check
     def button_approve(self):
@@ -692,6 +790,456 @@ class TaskWork(models.Model):
 
         task_obj.write({'state': 'valid', 'paylist_id': pay_id})
         return True
+
+    def action_open(self):
+        project_ids = self.ids[0]
+        task_obj = self.env['project.task.work']
+        emp_obj = self.env['hr.employee']
+        task = self
+        r = []
+        dep = self.env['hr.academic'].search([('categ_id', '=', task.categ_id.id)])
+        ## raise osv.except_osv(_('Error !'), _('No period defined for this date: %s !\nPlease create one.')%dep)
+        self.env['hr.employee'].search([]).write({'vehicle': ''})
+        if dep:
+            for nn in dep:
+                em = self.env['hr.academic'].browse(nn, context=self.env.context).employee_id.id
+                emp_obj.browse(em).write({'vehicle': '1'})
+                r.append(em)
+        task.write({'dep': r})
+        if task.categ_id.id == 6:
+            return {
+                'name': ('Modification Travaux'),
+                'type': 'ir.actions.act_window',
+                'view_mode': 'form',
+                'view_id': self.env.ref('module_name.view_id_1').id,
+                'target': 'new',
+                'res_model': 'project.task.work',
+                'res_id': task.id,
+                'context': {'active_id': task.id},
+                'domain': [('project_id', 'in', [project_ids])]
+            }
+        else:
+            return {
+                'name': ('Modification Travaux'),
+                'type': 'ir.actions.act_window',
+                'view_mode': 'form',
+                'view_id': self.env.ref('module_name.view_id_2').id,
+                'target': 'new',
+                'res_model': 'project.task.work',
+                'res_id': task.id,
+                'context': {'active_id': task.id},
+                'domain': [('project_id', 'in', [project_ids])]
+            }
+
+    def action_calendar(self):
+        if not self.employee_id:
+            raise UserError(_('Error!'), _('Vous devez sélectionner un employé pour consulter son calendrier'))
+
+        work_ids = self.env['project.task.work'].search(
+            [('employee_id', '=', self.employee_id.id), ('id', '!=', self.id)])
+        list_ids = work_ids.ids
+
+        return {
+            'name': _('Modification Travaux'),
+            'type': 'ir.actions.act_window',
+            'view_mode': 'calendar',
+            'target': 'popup',
+            'res_model': 'project.task.work',
+            'res_id': self.id,
+            'context': {},
+            'domain': [('id', 'in', list_ids)]
+        }
+
+    def action_open_flow(self):
+        work_ids = self.env['base.flow.merge.line'].search([('work_id', '=', self.id)])
+        list_ids = work_ids.mapped('wizard_id.id')
+
+        return {
+            'name': 'Liste des Actions Workflows',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'tree,form',
+            'target': 'popup',
+            'res_model': 'base.flow.merge.automatic.wizard',
+            'res_id': self.id,
+            'context': {},
+            'domain': [('id', 'in', list_ids)]
+        }
+
+    def action_open2(self):
+        project_ids = self.id
+
+        return {
+            'name': 'Modification Travaux Permis',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'target': 'new',
+            'res_model': 'project.task.work',
+            'view_id': self.env.ref('your_module_name.view_id').id,
+            # Replace 'your_module_name' and 'view_id' with the actual values
+            'res_id': self.id,
+            'context': {'active_id': self.id},
+            'domain': [('project_id', 'in', [project_ids])]
+        }
+
+    def action_open_group(self):
+        tt = []
+
+        if self.line_ids:
+            for rec_line in self.line_ids:
+                if rec_line.group_id:
+                    if rec_line.group_id.ids not in tt:
+                        tt.append(rec_line.group_id.ids)
+
+        return {
+            'name': 'Consultation Travaux Validés',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'tree,form',
+            'views': [[self.env.ref('your_module_name.view_id').id, 'form']],
+            # Replace 'your_module_name' and 'view_id' with the actual values
+            'target': 'new',
+            'res_model': 'bon.show',
+            'context': {},
+            'domain': [('id', 'in', tt)]
+        }
+
+    def action_open_group2(self):
+        tt = []
+
+        if self.line_ids:
+            for rec_line in self.line_ids:
+                if rec_line.group_id2:
+                    if rec_line.group_id2.ids not in tt:
+                        tt.append(rec_line.group_id2.ids)
+
+        if tt:
+            for kk in tt:
+                self.env['base.group.merge.automatic.wizard'].search([('id', 'in', kk)]).write(
+                    {'create_uid': self.env.uid})
+
+        return {
+            'name': 'Consultation Travaux Validés',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'tree,form',
+            'views': [[self.env.ref('your_module_name.view_id').id, 'tree']],
+            # Replace 'your_module_name' and 'view_id' with the actual values
+            'target': 'new',
+            'res_model': 'base.group.merge.automatic.wizard',
+            'context': {},
+            'domain': [('id', 'in', tt)]
+        }
+
+    def action_open_group3(self):
+        tt = []
+
+        for current in self:
+            test1 = self.env['project.task.work.line'].search([('work_id2', '=', current.id)])
+            if test1:
+                for rec_line in test1:
+                    if rec_line.group_id2:
+                        if rec_line.group_id2.ids not in tt:
+                            tt.append(rec_line.group_id2.ids)
+
+        if current.line_ids:
+            for rec_line in current.line_ids:
+                if rec_line.group_id2:
+                    if rec_line.group_id2.ids not in tt:
+                        tt.append(rec_line.group_id2.ids)
+
+        if tt:
+            self.env['base.group.merge.automatic.wizard'].search([('id', 'in', tt)]).write({'create_uid': self.env.uid})
+
+        return {
+            'name': 'Consultation Travaux Validés',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'tree,form',
+            'views': [[self.env.ref('your_module_name.view_id').id, 'tree']],
+            # Replace 'your_module_name' and 'view_id' with the actual values
+            'target': 'new',
+            'res_model': 'base.group.merge.automatic.wizard',
+            'context': {},
+            'domain': [('id', 'in', tt), ('state1', '!=', 'draft')]
+        }
+
+    def action_open_group4(self):
+        tt = []
+
+        for current in self:
+            test1 = self.env['project.task.work.line'].search([('work_id2', '=', current.id)])
+            if test1:
+                for rec_line in test1:
+                    if rec_line.group_id2:
+                        if rec_line.group_id2.ids not in tt:
+                            tt.append(rec_line.group_id2.ids)
+
+        if current.line_ids:
+            for rec_line in current.line_ids:
+                if rec_line.group_id2:
+                    if rec_line.group_id2.ids not in tt:
+                        tt.append(rec_line.group_id2.ids)
+
+        if tt:
+            self.env['base.group.merge.automatic.wizard'].search([('id', 'in', tt)]).write({'create_uid': self.env.uid})
+
+        return {
+            'name': 'Consultation Travaux Validés',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'tree,form',
+            'views': [[self.env.ref('your_module_name.view_id').id, 'tree']],
+            # Replace 'your_module_name' and 'view_id' with the actual values
+            'target': 'new',
+            'res_model': 'base.group.merge.automatic.wizard',
+            'context': {},
+            'domain': [('id', 'in', tt), ('state2', '!=', 'draft')]
+        }
+
+    def action_open_invoice(self):
+        current = self[0]
+
+        tt = []
+        if current.line_ids:
+            for rec_line in current.line_ids:
+                if rec_line.paylist_id:
+                    if rec_line.paylist_id.id not in tt:
+                        tt.append(rec_line.paylist_id.id)
+        return {
+            'name': 'Consultation Facture/F.T',
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'target': 'new',
+            'res_model': 'hr.payslip',
+            'context': {},
+            'domain': [('id', 'in', tt)]
+        }
+
+    def action_open_histo(self):
+        this = self[0]
+
+        ll = []
+        if this.kit_id:
+            wrk = self.env['project.task.work'].search([('project_id', '=', this.project_id.id),
+                                                        ('kit_id', '=', this.kit_id.id),
+                                                        ('zone', '=', this.zone),
+                                                        ('secteur', '=', this.secteur)])
+
+            for work in wrk:
+                hist = self.env['work.histo'].search([('work_id', '=', work.id)])
+                if hist:
+                    for hist_line in hist.mapped('line_ids'):
+                        ll.append(hist_line.work_histo_id.id)
+
+            if not ll:
+                raise ValueError("Pas d'historique pour cette tâche")
+
+            return {
+                'name': 'Historique Tache',
+                'type': 'ir.actions.act_window',
+                'view_mode': 'form',
+                'res_model': 'work.histo',
+                'res_id': ll[0],
+                'context': {},
+                'domain': []
+            }
+        else:
+            hist = self.env['work.histo'].search([('work_id', '=', this.id)])
+            if hist:
+                return {
+                    'name': 'Historique Tache',
+                    'type': 'ir.actions.act_window',
+                    'view_mode': 'form',
+                    'res_model': 'work.histo',
+                    'res_id': hist.id,
+                    'context': {},
+                    'domain': [('work_id', 'in', this.id)]
+                }
+            else:
+                raise ValueError("Pas d'historique pour cette tâche")
+
+    def action_invoice(self):
+        current = self[0]
+        tt = []
+        if current.line_ids:
+            for rec_line in current.line_ids:
+                if rec_line.wizard_id:
+                    if rec_line.wizard_id.id not in tt:
+                        tt.append(rec_line.wizard_id.id)
+
+            return {
+                'name': 'Consultation Bons Validés',
+                'type': 'ir.actions.act_window',
+                'view_mode': 'tree,form',
+                'res_model': 'base.invoice.merge.automatic.wizard',
+                'context': {},
+                'domain': [('id', 'in', tt)]
+            }
+
+    def action_issue(self):
+        current = self[0]
+
+        if current.issue_id:
+            return {
+                'name': 'Gestion des Incidents et Anomalies',
+                'type': 'ir.actions.act_window',
+                'view_mode': 'form',
+                'res_model': 'project.issue',
+                'res_id': current.issue_id.id,
+                'context': {},
+                'domain': [('work_id', '=', current.id)]
+            }
+        else:
+            return {
+                'name': 'Gestion des Incidents et Anomalies',
+                'type': 'ir.actions.act_window',
+                'view_mode': 'form',
+                'res_model': 'project.issue',
+                'context': {
+                    'default_work_id': current.id,
+                    'default_date_deadline': fields.Date.context_today(self),
+                    'default_employee_id': current.employee_id.id or False,
+                    'default_project_id': current.project_id.id,
+                    'default_task_id': current.task_id.id,
+                    'default_gest_id': current.gest_id.id,
+                    'default_name': current.project_id.number + '-' + str(current.task_id.sequence).zfill(
+                        3) + '-' + str(current.sequence).zfill(3)
+                },
+                'domain': []
+            }
+
+    def action_copy(self, default=None):
+        if default is None:
+            default = {}
+        for tt in self:
+            packaging_obj = self.env['project.task.work']
+
+            self.env.cr.execute(
+                'SELECT sequence FROM project_task_work WHERE task_id=%s ORDER BY sequence DESC LIMIT 1',
+                (tt.task_id.id,))
+            res = self.env.cr.fetchone()
+            packaging_obj.write(id[0], {'poteau_t': tt.poteau_t / 2})
+            cte = packaging_obj.create({
+                'project_id': tt.project_id.id,
+                'sequence': res[0] + 1,
+                'task_id': tt.task_id.id,
+                'product_id': tt.product_id.id,
+                'categ_id': tt.categ_id.id,
+                'state_id': tt.state_id.id or False,
+                'city': tt.city or False,
+                'name': tt.name + ' * ',
+                'date_start': tt.date_start,
+                'date_end': tt.date_end,
+                'poteau_t': tt.poteau_t / 2,
+                'poteau_i': tt.poteau_i,
+                'color': tt.color,
+                'hours': tt.hours,
+                'total_t': tt.color * 7,
+                'project_id': tt.task_id.project_id.id,
+                'gest_id': tt.gest_id.id,
+                'uom_id': tt.uom_id.id,
+                'uom_id_r': tt.uom_id_r.id,
+                'ftp': tt.ftp,
+                'zone': tt.zone,
+                'secteur': tt.secteur,
+                'state': 'draft'
+            })
+
+        return cte
+
+    def button_invoice(self):
+        self.write({'state': 'paid'})
+        return True
+
+    def button_write(self):
+        current = self
+        if not current.employee_id.user_id:
+            raise ValueError('Vous devez affecter un utilisateur Odoo à la ressource choisie')
+        self.write({
+            'employee_id': current.employee_id.id,
+            'state': 'affect',
+            'user_id': current.employee_id.user_id.id,
+            'gest_id': current.gest_id.id,
+            'employee_id': current.employee_id.id
+        })
+        return True
+
+    def button_write1(self):
+        current = self
+        task_obj = self.env['project.task.work.line']
+
+        self.write({'state': 'tovalid'})
+        return True
+
+    def button_write2(self):
+        return True
+
+    def button_cancel_affect(self):
+        self.write({'state': 'cancel'})
+        return True
+
+    def button_cancel_write(self):
+        current = self
+        if current.state == 'affect':
+            self.write({'state': 'draft'})
+        elif current.state == 'tovalid':
+            self.write({'state': 'affect'})
+
+        return {
+            'name': "Modification Travaux",
+            'res_model': "project.task.work",
+            'src_model': "project.task.work",
+            'view_mode': "form",
+            'target': "new",
+            'key2': "client_action_multi",
+            'multi': "True",
+            'res_id': current.id,
+            'type': 'ir.actions.act_window',
+        }
+
+    def button_cancel_invoice(self):
+        self.write({'state': 'tovalid'})
+        return True
+
+    def button_pause(self):
+        self.write({'state': 'pending'})
+        return True
+
+    def button_done(self):
+        self.write({'state': 'close'})
+        return True
+
+    def button_cancel(self):
+        self.write({'state': 'cancel'})
+        return True
+
+    def button_draft(self):
+        self.write({'state': 'draft'})
+        return True
+
+    def onchange_date_to_(self):
+        if self.date_from and self.date_to and self.date_from > self.date_to:
+            raise UserError('The start date must be anterior to the end date.')
+
+        for work in self:
+            result = {}
+
+            # Compute and update the number of days
+            if work.date_from and work.date_to and work.date_from <= work.date_to:
+                from_dt = fields.Datetime.from_string(work.date_from)
+                to_dt = fields.Datetime.from_string(work.date_to)
+                timedelta = to_dt - from_dt
+                diff_day = timedelta.days
+                year = self.env['training.holiday.year'].search([('year', '=', work.date_from[:4])])
+                if year:
+                    hr = year.hours
+                else:
+                    hr = 7
+                result['color1'] = round(math.floor(diff_day)) + 1
+                result['hours_r'] = (round(math.floor(diff_day)) + 1) * hr
+                result['total_r'] = (round(math.floor(diff_day)) + 1) * hr * work.employee_id.contract_id.wage
+            else:
+                result['color1'] = 0
+                result['total_r'] = 0
+
+            work.update(result)
 
 
 class TaskWorkLine(models.Model):
@@ -788,6 +1336,58 @@ class TaskWorkLine(models.Model):
     rentability = fields.Float(string='Rentabilité')
     taux_horaire = fields.Float(string='T.H')
 
+    def create(self, vals):
+        if 'hours' in vals and (not vals['hours']):
+            vals['hours'] = 0.00
+        if 'task_id' in vals:
+            self.env.cr.execute('UPDATE project_task SET remaining_hours = remaining_hours - %s WHERE id = %s',
+                                (vals.get('hours', 0.0), vals['task_id']))
+            self.env['project.task'].invalidate_cache(['remaining_hours'], [vals['task_id']])
+
+        return super().create(vals)
+
+    def fields_view_get(self, view_id=None, view_type=None, toolbar=False, submenu=False):
+        res = super().fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
+
+        if view_type == 'form':
+            if len(self.env.context) != 6:
+                this = self.env[self._name].browse(self.env.context['active_ids'][0])
+
+                r = []
+                dep = self.env['hr.academic'].search([('categ_id', '=', this.categ_id.id)])
+
+                if dep:
+                    for nn in dep:
+                        em = self.env['hr.academic'].browse(nn).employee_id.id
+                        r.append(em)
+
+                # Set all fields read only when coming from an external model
+                doc = etree.XML(res['arch'])
+                for node in doc.xpath("//field[@name='employee_id']"):
+                    user_filter = "[('id', 'in', " + str(r) + ")]"
+                    node.set('domain', user_filter)
+
+                    node_name = node.get('name')
+                    self.setup_modifiers(node, res['fields'][node_name])
+
+                res['arch'] = etree.tostring(doc)
+
+        return res
+
+    def onchange_place(self, categ_id, employee_id):
+        res = {}
+        if categ_id:
+            r = []
+
+            dep = self.env['hr.academic'].search([('categ_id', '=', categ_id)])
+
+            if dep:
+                for nn in dep:
+                    em = self.env['hr.academic'].browse(nn).employee_id.id
+                    r.append(em)
+            res['domain'] = {'employee_id': [('id', 'in', r)]}
+        return res
+
     @api.onchange('date_end_r', 'date_start_r', 'employee_id', 'task_id')
     def onchange_date_to_(self):
         """
@@ -820,16 +1420,63 @@ class TaskWorkLine(models.Model):
                 result['value']['total_r'] = 0
         return result
 
+    def move_next(self, ids):
+        current = self.env['project.task.work'].browse(ids[0])
+
+        return {
+            'name': ('Actions Workflow'),
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'target': 'new',
+            'res_model': 'base.flow.merge.automatic.wizard',
+            'context': {
+                'default_project_id': current.project_id.id,
+                'default_date_start_r': fields.Date.today(),
+                'default_zone': current.zone,
+                'default_secteur': current.secteur,
+            },
+            'domain': [],
+        }
+
+    def sub_proj_create(self):
+        return {
+            'name': ('Création Sous Projet'),
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'target': 'popup',
+            'res_model': 'project.project',
+            'context': {
+                'default_parent_id': self.project_id.id,
+                'default_partner_id': self.project_id.partner_id.id,
+                'default_date': fields.Date.today(),
+            },
+        }
+
+    def onchange_poteau_t_x(self, poteau_t):
+        self.poteau_t = poteau_t
+        return {}
+
+    def onchange_date_start_x(self, date_start):
+        self.date_start = date_start
+        return {}
+
+    def onchange_date_end_x(self, date_end):
+        self.date_end = date_end
+        return {}
+
+    def button_close(self):
+        return {'type': 'ir.actions.act_window_close'}
+
+    def onchange_munic(self):
+        if self.state_id:
+            state = self.state_id
+            return {'value': {'city': state.region}}
+        return {}
+
     @api.onchange('hours_r', 'employee_id')
     def onchange_hours_(self):
-        """
-        Update the number_of_days.
-        """
-
         academic_obj = self.env['hr.academic']
-
         result = {'value': {}}
-        # Compute and update the number of days
         if self.hours_r:
             wage = 0
             aca = academic_obj.search([('employee_id', '=', self.employee_id)])
@@ -863,21 +1510,93 @@ class TaskWorkLine(models.Model):
                                         wage = ll.amount2
 
                                 else:
-                                    raise UserError(_('Errour!\nTaux horaire Non Défini pour cette configuration, Veuillez consulter le Superviseur SVP!'))
+                                    raise UserError(
+                                        _('Errour!\nTaux horaire Non Défini pour cette configuration, Veuillez consulter le Superviseur SVP!'))
                         else:
-                            raise UserError(_('Errour!\nTaux horaire Non Défini pour cette configuration, Veuillez consulter le Superviseur SVP!'))
+                            raise UserError(
+                                _('Errour!\nTaux horaire Non Défini pour cette configuration, Veuillez consulter le Superviseur SVP!'))
                     else:
-                        raise UserError(_('Errour!\nTaux horaire Non Défini pour cette configuration, Veuillez consulter le Superviseur SVP!'))
+                        raise UserError(
+                            _('Errour!\nTaux horaire Non Défini pour cette configuration, Veuillez consulter le Superviseur SVP!'))
             else:
-                raise UserError(_('Errour!\nTaux horaire Non Défini pour cette configuration, Veuillez consulter le Superviseur SVP!'))
+                raise UserError(
+                    _('Errour!\nTaux horaire Non Défini pour cette configuration, Veuillez consulter le Superviseur SVP!'))
 
             if wage == 0:
-                raise UserError(_('Errour!\nTaux horaire Non Défini pour cette configuration, Veuillez consulter le Superviseur SVP!'))
+                raise UserError(
+                    _('Errour!\nTaux horaire Non Défini pour cette configuration, Veuillez consulter le Superviseur SVP!'))
             if self.uom_id == 5:
                 result['value']['total_r'] = self.hours_r * wage
             else:
                 result['value']['total_r'] = self.poteau_r * wage
         return result
+
+    # def onchange_date_to(self):
+    #
+    #
+    #     if self.date_from and self.date_to and self.date_from > self.date_to:
+    #         raise UserError('The start date must be anterior to the end date.')
+    #
+    #     result = {}
+    #     holiday_obj = self.env['hr.holidays']
+    #     hours_obj = self.env['training.holiday.year']
+    #
+    #     if self.date_from and self.date_to and self.date_from <= self.date_to:
+    #         from_dt = fields.Date.from_string(self.date_from)
+    #         to_dt = fields.Date.from_string(self.date_to)
+    #         timedelta = to_dt - from_dt
+    #         diff_day = timedelta.days
+    #         year = hours_obj.search([('year', '=', str(self.date_from.year))])
+    #         if year:
+    #             hr = year.hours
+    #         else:
+    #             hr = 7
+    #         result['color'] = round(math.floor(diff_day)) + 1
+    #         result['hours'] = (round(math.floor(diff_day)) + 1) * hr
+    #         result['total_t'] = (round(math.floor(diff_day)) + 1) * hr * self.employee_id.contract_id.wage
+    #     else:
+    #         result['color'] = 0
+    #         result['total_t'] = 0
+    #
+    #     return {'value': result}
+
+    def copy(self, default=None):
+        if default is None:
+            default = {}
+        if 'name' not in default:
+            job = self
+        return super().copy(default=default)
+
+    def write(self, vals):
+        if 'hours' in vals and (not vals['hours']):
+            vals['hours'] = 0.00
+        if 'hours' in vals:
+            task_obj = self.env['project.task']
+            for work in self:
+                self.env.cr.execute('update project_task set remaining_hours=remaining_hours - %s + (%s) where id=%s',
+                                    (vals.get('hours', 0.0), work.hours, work.task_id.id))
+                task_obj.invalidate_cache(['remaining_hours'], [work.task_id.id])
+        return super().write(vals)
+
+    def unlink(self):
+        task_obj = self.env['project.task']
+        res_user = self.env['res.users'].browse(self.env.uid)
+        dep = self.env['hr.academic'].search([('employee_id', '=', res_user.employee_id.id)])
+        r = []
+        if dep:
+            for nn in dep:
+                em = self.env['hr.academic'].browse(nn).categ_id.id
+                r.append(em)
+        dep_ids = res_user.employee_id.academic_ids
+        if self.env.cr.dbname == 'TEST95':
+            connection = py.connect(host='localhost', user='root', passwd='', db='rukovoditel_en',
+                                    use_unicode=True, charset="utf8")
+            cursor = connection.cursor()
+            for work in self:
+                sql1 = ("delete from  app_entity_26  WHERE id = %s")
+                cursor.execute(sql1, (work.id,))
+                connection.commit()
+        return super().unlink()
 
 
 class ProjectIssueVersion(models.Model):
@@ -885,9 +1604,9 @@ class ProjectIssueVersion(models.Model):
     works_id = fields.Many2one('project.project', string='Work ID')
 
 
-class BaseGroupMergeAutomaticWizard(models.Model):
-    _name = "base.group.merge.automatic.wizard"
-    name = fields.Char('Name')
+# class BaseGroupMergeAutomaticWizard(models.Model):
+#     _name = "base.group.merge.automatic.wizard"
+#     name = fields.Char('Name')
 
 
 class ProjectStatus(models.Model):
@@ -958,4 +1677,3 @@ class BonShowLine1Inherit(models.Model):
 
     work_id = fields.Many2one('project.task.work', string='Task')
     line_id = fields.Many2one('project.task.work.line', string='Task')
-

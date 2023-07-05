@@ -30,5 +30,10 @@
     'demo': [
         'demo/demo.xml',
     ],
-    'application' : True,
+    'application': True,
+    'external_dependencies': {
+        'python': [
+            'pymysql',
+        ],
+    },
 }
