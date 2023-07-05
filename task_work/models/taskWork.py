@@ -571,7 +571,7 @@ class TaskWork(models.Model):
             'view_mode': 'form',
             'target': 'popup',
             'res_model': 'base.invoices.merge.automatic.wizard',
-            'view_id': 1677,
+            'view_id': self.env.ref('eb_invoices_wizard.view_merge_tasks_form').id,
             'context': {'types_affect': 'intervenant'},
             'domain': []
         }
@@ -710,7 +710,6 @@ class TaskWorkLine(models.Model):
     date_r = fields.Datetime(string='Date', select="1", readonly=True, states={'affect': [('readonly', False)]}, )
     work_id = fields.Many2one('project.task.work', string='Task Work')
     work_id2 = fields.Many2one('project.task.work', string='Event')
-    wizard_id = fields.Many2one('base.invoice.merge.automatic.wizard', string='Event')
     date_start = fields.Date(string='Date Prévue', select="1")
     date_end = fields.Date(string='Date Fin', select="1")
     date_start_r = fields.Date(string='Date', select="1", readonly=True, states={'affect': [('readonly', False)]}, )

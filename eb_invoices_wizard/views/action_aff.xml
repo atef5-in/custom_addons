@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_affecter_ressources" model="ir.actions.server">
+            <field name="name">Affecter Ressources</field>
+            <field name="type">ir.actions.server</field>
+            <field name="model_id" ref="model_project_task_work" />
+            <field name="binding_model_id" ref="model_project_task_work" />
+            <field name="state">code</field>
+            <field name="code">
+               action= records.action_affect_ressource()
+            </field>
+    </record>
+
+</odoo>

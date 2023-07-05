@@ -1,0 +1,188 @@
+<odoo>
+    <data>
+
+
+        <record id="action_invoices_wizard" model="ir.actions.act_window">
+            <field name="name">Invoices</field>
+            <field name="res_model">base.invoices.merge.automatic.wizard</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree,form</field>
+
+
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a new INVOICE.
+                </p>
+            </field>
+        </record>
+
+        <record id="view_merge_tasks_form" model="ir.ui.view">
+            <field name="name">merge.tasks.form</field>
+            <field name="model">base.invoices.merge.automatic.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Merge Tasks">
+                    <header>
+                        <button name="action_open" type="object" string="Consulter Ces Taches" class="btn-primary"
+                                icon="gtk-save"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,affect"
+                               statusbar_colors="{&quot;draft&quot;:&quot;blue&quot;}" readonly="1"/>
+                    </header>
+                    <sheet string="Project">
+                        <!-- <h5>***If Assigned to: is empty , the user from the destination task will be assigned!</h5> -->
+                        <notebook>
+                            <page string="Paramétres d'Affectations">
+                                <group>
+                                    <group>
+                                        <field name="id" string="ID" readonly="1"/>
+                                        <field name="group_id" string="BON" readonly="1"/>
+                                        <field name="name" string="N° Job" readonly="1"/>
+                                        <field name="pay_id" string="done" invisible="1"/>
+                                        <field name="dep" string="dep" invisible="1"/>
+                                        <field name="done" string="done" invisible="1"/>
+                                        <field name="employee_id2" string="Intervenant"
+                                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                        <field name="project_id" string="done" invisible="1"/>
+                                        <field name="zone" string="done" invisible="1"/>
+                                        <field name="secteur" string="done" invisible="1"/>
+                                        <newline/>
+                                        <!--                                                                                <button name="action_calendar" type="object" string="" icon="terp-calendar"-->
+                                        <!--                                                                                        class="btn-primary"/>-->
+                                        <newline/>
+                                        <field name="date_start_r" string="Date Déb."/>
+                                        <newline/>
+                                        <field name="date_end_r" string="Date Fin."/>
+                                        <newline/>
+                                        <field name="poteau_t" string="Qté"/>
+                                        <newline/>
+                                    </group>
+                                    <group>
+                                        <field name="objet" string="objet"
+                                               attrs="{'required': [('mail_send', '=', 'yes')]}"/>
+                                        <field name="mail_send" string="Envoi Email?" required="1"/>
+
+                                        <field name="employee_ids" string="A" widget='many2many_tags'
+                                               options="{'no_create': True}"/>
+                                        <field name="employee_ids1" string="CC" widget='many2many_tags'
+                                               options="{'no_create': True}"/>
+                                        <field name="employee_ids2" string="CCi" widget='many2many_tags'
+                                               options="{'no_create': True}"/>
+                                        <field name="to" string="To" invisible="1"/>
+                                        <field name="cc" string="cc" invisible="1"/>
+                                        <field name="cci" string="cci" invisible="1"/>
+                                        <field name="categ_id" string="dep"
+                                               on_change="onchange_place(categ_id,project_id,zone,secteur)"
+                                               invisible="1"/>
+                                    </group>
+                                </group>
+                                <group>
+                                    <group string="Liens">
+<!--                                        <field name="link_ids" nolabel="1" readonly="0">-->
+<!--                                            <tree string="Taches" editable="bottom">-->
+                                                <!--                                                <field name="name" string="Description"/>-->
+                                                <!--                                                <field name="ftp" string="FTP"/>-->
+                                                <!--                                                <field name="flow_id" string="Flow_id" invisible="1"/>-->
+<!--                                            </tree>-->
+<!--                                        </field>-->
+                                    </group>
+                                    <group string="Commentaire">
+                                        <pre>
+                                            <field name="note" string="Commentaires"/>
+                                        </pre>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                        <group string="Travaux A  Valider">
+                            <newline/>
+                            <field name="work_ids" nolabel="1" options="{'no_create': True}">
+                                <tree string="Tasks" edit="true" editable="bottom"
+                                      colors="blue:state== 'draft';green:state== 'affect';purple:state== 'tovalid'"
+                                      create="false">
+                                    <field name="id" string="id" invisible="1"/>
+                                    <field name="sequence" string="Sequence" readonly="1"/>
+                                    <field name="project_id" invisible="context.get('user_invisible', False)"
+                                           readonly="1"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                           string="Projet"/>
+                                    <field name="task_id"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                           string="Travaux" invisible="1"/>
+                                    <field name="name" string="Nom Taches/Kit" readonly="1"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="product_id" string="T.S" readonly="1"/>
+                                    <field name="zone" string="Zone" readonly="1"/>
+                                    <field name="secteur" string="Secteur" sum="Total" readonly="1"/>
+                                    <field name="date_start" string="Date Début" widget="date"/>
+                                    <field name="date_end" string="Date Fin" widget="date"/>
+                                    <field name="color" string="Durée (Jours)" sum="Total"/>
+                                    <field name="uom_id" string="Unité" sum="Total"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="poteau_i" string="Qté Initiale" sum="Total" readonly="1"/>
+                                    <field name="poteau_da" string="Qté Déja Affect." readonly="1"/>
+                                    <field name="poteau_t" string="Qté Affect" sum="Total"/>
+                                    <field name="gest_id" string="Superviseur" widget="selection" readonly="1"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="categ_id" string="Intervenant" invisible="1"
+                                           on_change="onchange_place(categ_id,employee_id)"/>
+                                    <field name="employee_id" string="Intervenant"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                           attrs="{'readonly': [('state','=', 'affect')]}" required="1"
+                                           on_change="onchange_place(categ_id,employee_id)"/>
+                                    <field name="state" string="Statut" readonly="1"/>
+                                </tree>
+                            </field>
+                            <group string="Bons Réalisés A Valider" colspan="4" invisible="1">
+                                <group>
+                                    <field name="line_ids" nolabel="1">
+                                        <tree editable="Bottom" attrs="{'readonly': [('state','!=', 'affect')]}">
+                                            <field name="date_start_r" string="Date Début" widget="date"
+                                                   on_change="onchange_date_to_(date_end_r,date_start_r,employee_id)"/>
+                                            <field name="date_end_r" string="Date Fin" widget="date"
+                                                   on_change="onchange_date_to_(date_end_r,date_start_r,employee_id)"/>
+                                            <field name="aggr_ids" string="Bons" invisible="1"/>
+                                            <field name="min_id" string="min_id" invisible="1"/>
+                                            <field name="line_id" string="line_id" invisible="1"/>
+                                            <field name="wizard_id" string="line_id" invisible="1"/>
+                                            <field name="work_id" string="line_id" invisible="1"/>
+                                            <field name="color1" string="Durée(Jours)" sum="Prev Hours"/>
+                                            <field name="hours_r" string="Durée(Heurs)" widget="float_time"
+                                                   sum="Prev Hours"/>
+                                            <field name="poteau_r" string="Qté/Unité" sum="Prev Hours"/>
+                                            <field name="uom_id_r" string="Unité"
+                                                   options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                            <field name="wage" string="T.H"/>
+                                            <field name="amount_line" string="Total" sum="Prev Hours"/>
+                                            <field name="note" string="Commentaires" placeholder="Description..."/>
+                                            <field name="state" string="statut"/>
+                                        </tree>
+                                    </field>
+                                    <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+                                        <newline/>
+                                        <field name="amount_untaxed" widget="monetary"
+                                               options="{'currency_field': 'currency_id'}" string="Total H.T"/>
+                                        <field name="amount_tvq" widget="monetary"
+                                               options="{'currency_field': 'currency_id'}" string="TVQ"/>
+                                        <field name="amount_tps" widget="monetary"
+                                               options="{'currency_field': 'currency_id'}" string="TPS"/>
+                                        <div class="oe_subtotal_footer_separator oe_inline">
+                                            <label for="amount_total" string="Total"/>
+                                        </div>
+                                        <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator"
+                                               widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                    </group>
+                                </group>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+        <menuitem id="menu_project"
+                  name="Invoice "
+                  parent="menu_invoices_master"
+                  action="action_invoices_wizard"
+                  sequence="10"/>
+    </data>
+</odoo>

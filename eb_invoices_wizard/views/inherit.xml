@@ -1,0 +1,14 @@
+<odoo>
+
+    <record id="view_task_work_form_inherit" model="ir.ui.view">
+        <field name="name">task.work.form.inherit</field>
+        <field name="model">project.task.work</field>
+        <field name="inherit_id" ref="task_work.view_task_work_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='project_id']" position="before">
+                <field name="wizard_id" invisible="1" string="Wizard"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
