@@ -1,21 +1,6 @@
 <odoo>
     <data>
 
-
-        <record id="action_invoices_wizard" model="ir.actions.act_window">
-            <field name="name">Invoices</field>
-            <field name="res_model">base.invoices.merge.automatic.wizard</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="view_mode">tree,form</field>
-
-
-            <field name="help" type="html">
-                <p class="oe_view_nocontent_create">
-                    Click to create a new INVOICE.
-                </p>
-            </field>
-        </record>
-
         <record id="view_merge_tasks_form" model="ir.ui.view">
             <field name="name">merge.tasks.form</field>
             <field name="model">base.invoices.merge.automatic.wizard</field>
@@ -178,11 +163,5 @@
             </field>
         </record>
 
-
-        <menuitem id="menu_project"
-                  name="Invoice "
-                  parent="menu_invoices_master"
-                  action="action_invoices_wizard"
-                  sequence="10"/>
     </data>
 </odoo>

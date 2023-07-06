@@ -106,14 +106,12 @@ class EbMergeInvoicess(models.Model):
     time = fields.Float(string='Temps de gestion')
     time_ch = fields.Char(string='Temps de gestion')
 
-    @api.model
-    def default_get(self, fields):
-        print('default_get')
-        res = super().default_get(fields)
+    def default_get(self, fields_list):
+
+        res = super().default_get(fields_list)
         active_ids = self.env.context.get('active_ids')
 
         if self.env.context.get('active_model') == 'base.group.merge.automatic.wizard':
-            print('9.1')
             tt = self.env['base.group.merge.automatic.wizard'].browse(self.env.context.get('active_ids'))
             active_ids = tt.work_ids.ids
             vv = []
@@ -131,7 +129,6 @@ class EbMergeInvoicess(models.Model):
                         ('product_id.name', 'not ilike', '%cont%'),
                         ('product_id.name', 'not ilike', '%gestion client%')
                     ])
-                    dd = []
 
                     for kit_list_id in kit_list.ids:
                         work1 = self.env['project.task.work'].browse(kit_list_id)
@@ -150,11 +147,10 @@ class EbMergeInvoicess(models.Model):
             l = []
             pref = ''
             test = ''
-            list = []
             state = 'draft'
             self.env.cr.execute(
                 'select cast(substr(name, 5, 7) as integer)  from base_invoices_merge_automatic_wizard where name is not Null  and categ_id=1  and EXTRACT(YEAR FROM create_date)=%s   order by cast(name as integer) desc limit 1',
-                (str(fields.Date.today().strftime('%Y%m%d'))[:4],))
+                (str(datetime.today().year),))
             q3 = self.env.cr.fetchone()
 
             if q3:
@@ -165,7 +161,7 @@ class EbMergeInvoicess(models.Model):
             for jj in tt.work_ids.ids:
                 work = self.env['project.task.work'].browse(jj)
                 if work.state == 'close':
-                    raise UserError(_('Erreur!'), _("Travaux clotués!"))
+                    raise UserError(_('Erreur!\nTravaux clotués!'))
                 if len(active_ids) > 1:
                     pref = '/'
                 done = 0
@@ -194,8 +190,7 @@ class EbMergeInvoicess(models.Model):
                     res.update({'name': str(str(fields.Date.today().strftime('%Y%m%d'))[:4] + str(res1).zfill(3))})
 
         elif self.env.context.get('active_model') != 'project.task.work':
-            print('9.2')
-            res = super().default_get(fields)
+            res = super().default_get(fields_list)
             ##raise osv.except_osv(_('Transfert impossible!'),_("Pas de Stock suffisantdffd pour l'article %s  !")%  self.env.context.get('active_ids'))
 
             tt = self.env['base.flow.merge.automatic.wizard'].browse(self.env.context.get('active_ids'))
@@ -237,7 +232,7 @@ class EbMergeInvoicess(models.Model):
             state = 'draft'
             self.env.cr.execute(
                 'select cast(substr(name, 5, 7) as integer)  from base_invoices_merge_automatic_wizard where name is not Null  and categ_id=1  and EXTRACT(YEAR FROM create_date)=%s   order by cast(name as integer) desc limit 1',
-                (str(fields.Date.today().strftime('%Y%m%d'))[:4],))
+                (str(datetime.today().year),))
             q3 = self.env.cr.fetchone()
 
             if q3:
@@ -252,7 +247,7 @@ class EbMergeInvoicess(models.Model):
                 ##                tt=self.env['project.task.work.line'].search([('work_id','=',jj),('state','=','affect')]).ids
 
                 if work.state == 'close':
-                    raise UserError(_('Erreur!'), _("Travaux clotués!"))
+                    raise UserError(_('Erreur!\nTravaux clotués!'))
 
                 ##                if work.employee_id:
                 ##                    raise osv.except_osv(_('Erreur!'),_("Travaux Déja affectés aux ressources!"))
@@ -290,26 +285,20 @@ class EbMergeInvoicess(models.Model):
                 })
                 if cat == 1:
                     res.update({
-                        'name': str(str(fields.Date.today().strftime('%Y%m%d'))[:4] + str(res1).zfill(3))
+                        'name': str(str(datetime.today().year) + str(res1).zfill(3))
                     })
 
         if self.env.context.get('active_model') == 'project.task.work':
-            print("9.3")
             active_ids = self.env.context.get('active_ids')
             tt = self.env['project.task.work'].browse(active_ids)
 
             for work in tt:
-                print("9.4")
                 if 'correction' in work.product_id.name or 'gestion client' in work.product_id.name or u'Contrôle' in work.product_id.name:
-                    print("9.5")
-                    raise UserError(_('Action impossible!'),
-                                    _("Impossible d'affecter ce type de tache à partir de ce menu!"))
+                    raise UserError(_("Action impossible!\nImpossible d'affecter ce type de tache à partir de ce menu!"))
 
                 vv = []
-                dd = []
 
                 if work.kit_id:
-                    print("9.6")
                     kit_list = self.env['project.task.work'].search([
                         ('project_id', '=', work.project_id.id),
                         ('zone', '=', work.zone),
@@ -327,29 +316,24 @@ class EbMergeInvoicess(models.Model):
 
                     res['work_ids'] = vv
                 else:
-                    print("9.7")
                     res['work_ids'] = active_ids
 
                 if work.state == 'valid':
-                    raise UserError(_('Erreur!'), _("Travaux clotués!"))
+                    raise UserError(_('Erreur!\nTravaux clotués!'))
 
         ##raise osv.except_osv(_('Transfert impossible!'),_("Pas de Stock suffisantdffd pour l'article %s  !")% tt)
         ##        raise osv.except_osv(_('Error !'),
         ##                                         _('You cannot validate this journal entry because account "%s" does not belong to chart of accounts "%s"!') % (tt, tt))
 
         if self.env.context.get('active_model') == 'project.task.work' and active_ids:
-            print("1")
             # active_ids = self.env.context.get('active_ids')
 
             for hh in active_ids:
-                print("2")
                 work = self.env['project.task.work'].browse(hh)
                 print(work)
                 vv = []
-                dd = []
 
                 if work.kit_id:
-                    print("3")
                     kit_list = self.env['project.task.work'].search([
                         ('project_id', '=', work.project_id.id),
                         ('zone', '=', work.zone),
@@ -360,7 +344,6 @@ class EbMergeInvoicess(models.Model):
                         ('product_id.name', 'not ilike', '%gestion client%')
                     ])
                     for kit_work in kit_list:
-                        print("4")
                         if not work.is_copy and not kit_work.is_copy:
                             vv.append(kit_work.id)
                         elif kit_work.is_copy and work.rank == kit_work.rank:
@@ -379,8 +362,7 @@ class EbMergeInvoicess(models.Model):
 
             self.env.cr.execute(
                 'SELECT CAST(SUBSTRING(name, 5, 7) AS INTEGER) FROM base_invoices_merge_automatic_wizard WHERE name IS NOT NULL AND categ_id=1 AND EXTRACT(YEAR FROM create_date)=%s ORDER BY CAST(name AS INTEGER) DESC LIMIT 1',
-                (str(date.today().strftime('%Y%m%d'))[:4],)
-            )
+                (str(datetime.today().year),))
 
             q3 = self.env.cr.fetchone()
             print(q3)
@@ -390,19 +372,13 @@ class EbMergeInvoicess(models.Model):
                 res1 = '001'
 
             for jj in active_ids:
-                print("5")
                 work = self.env['project.task.work'].browse(jj)
 
                 if work.state == 'close':
-                    raise UserError(_('Erreur!'), _("Travaux clotués!"))
+                    raise UserError(_('Erreur!\nTravaux clotués!'))
 
                 if len(active_ids) > 1:
                     pref = '/'
-                    done = 0
-                if work.gest_id.user_id.id == self._uid:
-                    done = 1
-                else:
-                    done = 0
 
                 if work.state != 'draft':
                     state = 'affect'
@@ -411,19 +387,12 @@ class EbMergeInvoicess(models.Model):
 
                 if r:
                     for kk in r:
-                        print("6")
                         dep = self.env['hr.academic'].search([('categ_id', '=', kk)])
-                        print(dep)
                         if dep:
-                            print("6.1")
                             for nn in dep.ids:
-                                print("7")
                                 em = self.env['hr.academic'].browse(nn).employee_id.id
                                 l.append(em)
-                                print('l:', l)
-                print('work.categ_id:', work.categ_id.id)
                 cat = work[0].categ_id.id
-                print('cat :', cat)
                 test = test + pref + str(work.project_id.name) + ' - ' + str(work.task_id.sequence) + ' - ' + str(
                     work.sequence)
 
@@ -438,11 +407,8 @@ class EbMergeInvoicess(models.Model):
                     'state': state,
                     'dep': r,
                 })
-                print(res)
                 if cat == 1:
-                    res.update({'name': str(str(date.today().strftime('%Y%m%d'))[:4] + str(str(res1).zfill(3)))})
-
-        print(res)
+                    res.update({'name': str(str(datetime.today().year) + str(str(res1).zfill(3)))})
 
         return res
 
@@ -452,8 +418,7 @@ class EbMergeInvoicess(models.Model):
             if record.gest_id.user_id.id == self.env.user.id:
                 record.done = True
             else:
-                raise UserError(_('Transfert impossible!'),
-                                _("Pas de stock suffisant pour l'article %s !") % record.name)
+                raise UserError(_("Transfert impossible!\nPas de stock suffisant pour l'article %s !") % record.name)
                 record.done = False
 
     def _disponible(self):
@@ -682,17 +647,17 @@ class EbMergeInvoicess(models.Model):
             'target': 'new',
         }
 
-        return {
-            'name': 'Annualtaion d"affectation faite avec Succès',
-            'type': 'ir.actions.act_window',
-            'view_type': 'form',
-            'view_mode': 'form',
-            'res_model': 'sh.message.wizard',
-            'views': [(view_id, 'form')],
-            'view_id': view_id,
-            'target': 'new',
-            'context': context
-        }
+        # return {
+        #     'name': 'Annualtaion d"affectation faite avec Succès',
+        #     'type': 'ir.actions.act_window',
+        #     'view_type': 'form',
+        #     'view_mode': 'form',
+        #     'res_model': 'sh.message.wizard',
+        #     'views': [(view_id, 'form')],
+        #     'view_id': view_id,
+        #     'target': 'new',
+        #     'context': context,
+        # }
 
     # def action_calendar(self, cr, uid, ids, context=None):
     #     current = ids[0]
