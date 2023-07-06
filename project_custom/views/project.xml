@@ -199,7 +199,6 @@
                                     <field name="zone" string="Zone " readonly="1"/>
                                     <field name="etape" string="Etape" readonly="1" invisible="0"/>
                                     <field name="secteur" string="Sect" readonly="1"/>
-                                    <field name="done4" string="Libellé " readonly="1" invisible="1"/>
                                     <field name="date_start" string="Date Déb." readonly="1"/>
                                     <field name="date_end" string="Date Fin" readonly="1"/>
                                     <field name="color" string="Nb Jrs Prév." required="1"/>

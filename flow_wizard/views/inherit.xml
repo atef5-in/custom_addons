@@ -1,0 +1,36 @@
+<odoo>
+
+    <record id="view_task_work_action_workflow" model="ir.ui.view">
+        <field name="name">task.work.action.workflow</field>
+        <field name="model">project.task.work</field>
+        <field name="inherit_id" ref="task_work.view_task_work_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='done3']" position="after">
+                <field name="done4" string="Libellé " readonly="1" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_project_form_action_workflow" model="ir.ui.view">
+        <field name="name">project.form.action.workflow</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project_custom.view_custom_project_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='work_ids']/tree/field[@name='secteur']" position="after">
+                <field name="done4" string="Libellé " readonly="1" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_project_not_kit_action_workflow" model="ir.ui.view">
+        <field name="name">project.not.kit.action.workflow</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project_custom.view_kit_false"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='work_ids']/tree/field[@name='secteur']" position="after">
+                <field name="done4" string="Libellé " readonly="1" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -113,15 +113,6 @@ class TaskWork(models.Model):
             else:
                 rec.done3 = 0
 
-    def _default_flow(self):
-
-        for rec in self:
-            self.env.cr.execute('select id from base_flow_merge_line where work_id= %s', (rec.id,))
-            work_ids = self.env.cr.fetchone()
-            if work_ids:
-                rec.done4 = 1
-            else:
-                rec.done4 = 0
 
     def _check_color(self):
 
@@ -518,8 +509,6 @@ class TaskWork(models.Model):
     done2 = fields.Boolean(compute='_default_done2', string='Company Currency', readonly=True,
                            states={'draft': [('readonly', False)]}, )
     done3 = fields.Boolean(compute='_default_done3', string='Company Currency', readonly=True,
-                           states={'draft': [('readonly', False)]}, )
-    done4 = fields.Boolean(compute='_default_flow', string='Company Currency', readonly=True,
                            states={'draft': [('readonly', False)]}, )
     color = fields.Integer(string='Nbdays', readonly=True, states={'draft': [('readonly', False)]}, )
     color1 = fields.Integer(string='Durée(Jours)', readonly=True, states={'affect': [('readonly', False)]}, )
@@ -924,11 +913,6 @@ class BaseGroup(models.Model):
 class BaseInvoiceMergeAutomaticWizard(models.Model):
     _name = "base.invoice.merge.automatic.wizard"
     name = fields.Char('Name')
-
-
-class BaseFlowMergeLine(models.Model):
-    _name = "base.flow.merge.line"
-    work_id = fields.Many2one('project.task.work', string='Tache')
 
 
 # class BonShowInherit(models.Model):

@@ -3,12 +3,6 @@
 from odoo import models, fields, api
 
 
-class ProjectTaskWork(models.Model):
-    _inherit = 'project.task.work'
-
-    link_ids = fields.One2many('link.line', 'work_id', string='Work done')
-
-
 class LinkLine(models.Model):
     _name = 'link.line'
 
@@ -47,3 +41,16 @@ class LinkLine(models.Model):
                 'context': {},
                 'domain': []
             }
+
+
+class ProjectTaskWork(models.Model):
+    _inherit = 'project.task.work'
+
+    link_ids = fields.One2many('link.line', 'work_id', string='Work done')
+
+
+class BaseFlowMergeAutomaticWizard(models.Model):
+    _inherit = 'base.flow.merge.automatic.wizard'
+
+    link_ids = fields.One2many('link.line', 'flow_id', string="Work done", readonly=True,
+                               states={'draft': [('readonly', False)]}, )

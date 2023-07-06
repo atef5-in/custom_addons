@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_base_flow_merge_automatic_wizard_form" model="ir.ui.view">
+        <field name="name">base.flow.merge.automatic.wizard.form</field>
+        <field name="model">base.flow.merge.automatic.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Merge Tasks">
+                <header>
+
+
+                    <button name="button_approve" type="object" string="Valider le Traitement" class="oe_highlight"
+                            confirm="Valider l'action Workflow?" states='draft'/>
+                    <button name="button_cancel" type="object" string="Annuler le Traitement" class="oe_highlight"
+                            confirm="Annuler l'action Workflow?" states='affect' invisible="1"/>
+
+
+                    <field name="state" widget="statusbar" statusbar_visible="draft,affect"
+                           statusbar_colors="{'draft': 'blue'}" readonly="0"/>
+
+                </header>
+                <sheet string="Project">
+                    <!-- <h5>***If Assigned to: is empty , the user from the destination task will be assigned!</h5> -->
+                    <group string="Taches Concernées">
+                        <field name="current_user" string="current_user" invisible="1"/>
+                        <field name="name" string="current_user" invisible="1"/>
+                        <field name="line_ids" string="Taches Sources" sum="Total" readonly="1" nolabel="1">
+
+                            <tree string="Tasks" editable="bottom"
+                                  colors="blue:state== 'draft';green:state== 'affect';purple:state== 'tovalid'">
+
+
+                                <field name="work_id" readonly="1"
+                                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                       string="Taches"/>
+                                <field name="note" readonly="1"
+                                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                       string="T.S"/>
+
+
+                                <field name="date_start_r" string="Date Début" widget="date" readonly="1"/>
+                                <field name="date_end_r" string="Date Fin" widget="date" readonly="1"/>
+
+                                <field name="uom_id_r" string="Unité" sum="Total"
+                                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                       readonly="1"/>
+
+                                <field name="poteau_t" string="Qté/Unité" sum="Total" readonly="1"/>
+
+                                <field name="gest_id" string="Superviseur" widget="selection" readonly="1"
+                                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+
+                                <field name="state" string="Statut" readonly="1"/>
+
+
+                            </tree>
+                        </field>
+
+                    </group>
+                    <notebook>
+                        <page string="Actions A Prendre">
+                            <group>
+                                <group>
+                                    <field name="project_id" invisible="1"/>
+                                    <field name="time_ch" widget="time"
+                                           options="{'step': 5, 'timeFormat': 'HH:mm', 'minTime': '00:00', 'maxTime': '10:00'}"
+                                           required="1"/>
+
+                                    <field name="actions" string="Actions" required="1"
+                                           on_change="onchange_actions(actions)"/>
+                                    <field name="categ_id" string="Département"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                           required="1"/>
+
+
+                                    <field name="done" string="Taches de Corrections?"
+                                           help="Coché pour les taches de controles"/>
+                                    <field name="zone" string="Zone?" help="Ignoré si =0"/>
+                                    <field name="secteur" string="secteur?" help="Ignoré si =0"/>
+
+                                </group>
+                                <group>
+                                    <field name="date_start_r" string="Date Début" widget="date" readonly="0"/>
+                                    <field name="date_end_r" string="Date Fin" widget="date" readonly="0"/>
+                                    <field name="poteau_r" string="Qtée A Lancer"/>
+
+
+                                    <button name="button_affect" type="object" string="Affect. Ressource"
+                                            class="oe_highlight" confirm="Voulez-vous affecter les ressources?"
+                                            icon="terp-personal" attrs="{'invisible': [('state', '=', 'draft')]}"/>
+
+
+                                </group>
+                                <group>
+
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Informations Mails">
+                            <group>
+                                <group>
+                                    <field name="mail_send" string="Envoi Email?" required="1"/>
+                                    <field name="objet" string="Objet"
+                                           attrs="{'required': [('mail_send', '=', 'yes')]}"/>
+
+                                    <field name="send" string="Envoi Email?" invisible="1"/>
+
+                                    <field name="employee_ids" string="A" widget='many2many_tags'
+                                           options="{'no_create': True}"/>
+                                    <newline/>
+                                    <button name="button_load_mail" type="object" string="" icon="gtk-leave-fullscreen"
+                                            class="btn-primary"/>
+                                    <newline/>
+
+                                    <field name="employee_ids1" string="CC" widget='many2many_tags'
+                                           options="{'no_create': True}"/>
+                                    <field name="employee_ids2" string="CCi" widget='many2many_tags'
+                                           options="{'no_create': True}"/>
+                                    <field name="to" string="To" invisible="1"/>
+                                    <field name="cc" string="cc" invisible="1"/>
+                                    <field name="cci" string="cci" invisible="1"/>
+
+                                </group>
+                                <group>
+                                    <pre>
+                                        <field name="note" string="Commentaires"/>
+                                    </pre>
+
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Liens">
+                            <group>
+
+                                <!--                                <field name="link_ids" nolabel="1">-->
+                                <!--                                    <tree string="Taches" editable="bottom">-->
+                                <!--                                        <field name="name" string="Description"/>-->
+                                <!--                                        <field name="ftp" string="FTP"/>-->
+                                <!--                                        <field name="flow_id" string="Flow_id" invisible="1"/>-->
+                                <!---->
+                                <!--                                    </tree>-->
+                                <!---->
+                                <!--                                </field>-->
+                                <group>
+                                    <field name="attach_ids" widget="many2many_binary" class="oe_inline"
+                                           string="Pièces Jointes">
+                                    </field>
+
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+
+
+                    <group string="Taches A  Valider">
+                        <button name="button_save_" type="object" string="Charger les Taches" class="oe_highlight"
+                                confirm="Charger les Taches à activer?" states='draft' invisible="1"/>
+                        <newline/>
+
+
+                        <field name="work_ids" nolabel="1" options="{'no_create': True}">
+                            <tree string="Taches" editable="bottom"
+                                  colors="blue:state== 'draft';green:state== 'affect';purple:state== 'tovalid'"
+                                  readonly="1">
+
+
+                                <field name="project_id" invisible="context.get('user_invisible', False)" readonly="1"
+                                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                       string="Projet"/>
+
+                                <field name="task_id" invisible="context.get('user_invisible', False)" readonly="1"
+                                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                       string="Taches"/>
+                                <field name="name" string="Nom Travaux" readonly="1"
+                                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                <field name="kit_id" string="Kit"/>
+                                <field name="date_start" string="Date Début" widget="date"
+                                       on_change="onchange_date_start_x(date_start)"/>
+                                <field name="date_end" string="Date Fin" widget="date"
+                                       on_change="onchange_date_end_x(date_end)"/>
+
+                                <field name="uom_id" string="Unité" sum="Total"
+                                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+
+                                <field name="poteau_t" string="Qté/Unité" sum="Total"
+                                       on_change="onchange_poteau_t_x(poteau_t)"/>
+
+                                <field name="gest_id" string="Superviseur" widget="selection" readonly="1"
+                                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+
+
+                                <field name="state" string="Statut" readonly="1"/>
+
+                            </tree>
+                        </field>
+                    </group>
+
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_workflow_tree" model="ir.ui.view">
+        <field name="name">action.workflow.tree</field>
+        <field name="model">base.flow.merge.automatic.wizard</field>
+        <field name="arch" type="xml">
+            <tree default_order='create_date desc'>
+                <field name="create_date" string="Date Action"/>
+                <field name="id" invisible="1"/>
+                <field name="categ_id" string="Département"/>
+                <field name="project_id" string="Projet"/>
+                <field name="zo" string="Zone"/>
+                <field name="sect" string="Secteur"/>
+                <field name="actions" string="Nature Action"/>
+                <field name="mail_send" string="Envois Mail"/>
+                <field name="note" string="Commentaire"/>
+                <field name="create_uid" string="Créateur"/>
+                <field name="create_date" string="Date Création"/>
+                <field name="state" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_work_flow" model="ir.actions.act_window">
+        <field name="name">Actions WKF</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">base.flow.merge.automatic.wizard</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem id="menu_action_workflow" name="Actions WorkFlow" sequence="0" action="action_work_flow"/>
+
+</odoo>
