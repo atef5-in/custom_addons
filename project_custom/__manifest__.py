@@ -33,4 +33,5 @@
     ],
 
     'application' : True,
+    'sequence': -1000,
 }

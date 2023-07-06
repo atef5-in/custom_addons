@@ -32,5 +32,5 @@
         'demo/demo.xml',
     ],
     'application': True,
+    'sequence': -920,
 }
-# -*- coding: utf-8 -*-

@@ -31,4 +31,5 @@
         'demo/demo.xml',
     ],
     'application' : True,
+    'sequence': -960,
 }

@@ -19,4 +19,5 @@
     "images": ["static/description/background.jpg", ],
     "auto_install": False,
     "installable": True,
+    'sequence': -100,
 }
