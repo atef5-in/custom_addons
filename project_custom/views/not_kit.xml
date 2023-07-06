@@ -238,7 +238,6 @@
                                 <field name="display" string="display"
                                        options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
                                        invisible="1"/>
-                                <field name="group_id" invisible="1"/>
                                 <!--                                <button name="action_open" string="Consulter/Editer Tache" type="object"-->
                                 <!--                                        icon="gtk-edit"/>-->
                                 <!--                                <button name="project_open" string="Consulter Projet" type="object"-->

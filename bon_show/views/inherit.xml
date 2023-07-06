@@ -1,0 +1,47 @@
+<odoo>
+
+    <record id="view_task_work_tree_bon_show" model="ir.ui.view">
+        <field name="name">task.work.tree.bon.show</field>
+        <field name="model">project.task.work</field>
+        <field name="inherit_id" ref="task_work.view_task_work_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='display']" position="after">
+                <field name="group_id" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_task_work_form_bon_show" model="ir.ui.view">
+        <field name="name">task.work.form.bon.show</field>
+        <field name="model">project.task.work</field>
+        <field name="inherit_id" ref="task_work.view_task_work_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='ftp']" position="before">
+                <field name="group_id" invisible="1" string="C.G"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_project_form_bon_show" model="ir.ui.view">
+        <field name="name">project.form.bon.show</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project_custom.view_custom_project_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='work_ids']/tree/field[@name='display']" position="after">
+                <field name="group_id" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_project_not_kit_bon_show" model="ir.ui.view">
+        <field name="name">project.not.kit.bon.show</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project_custom.view_kit_false"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='work_ids']/tree/field[@name='display']" position="after">
+                <field name="group_id" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

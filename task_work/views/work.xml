@@ -72,7 +72,6 @@
                     <field name="total_r" string="Cout Réal" required="1"/>
                     <field name="state" string="Etat"/>
                     <field name="display" string="display" invisible="1"/>
-                    <field name="group_id" invisible="1"/>
                 </tree>
 
             </field>
@@ -195,7 +194,6 @@
 <!--                                    <field name="wizard_id" invisible="1" string="Wizard"/>-->
                                     <field name="project_id" invisible="0"/>
                                     <field name="task_id" invisible="1"/>
-                                    <field name="group_id" invisible="1" string="C.G"/>
                                     <field name="ftp" string="Ftp" placeholder="Description..." invisible="1"/>
                                     <field name="state" invisible="1" readonly="1" string="Etat"/>
                                     <field name="done3" string="Controlé?"/>

@@ -20,14 +20,14 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'project_custom', 'product'],
+    'depends': ['base', 'project_custom'],
 
     'images': ['static/description/banner.jpg'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-        'views/merge_facture.xml',
+        # 'views/merge_facture.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

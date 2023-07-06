@@ -237,7 +237,8 @@ class BonShow(models.Model):
     def unlink(self):
         for rec in self:
             if rec.state not in ['draft']:
-                raise UserError(_('Warning!\nImpossible de supprimer une Facture ou F/T si le statut n"est pas brouillon!'))
+                raise UserError(
+                    _('Warning!\nImpossible de supprimer une Facture ou F/T si le statut n"est pas brouillon!'))
             for kk in rec.line_ids2:
                 self.env.cr.execute("DELETE FROM bon_show_line2 WHERE bon_id=%s ", (rec.id,))
 
@@ -1210,3 +1211,16 @@ class BonShowLine1(models.Model):
 class HrHolidays(models.Model):
     _name = 'hr.holidays'
 
+
+class ProjectTaskWork(models.Model):
+    _inherit = 'project.task.work'
+
+    group_id = fields.Many2one('bon.show', 'group ID', select="1", readonly=True,
+                               states={'draft': [('readonly', False)]}, )
+
+
+class ProjectTaskWorkLine(models.Model):
+    _inherit = 'project.task.work.line'
+
+    group_id = fields.Many2one('bon.show', string='Done by', select="1", readonly=True,
+                               states={'affect': [('readonly', False)]}, )

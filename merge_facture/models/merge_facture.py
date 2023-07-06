@@ -130,20 +130,20 @@ class EbMergeFactures(models.Model):
     _description = 'Merge factures'
     _rec_name = 'name'
 
-    @api.model
-    def default_get(self, fields):
-        res = super(EbMergeFactures, self).default_get(fields)
-        active_ids = self.env.context.get('active_ids')
-        project_list = []
-        if active_ids:
-            res['work_ids'] = active_ids
-            for jj in active_ids:
-                work = self.env['project.task.work.line'].browse(jj)
-                project_list.append(work.project_id.id)
-                res.update({'partner_id': work.partner_id.id, 'project_id': work.project_id.id})
-            list_wo_no_duplicate = list(set(project_list))
-            res.update({'partner_id': work.work_id.task_id.partner_id.id, 'project_ids': list_wo_no_duplicate})
-        return res
+    # @api.model
+    # def default_get(self, fields):
+    #     res = super(EbMergeFactures, self).default_get(fields)
+    #     active_ids = self.env.context.get('active_ids')
+    #     project_list = []
+    #     if active_ids:
+    #         res['work_ids'] = active_ids
+    #         for jj in active_ids:
+    #             work = self.env['project.task.work.line'].browse(jj)
+    #             project_list.append(work.project_id.id)
+    #             res.update({'partner_id': work.partner_id.id, 'project_id': work.project_id.id})
+    #         list_wo_no_duplicate = list(set(project_list))
+    #         res.update({'partner_id': work.work_id.task_id.partner_id.id, 'project_ids': list_wo_no_duplicate})
+    #     return res
 
     @api.depends('line_ids.total')
     def _compute_amount(self):

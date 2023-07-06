@@ -18,7 +18,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'project', 'hr', 'product_custom', 'bon_show'],
+    'depends': ['base', 'project', 'hr', 'product_custom'],
 
     # always loaded
     'data': [

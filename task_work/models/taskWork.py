@@ -491,8 +491,6 @@ class TaskWork(models.Model):
     employee_id = fields.Many2one('hr.employee', 'Employé', readonly=True, states={'draft': [('readonly', False)]}, )
     issue_id = fields.Many2one('project.issue', 'Issue ID', select="1", readonly=True,
                                states={'draft': [('readonly', False)]}, )
-    group_id = fields.Many2one('bon.show', 'group ID', select="1", readonly=True,
-                               states={'draft': [('readonly', False)]}, )
     group_id2 = fields.Many2one('base.group.merge.automatic.wizard', string='group 2 ID', select="1", readonly=True,
                                 states={'draft': [('readonly', False)]}, )
     dependency_task_ids = fields.Many2many('project.task.work', 'project_task_dependency_work_rel',
@@ -769,8 +767,6 @@ class TaskWorkLine(models.Model):
     done3 = fields.Boolean(string='is done')
     done4 = fields.Boolean(string='is done')
     auto = fields.Boolean(string='is done')
-    group_id = fields.Many2one('bon.show', string='Done by', select="1", readonly=True,
-                               states={'affect': [('readonly', False)]}, )
     group_id2 = fields.Many2one('base.group', 'Done by', select="1", readonly=True,
                                 states={'affect': [('readonly', False)]}, )
     facture = fields.Boolean(string='Facture', readonly=True, states={'affect': [('readonly', False)]}, )
@@ -935,26 +931,26 @@ class BaseFlowMergeLine(models.Model):
     work_id = fields.Many2one('project.task.work', string='Tache')
 
 
-class BonShowInherit(models.Model):
-    _inherit = 'bon.show'
+# class BonShowInherit(models.Model):
+#     _inherit = 'bon.show'
+#
+#     work_id = fields.Many2one('project.task.work', 'Nationality', readonly=True,
+#                               states={'draft': [('readonly', False)]}, )
+#     line_ids = fields.Many2many('project.task.work.line', 'bon_show_project_task_work_line_rel', 'bon_show_id',
+#                                 'project_task_work_line_id', string='Legumes', readonly=True,
+#                                 states={'draft': [('readonly', False)]}, )
 
-    work_id = fields.Many2one('project.task.work', 'Nationality', readonly=True,
-                              states={'draft': [('readonly', False)]}, )
-    line_ids = fields.Many2many('project.task.work.line', 'bon_show_project_task_work_line_rel', 'bon_show_id',
-                                'project_task_work_line_id', string='Legumes', readonly=True,
-                                states={'draft': [('readonly', False)]}, )
-
-
-class BonShowLine2Inherit(models.Model):
-    _inherit = 'bon.show.line2'
-
-    work_id = fields.Many2one('project.task.work', string='Nationality')
-    line_id = fields.Many2one('project.task.work.line', string='Tags')
-
-
-class BonShowLine1Inherit(models.Model):
-    _inherit = 'bon.show.line1'
-
-    work_id = fields.Many2one('project.task.work', string='Task')
-    line_id = fields.Many2one('project.task.work.line', string='Task')
-
+#
+# class BonShowLine2Inherit(models.Model):
+#     _inherit = 'bon.show.line2'
+#
+#     work_id = fields.Many2one('project.task.work', string='Nationality')
+#     line_id = fields.Many2one('project.task.work.line', string='Tags')
+#
+#
+# class BonShowLine1Inherit(models.Model):
+#     _inherit = 'bon.show.line1'
+#
+#     work_id = fields.Many2one('project.task.work', string='Task')
+#     line_id = fields.Many2one('project.task.work.line', string='Task')
+#

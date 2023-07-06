@@ -20,13 +20,14 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'project'],
+    'depends': ['base', 'project_custom'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
         'views/facture.xml',
         'views/ft.xml',
+        'views/inherit.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
