@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem
+            id="menu_Projet_root"
+            name="Projet"
+            sequence="0"/>
+    <menuitem
+            id="menu_ActionWrk_master"
+            name="Recherche Action Work Flow"
+            parent="menu_Projet_root"
+            sequence="0"/>
+    <menuitem
+            id="menu_taches_master"
+            name="Recherche Taches"
+            parent="menu_Projet_root"
+            sequence="20"/>
+
+
+</odoo>
