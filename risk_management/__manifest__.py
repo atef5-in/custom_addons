@@ -20,7 +20,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'project_custom', 'eb_merge_task'],
+    'depends': ['base', 'project_custom', 'eb_merge_task', 'merge_facture'],
 
     # always loaded
     'data': [

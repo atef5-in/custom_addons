@@ -502,3 +502,11 @@ class BaseTaskMergeLine(models.Model):
         result['value'][
             'poteau_t'] = total / 1000  # Calcule la valeur pour le champ 'poteau_t' dans le dictionnaire de résultats
         return result  # Retourne le dictionnaire de résultats contenant les valeurs mises à jour
+
+
+class BaseFactureMergeLine(models.Model):
+    _inherit = 'base.facture.merge.line'
+
+    plan_id = fields.Many2one('risk.management.response.category', string='Wizard')
+    plan_id2 = fields.Many2one('risk.management.response.category', string='Wizard')
+    risk_id = fields.Many2one('risk.management.category', string='Wizard')

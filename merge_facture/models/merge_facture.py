@@ -26,9 +26,6 @@ class MergeFacturesLine(models.Model):
     date_to = fields.Date(string='Wizard')
     employee_id = fields.Many2one('hr.employee', string='Wizard')
     poteau_t = fields.Float(string='Time Spent')
-    plan_id = fields.Many2one('risk.management.response.category', string='Wizard')
-    plan_id2 = fields.Many2one('risk.management.response.category', string='Wizard')
-    risk_id = fields.Many2one('risk.management.category', string='Wizard')
     is_display = fields.Boolean(string='Display ?')
     plans = fields.Char(string='Plans')
     name = fields.Char(string='Name')
@@ -383,13 +380,11 @@ class EbMergeFactures(models.Model):
                                                             rec.date_start_r, "%Y-%m-%d") <= datetime.strptime(
                                                             ll.end_date, "%Y-%m-%d"):
                                                             if empl.job_id.id == 1 or ll.uom_id.id == 5:
-                                                                name_emp = empl.name
                                                                 exist += 1
                                                                 wage = ll.amount
                                                                 total_dep = wage * rec.hours_r
                                                                 total_dep2 += wage * rec.hours_r
                                                             else:
-                                                                name_emp = empl.name
                                                                 exist += 1
                                                                 wage = ll.amount
                                                                 total_dep = wage * rec.poteau_r
@@ -1984,7 +1979,7 @@ class EbMergeFactures(models.Model):
 class ProjectProfitability(models.Model):
     _name = 'project.profitability'
     _description = 'Project Profitability'
-
+#
     total_depenses = fields.Float(string='Total Depenses')
     montant_total = fields.Float(string='Montant total')
     diference = fields.Float('Difference ')
@@ -1995,5 +1990,3 @@ class ProjectProfitability(models.Model):
     # progress_amout = fields.Float(string='Progress Amount')
 
 
-class RiskManagementResponseCategory(models.Model):
-    _name = 'risk.management.response.category'
