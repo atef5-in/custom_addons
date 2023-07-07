@@ -12,6 +12,9 @@ class TaskWork(models.Model):
     _description = 'Project Task Work'
     _rec_name = 'id'
 
+    work_id = fields.Char(string='work ID')
+    work_id2 = fields.Char(string='work ID')
+
     def _default_done(self):
 
         for rec in self:
@@ -212,7 +215,7 @@ class TaskWork(models.Model):
     def _isinter(self):
 
         for book in self:
-            book.is_intervenant = False
+            book.is_intervenant = False #to set to False.
             if book.line_ids:
                 tt = []
                 for kk in book.line_ids.ids:
@@ -703,8 +706,10 @@ class TaskWork(models.Model):
 
             for work in wrk:
                 hist = self.env['work.histo'].search([('work_id', '=', work.id)])
+                print('hist:', hist)
                 if hist:
                     for hist_line in hist.mapped('line_ids'):
+                        # print('hist_line.work_histo_id.id:', hist_line.work_histo_id.id)
                         ll.append(hist_line.work_histo_id.id)
 
             if not ll:
@@ -738,27 +743,25 @@ class TaskWork(models.Model):
         project_ids = self.ids[0]
         task_obj = self.env['project.task.work']
         emp_obj = self.env['hr.employee']
-        task = self
         r = []
-        dep = self.env['hr.academic'].search([('categ_id', '=', task.categ_id.id)])
-        ## raise osv.except_osv(_('Error !'), _('No period defined for this date: %s !\nPlease create one.')%dep)
+        dep = self.env['hr.academic'].search([('categ_id', '=', self.categ_id.id)])
         self.env['hr.employee'].search([]).write({'vehicle': ''})
         if dep:
             for nn in dep:
                 em = self.env['hr.academic'].browse(nn, context=self.env.context).employee_id.id
                 emp_obj.browse(em).write({'vehicle': '1'})
                 r.append(em)
-        task.write({'dep': r})
-        if task.categ_id.id == 6:
+        self.write({'dep': r})
+        if self.categ_id.id == 6:
             return {
-                'name': ('Modification Travaux'),
+                'name': 'Modification Travaux',
                 'type': 'ir.actions.act_window',
                 'view_mode': 'form',
                 'view_id': self.env.ref('module_name.view_id_1').id,
                 'target': 'new',
                 'res_model': 'project.task.work',
-                'res_id': task.id,
-                'context': {'active_id': task.id},
+                'res_id': self.id,
+                'context': {'active_id': self.id},
                 'domain': [('project_id', 'in', [project_ids])]
             }
         else:
@@ -769,8 +772,8 @@ class TaskWork(models.Model):
                 'view_id': self.env.ref('module_name.view_id_2').id,
                 'target': 'new',
                 'res_model': 'project.task.work',
-                'res_id': task.id,
-                'context': {'active_id': task.id},
+                'res_id': self.id,
+                'context': {'active_id': self.id},
                 'domain': [('project_id', 'in', [project_ids])]
             }
 
@@ -823,8 +826,8 @@ class TaskWork(models.Model):
             'name': 'Consultation Travaux Validés',
             'type': 'ir.actions.act_window',
             'view_mode': 'tree,form',
-            'views': [[self.env.ref('med_eb_group_wizard.view_id').id, 'tree']],
-            # Replace 'your_module_name' and 'view_id' with the actual values
+            'views': [[self.env.ref('med_eb_group_wizard.retour_bons_production').id, 'tree']],
+
             'target': 'new',
             'res_model': 'base.group.merge.automatic.wizard',
             'context': {},
