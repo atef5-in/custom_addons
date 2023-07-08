@@ -551,3 +551,9 @@ class HrCertification(models.Model):
 class AccountAnalyticJournal(models.Model):
     _name = 'account.analytic.journal'
 
+
+class MailChannel(models.Model):
+    _inherit = 'mail.channel'
+
+    def _subscribe_users_automatically_get_members(self):
+        return {}
