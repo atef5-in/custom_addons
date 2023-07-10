@@ -10,102 +10,6 @@ class EbMergeInvoicess(models.Model):
     _name = "base.invoices.merge.automatic.wizard"
     _description = "Merge invoicess"
 
-    def _amount_all(self):
-
-        tax_obj = self.env['account.tax']
-
-        tvp_obj = tax_obj.browse(8)
-        tps_obj = tax_obj.browse(7)
-
-        for invoice in self:
-            invoice.amount_untaxed = sum(line.amount_line for line in invoice.line_ids)
-            if invoice.employee_id.job_id.id == 1:
-                tvq = 0
-                tps = 0
-            else:
-                tvq = tvp_obj.amount
-                tps = tps_obj.amount
-            invoice.amount_tps = invoice.amount_untaxed * tps
-            invoice.amount_tvq = invoice.amount_untaxed * tvq
-            invoice.amount_total = invoice.amount_untaxed + invoice.amount_tps + invoice.amount_tvq
-
-    name = fields.Char(string='name', readonly=True, )
-    gest_id = fields.Many2one('hr.employee', string='Wizard', readonly=True, states={'draft': [('readonly', False)]})
-    work_ids = fields.Many2many('project.task.work', string='Invoices', readonly=True,
-                                states={'draft': [('readonly', False)]})
-    user_id = fields.Many2one('res.users', string='Assigned', readonly=True, states={'draft': [('readonly', False)]})
-    dst_work_id = fields.Many2one('project.task.work', string='Destination Task')
-    dst_project = fields.Many2one('project.project', string="Project")
-    group_id = fields.Many2one('base.group.merge.automatic.wizard', string="Project")
-    line_ids = fields.One2many(
-        'base.invoices.merge.line', 'wizard_id', string="Role lines", copy=True,
-        readonly=True, states={'draft': [('readonly', False)]})
-    # link_ids = fields.One2many('link.line', 'affect_id', string="Work done")
-    project_id = fields.Many2one('project.project', string='Wizard', readonly=True,
-                                 states={'draft': [('readonly', False)]})
-    task_id = fields.Many2one('project.task', string='Wizard', readonly=True, states={'draft': [('readonly', False)]})
-    work_id = fields.Many2one('project.task.work', string='Wizard', readonly=True,
-                              states={'draft': [('readonly', False)]})
-    pay_id = fields.Many2one('hr.payslip', string='Wizard', readonly=True, states={'draft': [('readonly', False)]})
-    date_start_r = fields.Date(string='Assigned')
-    date_end_r = fields.Date(string='Assigned')
-    employee_id = fields.Many2one('hr.employee', string='Assigned',
-                                  readonly=True, states={'draft': [('readonly', False)]})
-    employee_id2 = fields.Many2one('hr.employee', string='Assigned')
-    hours_r = fields.Float(string='Assigned')
-    total_t = fields.Float(string='Assigned')
-    total_r = fields.Float(string='Assigned')
-    poteau_t = fields.Float(string='Assigned')
-    poteau_r = fields.Float(string='Assigned')
-    poteau_i = fields.Float(string='Assigned')
-    poteau_reste = fields.Float(string='Assigned')
-    sequence = fields.Integer(string='Assigned')
-    zone = fields.Integer(string='Assigned')
-    secteur = fields.Integer(string='Assigned')
-    state = fields.Selection([
-        ('draft', 'Planif. Trav.'),
-        ('affect', 'Travaux Affectés'),
-        ('tovalid', 'Validaion Super.'),
-        ('valid', 'Factures Br.'),
-        ('paid', 'Factures Val.'),
-        ('cancel', 'T. Annulés'),
-        ('pending', 'T. Suspendus'),
-        ('close', 'Traité')], default='draft')
-    note = fields.Text(string='Assigned')
-    states = fields.Char(string='char', readonly=True, states={'draft': [('readonly', False)]})
-    ftp = fields.Char(string='char')
-    dep = fields.Char(string='char', readonly=True, states={'draft': [('readonly', False)]})
-    done = fields.Boolean(string='Is doctor?', compute='_disponible')
-    objet = fields.Char(string='char')
-    color1 = fields.Integer(string='Assigned')
-    uom_id_r = fields.Many2one('product.uom', string='Assigned')
-    uom_id = fields.Many2one('product.uom', string='Assigned')
-    amount_untaxed = fields.Float(compute='_amount_all', string='Name', default=0, )
-    amount_total = fields.Float(compute='_amount_all', string='Name')
-    amount_tvq = fields.Float(compute='_amount_all', string='Name')
-    amount_tps = fields.Float(compute='_amount_all', string='Name')
-    categ_id = fields.Many2one('product.category', string='Wizard')
-    to = fields.Char(string='char')
-    cc = fields.Char(string='char')
-    cci = fields.Char(string='char')
-    mail_send = fields.Selection([('yes', 'Oui'), ('no', 'Non')])
-    employee_ids = fields.Many2many('hr.employee', 'base_invoices_merge_automatic_wizard_hr_employee_rel',
-                                    'base_invoices_merge_automatic_wizard_id', 'hr_employee_id', string='Legumes')
-    employee_ids1 = fields.Many2many('hr.employee', 'base_invoices_merge_automatic_wizard_hr_employee_rel1',
-                                     'base_invoices_merge_automatic_wizard_id', 'hr_employee_id', string='Legumes')
-    employee_ids2 = fields.Many2many('hr.employee', 'base_invoices_merge_automatic_wizard_hr_employee_rel2',
-                                     'base_invoices_merge_automatic_wizard_id', 'hr_employee_id', string='Legumes')
-    employee_ids3 = fields.Many2many('hr.employee', 'base_invoices_merge_automatic_wizard_hr_employee_rel3',
-                                     'base_invoices_merge_automatic_wizard_id', 'hr_employee_id', string='Legumes')
-    types_affect = fields.Selection([
-        ('intervenant', 'Production'),
-        ('controle', 'Contrôle'),
-        ('correction', 'Correction')
-    ], string="Type d'affectation", default='intervenant')
-    intervenant_id = fields.Many2one('hr.employee', string='Intervenant')
-    time = fields.Float(string='Temps de gestion')
-    time_ch = fields.Char(string='Temps de gestion')
-
     def default_get(self, fields_list):
 
         res = super().default_get(fields_list)
@@ -411,6 +315,102 @@ class EbMergeInvoicess(models.Model):
                     res.update({'name': str(str(datetime.today().year) + str(str(res1).zfill(3)))})
 
         return res
+
+    def _amount_all(self):
+
+        tax_obj = self.env['account.tax']
+
+        tvp_obj = tax_obj.browse(8)
+        tps_obj = tax_obj.browse(7)
+
+        for invoice in self:
+            invoice.amount_untaxed = sum(line.amount_line for line in invoice.line_ids)
+            if invoice.employee_id.job_id.id == 1:
+                tvq = 0
+                tps = 0
+            else:
+                tvq = tvp_obj.amount
+                tps = tps_obj.amount
+            invoice.amount_tps = invoice.amount_untaxed * tps
+            invoice.amount_tvq = invoice.amount_untaxed * tvq
+            invoice.amount_total = invoice.amount_untaxed + invoice.amount_tps + invoice.amount_tvq
+
+    name = fields.Char(string='name', readonly=True, )
+    gest_id = fields.Many2one('hr.employee', string='Wizard', readonly=True, states={'draft': [('readonly', False)]})
+    work_ids = fields.Many2many('project.task.work', string='Invoices', readonly=True,
+                                states={'draft': [('readonly', False)]})
+    user_id = fields.Many2one('res.users', string='Assigned', readonly=True, states={'draft': [('readonly', False)]})
+    dst_work_id = fields.Many2one('project.task.work', string='Destination Task')
+    dst_project = fields.Many2one('project.project', string="Project")
+    group_id = fields.Many2one('base.group.merge.automatic.wizard', string="Project")
+    line_ids = fields.One2many(
+        'base.invoices.merge.line', 'wizard_id', string="Role lines", copy=True,
+        readonly=True, states={'draft': [('readonly', False)]})
+    # link_ids = fields.One2many('link.line', 'affect_id', string="Work done")
+    project_id = fields.Many2one('project.project', string='Wizard', readonly=True,
+                                 states={'draft': [('readonly', False)]})
+    task_id = fields.Many2one('project.task', string='Wizard', readonly=True, states={'draft': [('readonly', False)]})
+    work_id = fields.Many2one('project.task.work', string='Wizard', readonly=True,
+                              states={'draft': [('readonly', False)]})
+    pay_id = fields.Many2one('hr.payslip', string='Wizard', readonly=True, states={'draft': [('readonly', False)]})
+    date_start_r = fields.Date(string='Assigned')
+    date_end_r = fields.Date(string='Assigned')
+    employee_id = fields.Many2one('hr.employee', string='Assigned',
+                                  readonly=True, states={'draft': [('readonly', False)]})
+    employee_id2 = fields.Many2one('hr.employee', string='Assigned')
+    hours_r = fields.Float(string='Assigned')
+    total_t = fields.Float(string='Assigned')
+    total_r = fields.Float(string='Assigned')
+    poteau_t = fields.Float(string='Assigned')
+    poteau_r = fields.Float(string='Assigned')
+    poteau_i = fields.Float(string='Assigned')
+    poteau_reste = fields.Float(string='Assigned')
+    sequence = fields.Integer(string='Assigned')
+    zone = fields.Integer(string='Assigned')
+    secteur = fields.Integer(string='Assigned')
+    state = fields.Selection([
+        ('draft', 'Planif. Trav.'),
+        ('affect', 'Travaux Affectés'),
+        ('tovalid', 'Validaion Super.'),
+        ('valid', 'Factures Br.'),
+        ('paid', 'Factures Val.'),
+        ('cancel', 'T. Annulés'),
+        ('pending', 'T. Suspendus'),
+        ('close', 'Traité')], default='draft')
+    note = fields.Text(string='Assigned')
+    states = fields.Char(string='char', readonly=True, states={'draft': [('readonly', False)]})
+    ftp = fields.Char(string='char')
+    dep = fields.Char(string='char', readonly=True, states={'draft': [('readonly', False)]})
+    done = fields.Boolean(string='Is doctor?', compute='_disponible')
+    objet = fields.Char(string='char')
+    color1 = fields.Integer(string='Assigned')
+    uom_id_r = fields.Many2one('product.uom', string='Assigned')
+    uom_id = fields.Many2one('product.uom', string='Assigned')
+    amount_untaxed = fields.Float(compute='_amount_all', string='Name', default=0, )
+    amount_total = fields.Float(compute='_amount_all', string='Name')
+    amount_tvq = fields.Float(compute='_amount_all', string='Name')
+    amount_tps = fields.Float(compute='_amount_all', string='Name')
+    categ_id = fields.Many2one('product.category', string='Wizard')
+    to = fields.Char(string='char')
+    cc = fields.Char(string='char')
+    cci = fields.Char(string='char')
+    mail_send = fields.Selection([('yes', 'Oui'), ('no', 'Non')])
+    employee_ids = fields.Many2many('hr.employee', 'base_invoices_merge_automatic_wizard_hr_employee_rel',
+                                    'base_invoices_merge_automatic_wizard_id', 'hr_employee_id', string='Legumes')
+    employee_ids1 = fields.Many2many('hr.employee', 'base_invoices_merge_automatic_wizard_hr_employee_rel1',
+                                     'base_invoices_merge_automatic_wizard_id', 'hr_employee_id', string='Legumes')
+    employee_ids2 = fields.Many2many('hr.employee', 'base_invoices_merge_automatic_wizard_hr_employee_rel2',
+                                     'base_invoices_merge_automatic_wizard_id', 'hr_employee_id', string='Legumes')
+    employee_ids3 = fields.Many2many('hr.employee', 'base_invoices_merge_automatic_wizard_hr_employee_rel3',
+                                     'base_invoices_merge_automatic_wizard_id', 'hr_employee_id', string='Legumes')
+    types_affect = fields.Selection([
+        ('intervenant', 'Production'),
+        ('controle', 'Contrôle'),
+        ('correction', 'Correction')
+    ], string="Type d'affectation", default='intervenant')
+    intervenant_id = fields.Many2one('hr.employee', string='Intervenant')
+    time = fields.Float(string='Temps de gestion')
+    time_ch = fields.Char(string='Temps de gestion')
 
     def _compute_done2(self):
         print('_compute_done2')
