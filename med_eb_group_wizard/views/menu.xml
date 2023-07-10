@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_declaration_bons_root"
+              name="Declaration Bons"
+              web_icon="med_eb_group_wizard,static/description/icon.png"
+              sequence="0"/>
+
+<!--    <menuitem id="menu_declaration_bons_master"-->
+<!--              name="Declaration Bons"-->
+<!--              parent="menu_declaration_bons_root"-->
+<!--              sequence="10"/>-->
+
+<!--    <menuitem id="menu_declaration_de_bon_controle_master"-->
+<!--              name="Declaration de bon de contrôle"-->
+<!--              parent="menu_declaration_bons_root"-->
+<!--              sequence="20"/>-->
+
+<!--    <menuitem id="menu_declaration_de_bon_correction_master"-->
+<!--              name="Declaration de bon de correction"-->
+<!--              parent="menu_declaration_bons_root"-->
+<!--              sequence="30"/>-->
+
+    <menuitem id="menu_project_task_work_master"
+              name="Project Task Work"
+              parent="menu_declaration_bons_root"
+              sequence="40"/>
+
+
+</odoo>

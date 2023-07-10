@@ -1,0 +1,215 @@
+<odoo>
+    <!--    vue ?-->
+    <data>
+        <record id="declaration_de_bon_control_form" model="ir.ui.view">
+            <field name="name">declaration.bon.control.form</field>
+            <field name="model">base.group.merge.automatic.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Declaration de bon de controle">
+                    <sheet string="Project">
+                        <header>
+                            <button name="button_approve1" type="object" string="Demande Approbation Controle"
+                                    class="oe_highlight" confirm="Envoyer pour Approbations Controles?"
+                                    attrs="{'invisible':[ '|', ('state1','not in',('draft')),('done1_','=',False)]}"/>
+
+                            <button name="button_approve_s1" type="object" string="Valider Controles"
+                                    class="oe_highlight" confirm="Valider les Traitements?"
+                                    attrs="{'invisible':[ '|',('state1','not in',('tovalid')),('done_','=',False)]}"/>
+
+                            <button name="button_reopen1" type="object" string="Annuler Dde" class="oe_highlight"
+                                    confirm="Annuler Les Bons?"
+                                    attrs="{'invisible':[ '|',('state1','not in',('tovalid')),('done_','=',False)]}"/>
+
+                            <button name="affecter_bon_controle" type="object" string="Affecter Controle"
+                                    class="oe_highlight"
+                                    attrs="{'invisible':[ ('done','=',False),('state2','!=','draft')]}" invisible="1"/>
+
+                            <button name="button_bon_correction" type="object" string="Affecter Correction"
+                                    class="oe_highlight"
+                                    attrs="{'invisible':[ '|', '|',('done','=',False),('state2','!=','draft'),('state1','!=','valid')]}"/>
+                            <field name="state1" widget="statusbar" statusbar_visible="draft,tovalid,valid"
+                                   statusbar_colors="{'draft':'blue'}" readonly="1"/>
+                            <field name="state2" widget="statusbar" statusbar_visible="draft,tovalid,valid"
+                                   statusbar_colors="{'draft':'blue'}" invisible="1"/>
+                        </header>
+                        <group>
+                            <group attrs="{'readonly':[('state1', 'not in', ['draft','tovalid'])]}">
+                                <group string="Informations Générale">
+                                    <field name="sadmin" string="Categ" invisible="1"/>
+                                    <field name="sadmin" string="super" invisible="1"/>
+                                    <field name="categ_id" string="Categ" invisible="1"/>
+                                    <field name="id" string="ID"/>
+                                    <field name="num" string="ID" invisible="1"/>
+                                    <field name="type1" string="Type" invisible="1"/>
+                                    <field name="donecq" string="Done" invisible="1"/>
+                                    <field name="doneco" string="Done" invisible="1"/>
+
+                                    <field name="done" string="Done" invisible="1"/>
+                                    <field name="done1" string="Is User" invisible="1"/>
+                                    <field name="done_" string="Done" invisible="1"/>
+                                    <field name="done1_" string="Is User" invisible="1"/>
+                                    <field name="done__" string="Done" invisible="1"/>
+                                    <field name="done1__" string="Is User" invisible="1"/>
+                                    <field name="coordin_id" string="Coordin" invisible="1"/>
+
+                                    <field name="employee_id" string="employee_id" invisible="1"/>
+
+                                    <field name="gest_id" string="super" invisible="1"/>
+                                    <field name="kit_id" string="kit" invisible="1"/>
+                                    <field name="date_start_r" string="Date"
+                                           on_change="onchange_date_from(categ_id,date_start_r)"
+                                           readonly="1"/>
+                                    <field name="project_id" string="Project" readonly="1"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="gest_id2" string="intervenant" readonly="1"/>
+                                    <field name="bon_id" string="Bon" invisible="1"/>
+
+                                </group>
+                            </group>
+                            <group string="Informations Mails">
+                                <field name="obj" string="Objet Mail"/>
+                                <field name="zo" string="zo" invisible="0"/>
+                                <field name="sect" string="sect" invisible="0"/>
+                                <field name="mail_send1" string="Envoi Email?"
+                                       attrs="{'readonly':[('state1', 'not in', ['draft'])]}"/>
+                                <field name="employee_ids3" string="A" widget="many2many_tags"
+                                       options="{'no_create': True}"
+                                       attrs="{'readonly':[ '|', ('state1','not in',('draft')),('done1_','=',False)]}"/>
+                                <newline/>
+                                <button name="button_load_mail1" type="object" string="" icon="gtk-leave-fullscreen"
+                                        class="btn-primary" attrs="{'invisible':[('state1','not in',('draft'))]}"/>
+                                <newline/>
+                                <field name="employee_ids4" string="CC" widget="many2many_tags"
+                                       options="{'no_create': True}"
+                                       attrs="{'readonly':[ '|', ('state1','not in',('draft')),('done1_','=',False)]}"/>
+                                <field name="employee_ids" string="CCi" widget="many2many_tags"
+                                       options="{'no_create': True}"
+                                       invisible="1"/>
+                                <field name="to" string="To" invisible="1"/>
+                                <field name="cc" string="cc" invisible="1"/>
+                                <field name="cci" string="cci" invisible="1"/>
+                            </group>
+
+                        </group>
+                        <group string="Commentaires">
+                            <newline/>
+                            <field name="note2" string="Commentaire Intervenant(Controle)"
+                                   placeholder="Votre Commentaires/Remarques Ici"
+                                   attrs="{'readonly':[ '|', ('state1','not in',('draft')),('done1_','=',False)]}"/>
+                            <newline/>
+                            <field name="note3" string="Commentaire Superviseur(controle)"
+                                   placeholder="Votre Commentaires/Remarques Ici"
+                                   attrs="{'readonly':[ '|',('state1','not in',('tovalid')),('done_','=',False)]}"/>
+                        </group>
+                        <group string="Travaux Planifiés">
+                            <field name="work_ids" nolabel="1" readonly="1"
+                                   options="{'no_create': True, 'no_create_edit':True,'no_open':True}">
+                                <tree string="Tasks" create="0" edit="0" editable="bottom">
+                                    <field name="sequence" string="Séquence"/>
+
+                                    <field name="project_id" invisible="context.get('user_invisible', False)"
+                                           readonly="1"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                           string="Projet"/>
+
+                                    <field name="name" string="Nom Taches/Kit" readonly="1"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="product_id" string="T.S"/>
+
+                                    <field name="date_start" string="Date Start" widget="date" readonly="1"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="date_end" string="Date Fin" widget="date" readonly="1"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="color" string="Durée (Jours)" sum="Total" readonly="1"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="hours" string="Durée (Heurs)"/>
+                                    <field name="uom_id" string="Unité"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="poteau_t" string="Qté/Unité Prév." sum="Prev Hours"/>
+
+                                    <field name="gest_id" string="Superviseur" readonly="1"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="employee_id" string="employee_id"/>
+
+                                    <field name="employee_id" string="Intervenant" readonly="1"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="state" string="Etat" readonly="1"/>
+                                    <!--                                    <button name="action_open_histo" string="Consulter Historique Tache" type="object"-->
+                                    <!--                                            icon="gtk-dnd"/>-->
+
+                                </tree>
+                            </field>
+                        </group>
+
+                        <group string="Informations Bons">
+                            <group>
+                                <newline/>
+                                <group>
+                                    <button name="button_save_" type="object" string="Save" icon="gtk-floppy"
+                                            nolabel="1"
+                                            class="btn-primary"
+                                            attrs="{'invisible':[('state1', 'not in', ['draft','tovalid'])]}"/>
+                                </group>
+                                <group>
+                                    <button name="button_import2" type="object" string="Importer Travaux de Controles"
+                                            icon="gtk-sort-descending" confirm="Créer un Bon de Controle?"
+                                            class="btn-primary"
+                                            attrs="{'invisible':['|',('state1','not in',['draft']),('done1_','=',False)]}"/>
+                                </group>
+                            </group>
+                            <newline/>
+                            <field name="line_ids2" nolabel="1"
+                                   attrs="{'readonly':[('state1', 'not in', ('draft','tovalid'))]}">
+                                <tree editable="bottom" create="0">
+                                    <!-- domain="[('product_id.name', 'ilike', 'qualit')]">-->
+                                    <field name="sequence" string="Ordre"/>
+                                    <field name="work_id" string="Travaux"/>
+                                    <field name="name" string="Nom Taches/Kit"/>
+                                    <field name="product_id" string="T.S"/>
+                                    <field name="project_id" string="name" invisible="1"/>
+                                    <field name="employee_id" string="min_id" invisible="1"/>
+                                    <field name="date_start_r" string="D. Début" widget="date"
+                                           on_change="onchange_date_to_(date_end_r,date_start_r,employee_id)"
+                                           bg_color="thistle:work_id!=True;"/>
+                                    <field name="date_end_r" string="D. Fin" widget="date"
+                                           on_change="onchange_date_to_(date_end_r,date_start_r,employee_id)"/>
+                                    <field name="categ_id" string="min_id" invisible="1"/>
+                                    <field name="color1" string="Jrs" sum="Prev Hours"/>
+                                    <field name="hours_r" string="Hrs" widget="float_time" sum="Prev Hours"
+                                           bg_color="thistle:work_id!=True;"/>
+                                    <!--                                      <field name="poteau_r" string="Qté/Unité" sum="Prev Hours" widget="char"-->
+                                    <!--                                        bg_color="thistle:work_id!=True;"/>-->
+                                    <field name="uom_id_r" string="Unité"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="state" string="line" invisible="1"/>
+                                    <!--                                                                        <field name="line_id" string="line" invisible="1"/>-->
+                                    <!--                                                                                                            <field name="project_id2" string="Sous Projet?"-->
+                                    <!--                                                                                                                   domain="[('parent_id1','=',project_id)]"-->
+                                    <!--                                                                                                                   options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>-->
+                                    <field name="gest_id" string="Controleur" readonly="1"/>
+                                    <!--                                                                        <field name="corr" string="Correction?" invisible="1" required="0"/>-->
+                                    <!--                                                                                                            <field name="total_part_cont" string="type"/>-->
+                                    <field name="ftp" string="Lien FTP" invisible="0"/>
+                                    <!--                                                                                                            <field name="b1" string="Inj." invisible="0"-->
+                                    <!--                                                                                                                   attrs="{'readonly':[('b1', '=', True)]}"/>-->
+                                </tree>
+                            </field>
+                        </group>
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+                <record id="action_declaration_de_bon_controle" model="ir.actions.act_window">
+                    <field name="type">ir.actions.act_window</field>
+                    <field name="name">Declaration des bon de conrole</field>
+                    <field name="res_model">base.group.merge.automatic.wizard</field>
+                </record>
+    </data>
+    <!--    <menuitem id="menu_declaration_de_bon_controle"-->
+    <!--              name="Declaration de bon de contrôle"-->
+    <!--              parent="menu_declaration_de_bon_controle_master"-->
+    <!--              action="action_declaration_de_bon_controle"-->
+    <!--              sequence="10"/>-->
+</odoo>

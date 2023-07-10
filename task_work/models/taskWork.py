@@ -12,8 +12,8 @@ class TaskWork(models.Model):
     _description = 'Project Task Work'
     _rec_name = 'id'
 
-    work_id = fields.Char(string='work ID')
-    work_id2 = fields.Char(string='work ID')
+    # work_id = fields.Char(string='work ID')
+    # work_id2 = fields.Char(string='work ID')
 
     def _default_done(self):
 

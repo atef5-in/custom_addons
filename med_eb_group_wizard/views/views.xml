@@ -1,0 +1,56 @@
+<openerp>
+<data>
+  <record id="merge_group_form" model="ir.ui.view">
+      <field name="name">eb.merge.group.form</field>
+      <field name="model">base.group.merge.automatic.wizard</field>
+      <field name="arch" type="xml">
+          <form string="Merge Works">
+            <script>
+                $(document).ready(function(){
+                    $('.ui-dialog').css({'width': '680px'});
+                    $('.oe_form_sheet_width').css({'MAXwidth': '550px'});
+                    });
+            </script>
+            <!-- <h5>***If Assigned to: is empty , the user from the destination task will be assigned!</h5> -->
+              <group string="Assign tasks to">
+                    <field name="user_id" class="oe_inline"/>
+                    <field name="dst_project" class="oe_inline"/>
+              </group>
+              <group string="Destination">
+                  <field name="dst_work_id" class="oe_inline"/>
+
+              </group>
+              <group string="Select Tasks">
+                  <field name="work_ids" nolabel="1">
+                      <tree>
+                          <field name="create_date"/>
+                          <field name="name"/>
+                          <field name="task_id"/>
+                         
+                          <!-- <field name="user_id"/> -->
+                          <field name="id"/>
+                      </tree>
+                  </field>
+              </group>
+              <footer>
+                  <button name="action_merge" type="object" string="Merge" class="btn-primary"/>
+                  <button string="Cancel" class="btn-default" special="cancel"/>
+              </footer>
+          </form>
+      </field>
+  </record>
+
+ 
+
+  <act_window
+      id="action_merge_group"
+      name="Merge group"
+      multi="True"
+      key2="client_action_multi"
+      res_model="base.group.merge.automatic.wizard"
+      src_model="project.task.work"
+      view_mode="form"
+      target="new"
+      view_type="form"/>
+</data>
+</openerp>

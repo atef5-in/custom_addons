@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_declarer_bons" model="ir.actions.server">
+        <field name="name">Déclarer Les Bons</field>
+        <field name="type">ir.actions.server</field>
+        <field name="model_id" ref="med_eb_group_wizard.model_project_task_work"/>
+        <field name="binding_model_id" ref="med_eb_group_wizard.model_project_task_work"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            action = records.action_open1()
+        </field>
+    </record>
+
+    <record id="view_project_task_work_tree" model="ir.ui.view">
+        <field name="name">project.task.work.tree</field>
+        <field name="model">project.task.work</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="project_id" string="Projet"/>
+                <field name="name" string="Nom Taches/Kit"/>
+                <field name="product_id" string="T.S"/>
+                <field name="date_start" string="Date Start Project" invisible="1"/>
+                <field name="date_end" string="Date Fin Project" invisible="1"/>
+
+                <field name="date_start_r" string="Date Start task"/>
+                <field name="date_end_r" string="Date Fin task"/>
+                <field name="color" string="Durée (Jours)"/>
+                <field name="hours" string="Durée (Heurs)"/>
+                <field name="uom_id" string="Unité"/>
+                <!-- <field name="poteau_t" string="Qté/Unité Prév." sum="Prev Hours"/>-->
+                <field name="gest_id" string="Superviseur" readonly="0"/>
+                <!--options="{'no_create': True, 'no_create_edit':True,'no_open':True}"-->
+
+                <field name="employee_id" string="Intervenant"/>
+                <field name="state" string="Etat" readonly="0"/>
+                <field name="categ_id" string="Category"/>
+                <field name="task_id" string="Task id"/>
+
+<!--                <button name="action_open_histo" string="Consulter Historique Tache" type="action"-->
+<!--                        icon="fa:hand-paper-o"/>-->
+<!--                <button name="action_open" string="Consulter/Editer Tache" type="action" icon="fa:edit"/>-->
+<!--                <button name="project_open" string="Consulter Projet" type="action" icon="fa:cogs"/>-->
+<!--                <button name="action_open_flow" string="Consulter Workflow" type="action" icon="fa:sort-desc"-->
+<!--                        attrs="{'invisible': [('done4','=', False)]}"/>-->
+
+<!--                <button name="action_open_group2" string="Consulter Retours Bons" type="action" icon="fa:paint-brush"-->
+<!--                        attrs="{'invisible': [('is_intervenant','=', False)]}"/>-->
+<!--                <button name="action_open_group3" string="Consulter Retours Bonn controle" type="action"-->
+<!--                        icon="fa:check-square-o" attrs="{'invisible': [('is_control','=', False)]}"/>-->
+<!--                <button name="action_open_group4" string="Consulter Retours Bons correction" type="action"-->
+<!--                        icon="fa:palette" attrs="{'invisible': [('is_correction','=', False)]}"/>-->
+
+<!--                <button name="action_open_group" string="Consulter la F.T/Facture" type="action" icon="fa:indent"-->
+<!--                        attrs="{'invisible': [('done2','=', False)]}"/>-->
+
+<!--                <button name="move_next" string="Taches Suivantes" type="action" icon="fa:angle-double-right"-->
+<!--                        attrs="{'invisible': [('done33','=', False)]}"/>-->
+
+<!--                <button name="action_open_invoice" string="Consulter la Facture/F.P" type="action"-->
+<!--                        icon="fa:check-circle-o" attrs="{'invisible': [('done1','=', False)]}"/>-->
+<!--                <button name="action_copy" string="Dupliquer Fiche" type="action" icon="fa:clone"-->
+<!--                        confirm="Voulez-vous Dupliquer les Travaux?" invisible="1"/>-->
+<!--                <button name="action_issue2" string="Consulter Tableau Plans Relevé" type="action" icon="fa:calendar"-->
+<!--                        attrs="{'invisible': [('r_id', '=', False)]}"/>-->
+
+            </tree>
+        </field>
+    </record>
+    <record id="view_project_task_work_form" model="ir.ui.view">
+        <field name="model">project.task.work</field>
+        <field name="name">project.task.work.form</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="project_id" string="Projet"/>
+                        <field name="name" string="Nom Taches/Kit"/>
+                        <field name="product_id" string="T.S"/>
+
+                        <field name="date_start" string="Date Start Project" invisible="0"/>
+                        <field name="date_end" string="Date Fin Project" invisible="0"/>
+
+                        <field name="date_start_r" string="Date Start" widget="date"/>
+                        <field name="date_end_r" string="Date Fin" widget="date"/>
+
+                        <field name="color" string="Durée (Jours)" sum="Total"/>
+                        <field name="hours" string="Durée (Heurs)"/>
+                        <field name="uom_id" string="Unité"/>
+                        <!--                                    <field name="poteau_t" string="Qté/Unité Prév." sum="Prev Hours"/>-->
+                        <field name="gest_id" string="Superviseur" readonly="0"/>
+                        <!--                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"-->
+
+                        <field name="employee_id" string="Intervenant"/>
+                        <field name="state" string="Etat" readonly="0"/>
+                        <field name="categ_id" string="Category"/>
+                        <field name="task_id" string="Task id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_project_task_work" model="ir.actions.act_window">
+        <field name="name">Create project Task work</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">project.task.work</field>
+        <field name="view_mode">tree,form</field>
+
+    </record>
+    <record id="view_project_task_work_search" model="ir.ui.view">
+        <field name="name">project.task.work.search</field>
+        <field name="model">project.task.work</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="project_id" string="Projet"/>
+                <field name="name" string="Nom Taches/Kit"/>
+                <field name="product_id" string="T.S"/>
+                <field name="date_start_r" string="Date Start"/>
+                <field name="date_end_r" string="Date Fin"/>
+                <field name="color" string="Durée (Jours)"/>
+                <field name="hours" string="Durée (Heurs)"/>
+                <field name="uom_id" string="Unité"/>
+                <field name="gest_id" string="Superviseur"/>
+
+
+                <field name="employee_id" string="Intervenant"/>
+                <field name="state" string="Etat"/>
+                <field name="categ_id" string="Category"/>
+                <field name="task_id" string="Task id"/>
+            </search>
+        </field>
+    </record>
+    <menuitem id="menu_views_project_task_work"
+              name="Project Task Work"
+              parent="menu_project_task_work_master"
+              action="action_project_task_work"
+              sequence="40"/>
+</odoo>
+
