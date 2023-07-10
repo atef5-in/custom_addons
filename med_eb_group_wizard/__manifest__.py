@@ -8,11 +8,12 @@
     'category': 'Project, Tasks',
     'version': '15.0.1.0.0',
     'depends': ['base',
-                # 'project',
-                # 'product',
-                # 'task_work',
-                # 'project_timesheet',
-
+                #             'project',
+                #             'product',
+                #             'task_custom',
+                'task_work',
+                # 'employee_custom',
+                # 'product_custom'
                 ],
     'data': [
         'security/ir.model.access.csv',

@@ -12,8 +12,8 @@ class TaskWork(models.Model):
     _description = 'Project Task Work'
     _rec_name = 'id'
 
-    # work_id = fields.Char(string='work ID')
-    # work_id2 = fields.Char(string='work ID')
+    work_id = fields.Char(string='work ID')
+    work_id2 = fields.Char(string='work ID')
 
     def _default_done(self):
 
@@ -1042,6 +1042,14 @@ class TaskWork(models.Model):
                         },
             'domain': [],
         }
+    @api.model
+    def create(self, values):
+        if 'active_ids' in self.env.context and self.env.context.get('active_model') == 'project.task.work':
+            # If the context contains active_ids and active_model is 'project.task.work',
+            # it means the wizard is being called from the 'project.task.work' model
+            return self.browse(self.env.context['active_ids'])[0]
+        else:
+            return super(TaskWork, self).create(values)
 
 
 class TaskWorkLine(models.Model):

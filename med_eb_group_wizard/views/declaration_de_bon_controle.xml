@@ -162,7 +162,7 @@
                                    attrs="{'readonly':[('state1', 'not in', ('draft','tovalid'))]}">
                                 <tree editable="bottom" create="0">
                                     <!-- domain="[('product_id.name', 'ilike', 'qualit')]">-->
-                                    <field name="sequence" string="Ordre"/>
+<!--                                    <field name="sequence" string="Ordre"/>-->
                                     <field name="work_id" string="Travaux"/>
                                     <field name="name" string="Nom Taches/Kit"/>
                                     <field name="product_id" string="T.S"/>
