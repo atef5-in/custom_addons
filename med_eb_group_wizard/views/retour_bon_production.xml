@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!--1829-->
+<odoo>
+    <data>
+        <record id="retour_bons_production" model="ir.ui.view">
+            <field name="name">retour.bons.production.form</field>
+            <field name="model">base.group.merge.automatic.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Merge Tasks">
+                    <sheet string="Project">
+                        <group string="Retour de bon de production" invisible="1">
+                            <tree string="Groups" create="false"
+                                  colors="blue:state== 'draft';green:state== 'affect';purple:state== 'tovalid';red:state== 'cancel'"
+                                  readonly="1" default_sort="date_start_r desc">
+                                <field name="id" string="ID"/>
+                                <field name="date_start_r" string="Date"/>
+                                <field name="employee_id" string="Intervenant"/>
+                                <field name="project_id" string="Projet"/>
+                                <field name="zo" string="Zone"/>
+                                <field name="sect" string="Secteur"/>
+                                <field name="gest_id" string="Superviseur"/>
+                                <field name="coordin_id" string="Cordinateur"/>
+                                <field name="gest_id2" string="Controleur"/>
+                                <field name="emp_id2" string="Correceteur"/>
+                                <field name="state" string="Etat Bon"/>
+                                <field name="state1" string="Etat Bon Controle"/>
+                                <field name="state2" string="Etat Bon Correction"/>
+                                <button name="action_open" string="Consulter/Editer Grouppement" type="object"
+                                        icon="fa-pencil"/>
+                            </tree>
+                        </group>
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

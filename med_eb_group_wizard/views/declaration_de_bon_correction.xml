@@ -1,0 +1,192 @@
+<odoo>
+    <!--    vue1665-->
+    <data>
+
+        <record id="declaration_de_bon_correction_form" model="ir.ui.view">
+            <field name="name">declaration.bon_control.form</field>
+            <field name="model">base.group.merge.automatic.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Merge Tasks">
+                    <sheet string="Project">
+                        <header>
+                            <button name="button_approve2" type="object" string="Dde Approbation Corrections"
+                                    class="oe_highlight" confirm="Envoyer pour Approbation?"
+                                    attrs="{'invisible': ['|', ('state2', 'not in', ('draft')), ('done1', '=', False)]}"/>
+                            <button name="button_approve_s2" type="object" string="Valider Corrections(S)"
+                                    class="oe_highlight" confirm="Valider les Traitements?"
+                                    attrs="{'invisible': ['|', ('state2', 'not in', ('tovalid')), ('done', '=', False)]}"/>
+                            <button name="button_reopen2" type="object" string="Annuler Dde" class="oe_highlight"
+                                    confirm="Annuler Les Bons?"
+                                    attrs="{'invisible': ['|', ('state2', 'not in', ('tovalid')), ('done', '=', False)]}"/>
+                            <button name="affecter_bon_controle" type="object" string="Affecter Controle"
+                                    class="oe_highlight" attrs="{'invisible': [('done', '=', False)]}" invisible="1"/>
+                            <button name="button_bon_correction" type="object" string="Affecter Correction"
+                                    class="oe_highlight" attrs="{'invisible': [('done', '=', False)]}" invisible="1"/>
+                            <field name="state2" widget="statusbar" statusbar_visible="draft,tovalid,valid"
+                                   statusbar_colors="{'draft': 'blue'}" readonly="1"/>
+                        </header>
+                        <group>
+                            <group string="Informations Générale">
+                                <field name="sadmin" string="Categ" invisible="1"/>
+                                <field name="sadmin" string="super" invisible="1"/>
+                                <field name="categ_id" string="Categ" invisible="1"/>
+                                <field name="id" string="ID"/>
+                                <field name="num" string="ID" invisible="1"/>
+                                <field name="type1" string="Type" invisible="1"/>
+                                <field name="donecq" string="Done" invisible="1"/>
+                                <field name="doneco" string="Done" invisible="1"/>
+
+                                <field name="done" string="Done" invisible="1"/>
+                                <field name="done1" string="Is User" invisible="1"/>
+                                <field name="done_" string="Done" invisible="1"/>
+                                <field name="done1_" string="Is User" invisible="1"/>
+                                <field name="done__" string="Done" invisible="1"/>
+                                <field name="done1__" string="Is User" invisible="1"/>
+                                <field name="coordin_id" string="Coordin" invisible="1"/>
+
+                                <field name="employee_id" string="employee_id" invisible="1"/>
+                                <field name="gest_id" string="gest_id" invisible="1"/>
+                                <field name="emp_id2" string="intervenant" readonly="1"/>
+
+                                <field name="kit_id" string="kit" invisible="1"/>
+                                <field name="date_start_r" string="Date"
+                                       on_change="onchange_date_from(categ_id,date_start_r)"
+                                       readonly="1"/>
+                                <field name="project_id" string="Project" readonly="1"
+                                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                <field name="bon_id" invisible="1"/>
+
+                            </group>
+                            <group string="Informations Mails">
+                                <field name="obj" string="Objet Mail"/>
+                                <field name="zo" string="zo" invisible="1"/>
+                                <field name="sect" string="sect" invisible="1"/>
+                                <field name="mail_send2" string="Informer le superviseur par Email?"
+                                       attrs="{'readonly':[ '|', ('state2','!=','draft'),('done1__','=',False)]}"
+                                       on_change="onchange_mail"/>
+                                <field name="employee_ids5" string="A" widget='many2many_tags'
+                                       options="{'no_create': True}"
+                                       attrs="{'readonly':[ '|', ('state2','not in',('draft')),('done1__','=',False)]}"/>
+                                <newline/>
+                                <button name="button_load_mail2" type="object" string="" icon="gtk-leave-fullscreen"
+                                        class="btn-primary"
+                                        attrs="{'invisible':[ '|', ('state2','not in',('draft')),('done1__','=',False)]}"/>
+                                <newline/>
+                                <field name="employee_ids6" string="CC" widget='many2many_tags'
+                                       options="{'no_create': True}"
+                                       attrs="{'readonly':[ '|', ('state2','not in',('draft')),('done1__','=',False)]}"/>
+                                <field name="to" string="To" invisible="1"/>
+                                <field name="cc" string="cc" invisible="1"/>
+                                <field name="cci" string="cci" invisible="1"/>
+                            </group>
+                        </group>
+                        <group string="Commentaires">
+                            <newline/>
+                            <field name="note4" string="Commentaire Intervenant(Correction)"
+                                   placeholder="Votre Commentaires/Remarques Ici"
+                                   attrs="{'readonly':[ '|', ('state2','not in',('draft')),('done1__','=',False)]}"/>
+                            <newline/>
+                            <field name="note5" string="Commentaire Superviseur(Correction)"
+                                   placeholder="Votre Commentaires/Remarques Ici"
+                                   attrs="{'readonly':[ '|',('state2','not in',('tovalid')),('done__','=',False)]}"/>
+                            <!--                            <field name="dc_" string="CC" invisible="1"/>-->
+                            <!--                            <field name="dq_" string="CC" invisible="1"/>-->
+                        </group>
+                        <group string="Travaux Planifiés">
+                            <field name="work_ids" nolabel="1" readonly="1"
+                                   options="{'no_create': True, 'no_create_edit':True,'no_open':True}">
+                                <tree string="Tasks" create="false" edit="false" editable="bottom">
+                                    <field name="sequence" string="Séquence"/>
+
+                                    <field name="project_id" invisible="context.get('user_invisible', False)"
+                                           readonly="1"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                           string="Projet"/>
+
+                                    <field name="name" string="Nom Taches/Kit" readonly="1"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="product_id" string="T.S"/>
+
+                                    <field name="date_start" string="Date Start" widget="date" readonly="1"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="date_end" string="Date Fin" widget="date" readonly="1"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="color" string="Durée (Jours)" sum="Total" readonly="1"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="hours" string="Durée (Heurs)"/>
+                                    <field name="uom_id" string="Unité"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <!--                                    <field name="poteau_t" string="Qté/Unité Prév." sum="Prev Hours"/>-->
+
+                                    <field name="gest_id" string="Superviseur" readonly="1"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="employee_id" string="Intervenant" readonly="1"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="state" string="Etat" readonly="1"/>
+                                    <!--                                    <button name="action_open_histo" string="Consulter Historique Tache" type="object"-->
+                                    <!--                                            icon="gtk-dnd"/>-->
+                                </tree>
+                            </field>
+                        </group>
+                        <group string="Informations Bons">
+                            <newline/>
+                            <group>
+                                <button name="button_save_" type="object" string="" icon="gtk-floppy" nolabel="1"
+                                        class="btn-primary"/>
+
+                            </group>
+                            <group>
+                                <button name="button_import" type="object" string="Importer Travaux de Correction"
+                                        icon="gtk-sort-descending" confirm="Créer un Bon de Corrections?"
+                                        class="btn-primary"
+                                        attrs="{'invisible':[('state2','not in',('draft'))]}"/>
+                            </group>
+                            <newline/>
+                            <field name="line_ids3" nolabel="1" context="{'default_employee_id':employee_id}"
+                                   domain="[('name', 'ilike', 'orrection')]"
+                                   attrs="{'readonly':[('state2', 'not in', ('draft','tovalid'))]}">
+                                <tree editable="bottom" create="false"
+                                      domain="[('product_id.name', 'ilike', 'orrection')]">
+                                    <field name="sequence" string="Ordre"/>
+                                    <field name="work_id" string="Travaux" readonly="1"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="name" string="Nom Taches/Kit" readonly="1"/>
+                                    <field name="product_id" string="T.S"/>
+                                    <field name="project_id" string="name" invisible="1"/>
+                                    <field name="employee_id" string="min_id" invisible="1"/>
+                                    <field name="date_start_r" string="D. Début" widget="date"
+                                           on_change="onchange_date_to_(date_end_r,date_start_r,employee_id)"
+                                           bg_color="thistle:work_id!=True;"/>
+                                    <field name="date_end_r" string="D. Fin" widget="date"
+                                           on_change="onchange_date_to_(date_end_r,date_start_r,employee_id)"/>
+                                    <field name="categ_id" string="min_id" invisible="1"/>
+                                    <field name="color1" string="Jrs" sum="Prev Hours"/>
+                                    <field name="hours_r" string="Hrs" widget="float_time" sum="Prev Hours"
+                                           bg_color="thistle:work_id!=True;"/>
+                                    <field name="poteau_r" string="Qté/Unité" sum="Prev Hours" widget="char"/>
+                                    <field name="uom_id_r" string="Unité"
+                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                    <field name="state" string="line" invisible="1"/>
+                                    <field name="line_id" string="line" invisible="1"/>
+                                    <!--                                    <field name="facturable" string="Fact?" bg_color="thistle:work_id!=True;"/>-->
+                                    <!--                                    <field name="project_id2" string="Sous Projet?"-->
+                                    <!--                                           domain="[('parent_id1','=',project_id)]"-->
+                                    <!--                                           options="{'no_create': True, 'no_create_edit':True,'no_open':True}"-->
+                                    <!--                                           attrs="{'required':[('facturable', '=', 'facturable')]}"/>-->
+                                    <!--                                    <field name="total_part_corr" string="Type"/>-->
+                                    <field name="ftp" string="Lien FTP" invisible="0"/>
+                                    <field name="employee_id" string="Interv." readonly="1"/>
+                                    <!--                                    <field name="b1" string="Inj." invisible="1"-->
+                                    <!--                                           attrs="{'readonly':[('b1', '=', True)]}"/>-->
+                                    <field name="issue_id" string="Issue" invisible="1"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+
+
+</odoo>
