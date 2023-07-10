@@ -15,8 +15,8 @@ class EbMergegroups(models.Model):
     _description = "Declararion des bons"
     _rec_name = "id"
 
-    obj = fields.Char('name')
-    name = fields.Char('name')
+    # obj = fields.Char('name')
+    # name = fields.Char('name')
 
     reviewer_id1 = fields.Many2one('hr.employee', string='Wizard')
     coordin_id10 = fields.Many2one('hr.employee', string='Wizard')

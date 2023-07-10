@@ -857,22 +857,3 @@ class WorkHistoLine(models.Model):
     coment1 = fields.Text(string='Comment 1')
     id_object = fields.Integer(string='Object ID')
     execute_by = fields.Boolean(default="False")
-
-
-class BaseGroupMergeAutomaticWizard(models.Model):
-    _name = 'base.group.merge.automatic.wizard'
-    _description = 'Automatic Group Merge Wizard'
-
-    create_date = fields.Date(string='Create Date', default=fields.Date.today())
-    date_start_r = fields.Date(string='Date Start R', default=fields.Date.today())
-    project_id = fields.Many2one('project.project', string='Project')
-    zo = fields.Char(string='Zone')
-    sect = fields.Char(string='Secteur')
-    gest_id = fields.Many2one('res.partner', string='Gest')
-    state = fields.Selection([
-        ('draft', 'Draft'),
-        ('valid', 'Validated'),
-        ('cancel', 'Cancelled')
-    ], string='State', default='draft')
-    active = fields.Boolean(string='Active', default=True)
-    name = fields.Char(string='Name')
