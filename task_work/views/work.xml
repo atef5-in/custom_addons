@@ -1,5 +1,4 @@
 <odoo>
-
     <record id="action_declarer_bons" model="ir.actions.server">
         <field name="name">Déclarer Les Bons</field>
         <field name="type">ir.actions.server</field>
@@ -17,7 +16,7 @@
         <field name="model">project.task.work</field>
         <field name="arch" type="xml">
             <tree string="Tâches" default_order="project_id,sequence,name">
-                <field name="sequence" string="Séq" readonly="1"/>
+                <field name="sequence" string="Séq" readonly="1" invisible="1"/>
                 <field name="id" string="id" readonly="1"/>
                 <field name="categ_id" string="Département" readonly="1"/>
                 <field name="project_id" string="Projet" readonly="1"/>
@@ -33,7 +32,7 @@
                 <field name="etape" string="Etape" readonly="1" invisible="0"/>
                 <field name="date_start" string="Date Déb." readonly="1"/>
                 <field name="date_end" string="Date Fin" readonly="1"/>
-                <field name="color" string="Nb Jrs Prév." required="1"/>
+                <field name="color" string="Nb Jrs Prév." required="1" invisible="1"/>
                 <field name="hours" string="Nb Hrs Prév." required="1"/>
                 <field name="issue_id" string="Date Fin Prévue" invisible="1"/>
                 <field name="line_ids" string="Date Fin Prévue" invisible="1"/>
@@ -43,18 +42,18 @@
                 <field name="reviewer_id1"
                        string="Super" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
                        readonly="1"/>
-                <field name="gest_id3"
-                       string="Coord" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
-                       readonly="1"/>
-                <field name="coordin_id1"
-                       string="Coord1" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
-                       readonly="1"/>
-                <field name="coordin_id2"
-                       string="Coord2" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
-                       readonly="1"/>
-                <field name="coordin_id3"
-                       string="Coord3" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
-                       readonly="1"/>
+                <!--                <field name="gest_id3"-->
+                <!--                       string="Coord" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"-->
+                <!--                       readonly="0"/>-->
+                <!--                <field name="coordin_id1"-->
+                <!--                       string="Coord1" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"-->
+                <!--                       readonly="0"/>-->
+                <!--                <field name="coordin_id2"-->
+                <!--                       string="Coord2" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"-->
+                <!--                       readonly="0"/>-->
+                <!--                <field name="coordin_id3"-->
+                <!--                       string="Coord3" options="{'no_create': True, 'no_create_edit':True,'no_open':True}"-->
+                <!--                       readonly="0"/>-->
                 <field name="employee_id" string="Ressource affectée" invisible="1"/>
                 <field name="affect_emp" string="Aff. Employés"/>
                 <field name="affect_con" string="Aff. Controle"/>
@@ -73,21 +72,22 @@
                 <field name="is_control" string="Libellé " readonly="1" invisible="1"/>
                 <field name="is_correction" string="Libellé " readonly="1" invisible="1"/>
                 <field name="done33" string="Libellé " readonly="1" invisible="1"/>
-                <field name="poteau_i" string="Qté T. Prévue" readonly="1"/>
-                <field name="poteau_da" string="Qté Déja Affect." readonly="1"/>
-                <field name="poteau_ra" string="Qté Non Affect." readonly="1"/>
-                <field name="poteau_t" string="Qté Ddée" readonly="1"/>
-                <field name="uom_id" string="Unité" required="0"/>
+                <field name="poteau_i" string="Qté T. Prévue" readonly="1"  invisible="1"/>
+                <field name="poteau_da" string="Qté Déja Affect." readonly="1"  invisible="1"/>
+                <field name="poteau_ra" string="Qté Non Affect." readonly="1"  invisible="1"/>
+                <field name="poteau_t" string="Qté Ddée" readonly="1"  invisible="1"/>
+                <field name="uom_id" string="Unité" required="0"  invisible="1"/>
                 <field name="risk" string="risk" required="1" invisible="1"/>
-                <field name="hours_r" string="Nb Hrs Réal." required="1"/>
-                <field name="poteau_r" string="Qté Réal." required="1"/>
-                <field name="total_r" string="Cout Réal" required="1"/>
+                <field name="hours_r" string="Nb Hrs Réal." required="1"  invisible="1"/>
+                <field name="poteau_r" string="Qté Réal." required="1" />
+                <field name="poteau_r" string="Qté Réal." required="1" />
+                <field name="total_r" string="Cout Réal" required="1" />
                 <field name="state" string="Etat"/>
                 <field name="display" string="display" invisible="1"/>
-<!--                <button name="action_open_histo" string="Consulter Historique Tache" type="object" invisible=""/>-->
-<!--                <button name="action_open" string="Consulter/Editer Tache" type="object" icon="fa:edit"/>-->
+                <button name="action_open_histo" string="Consulter Historique Tache" type="object" invisible=""/>
+                <button name="action_open" string="Consulter/Editer Tache" type="object" icon="fa:edit"/>
 
-<!--                <button name="project_open" string="Consulter Projet" type="object" icon="fa:cogs"/>-->
+                <button name="project_open" string="Consulter Projet" type="object" icon="fa:cogs"/>
                 <button name="action_open_flow" string="Consulter Workflow" type="object" icon="fa:sort-desc"
                         attrs="{'invisible': [('done4','=', False)]}"/>
 
@@ -101,15 +101,15 @@
                 <button name="action_open_group" string="Consulter la F.T/Facture" type="object" icon="fa:indent"
                         attrs="{'invisible': [('done2','=', False)]}"/>
 
-                <button name="move_next" string="Taches Suivantes" type="object" icon="fa:angle-double-right"
-                        attrs="{'invisible': [('done33','=', False)]}"/>
+                <!--                <button name="move_next" string="Taches Suivantes" type="object" icon="fa:angle-double-right"-->
+                <!--                        attrs="{'invisible': [('done33','=', False)]}"/>-->
 
-<!--                <button name="action_open_invoice" string="Consulter la Facture/F.P" type="object"-->
-<!--                        icon="fa:check-circle-o" attrs="{'invisible': [('done1','=', False)]}"/>-->
-<!--                <button name="action_copy" string="Dupliquer Fiche" type="object" icon="fa:clone"-->
-<!--                        confirm="Voulez-vous Dupliquer les Travaux?" invisible="1"/>-->
-<!--                <button name="action_issue2" string="Consulter Tableau Plans Relevé" type="object" icon="fa:calendar"-->
-<!--                        attrs="{'invisible': [('r_id', '=', False)]}"/>-->
+                <!--                <button name="action_open_invoice" string="Consulter la Facture/F.P" type="object"-->
+                <!--                        icon="fa:check-circle-o" attrs="{'invisible': [('done1','=', False)]}"/>-->
+                <!--                <button name="action_copy" string="Dupliquer Fiche" type="object" icon="fa:clone"-->
+                <!--                        confirm="Voulez-vous Dupliquer les Travaux?" invisible="1"/>-->
+                <!--                <button name="action_issue2" string="Consulter Tableau Plans Relevé" type="object" icon="fa:calendar"-->
+                <!--                        attrs="{'invisible': [('r_id', '=', False)]}"/>-->
             </tree>
 
         </field>
@@ -246,18 +246,18 @@
         </field>
     </record>
 
-        <record id="action_task_work" model="ir.actions.act_window">
-            <field name="name">Tâches</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">project.task.work</field>
-            <field name="view_mode">tree,form</field>
-            <field name="context">{}</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Create your first project task work !
-                </p>
-            </field>
-        </record>
+    <record id="action_task_work" model="ir.actions.act_window">
+        <field name="name">Tâches</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">project.task.work</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first project task work !
+            </p>
+        </field>
+    </record>
 
     <menuitem id="menu_work" name="Tâches" sequence="-800" action="action_task_work"/>
 </odoo>

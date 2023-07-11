@@ -215,7 +215,7 @@ class TaskWork(models.Model):
     def _isinter(self):
 
         for book in self:
-            book.is_intervenant = False #to set to False.
+            book.is_intervenant = False  # to set to False.
             if book.line_ids:
                 tt = []
                 for kk in book.line_ids.ids:
@@ -1042,6 +1042,7 @@ class TaskWork(models.Model):
                         },
             'domain': [],
         }
+
     @api.model
     def create(self, values):
         if 'active_ids' in self.env.context and self.env.context.get('active_model') == 'project.task.work':

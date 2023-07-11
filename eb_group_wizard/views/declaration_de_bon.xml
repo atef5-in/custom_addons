@@ -16,7 +16,7 @@
 
                             <button name="valider_bon" type="object" string="Valider Bons(S)" class="oe_highlight"
                                     confirm="Valider les Traitements?"
-                                    attrs="{'invisible':[ '|',('state','not in',('tovalid')),('done','=',True)]}"
+                                    attrs="{'invisible':[ '|',('state','not in',('tovalid')),('done','=',False)]}"
                             />
                             <button name="button_workflow" type="object" string="Action Workflow" class="oe_highlight"
                                     confirm="Lancer une Action W.F?" attrs="{'invisible':[('state','in',('draft'))]}"
