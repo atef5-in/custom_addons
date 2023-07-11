@@ -245,11 +245,11 @@ class EbMergegroups(models.Model):
                     proj.append(work.project_id.id)
 
                 if work.state == 'pending':
-                    raise UserError(_('Action impossible!'), _('Travaux Suspendus!'))
+                    raise UserError('Action impossible! ravaux Suspendus!')
                 if work.state == 'draft':
-                    raise UserError(_('Action impossible!'), _('Travaux Non Affectés!'))
+                    raise UserError('Action impossible! Travaux Non Affectés!')
                 if len(proj) > 1:
-                    raise UserError(_('Action impossible!'), _('Déclaration se fait uniquement sur un projet!'))
+                    raise UserError('Action impossible! Déclaration se fait uniquement sur un projet!')
                 if len(active_ids) > 1:
                     pref = '/'
 
@@ -1960,14 +1960,17 @@ class EbMergegroups(models.Model):
                         })
                 for kk in line.line_ids.ids:
                     line_w = line_obj1.browse(kk)
+                    print('kk :', kk)
+                    print('line_w :', line_w)
                     if line_w:
+                        print('group_id2 :', line.id)
                         move_line = {
                             'product_id': line_w.work_id.product_id.id,
                             'employee_id': line_w.employee_id.id,
                             'state': 'draft',
                             'work_id': line_w.work_id.id,
                             'task_id': line_w.work_id.task_id.id,
-                            # 'group_id2': line.id,
+                            'group_id2': line.id,
                             'ftp': line_w.ftp,
                             'sequence': line_w.work_id.sequence,
                             'categ_id': line_w.work_id.categ_id.id,
@@ -1988,8 +1991,11 @@ class EbMergegroups(models.Model):
                             'zone': line_w.work_id.zone,
                             'secteur': line_w.work_id.secteur,
                         }
+                        print('work_line :', work_line)
+                        print('line_obj1 :', line_obj1)
                         one = work_line.create(move_line)
-                        line_obj1.write({'id': kk, 'line_id': one.id})
+                        # line_obj1.browse(kk).write({'line_id': one.id})
+                        # line_obj1.write(kk, {'line_id': one.id})
         # the code bellow must be reviewed
         for ww in self.work_ids:
             if ww.state == 'affect':

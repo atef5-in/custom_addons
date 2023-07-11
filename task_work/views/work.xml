@@ -84,13 +84,12 @@
                 <field name="total_r" string="Cout Réal" required="1" />
                 <field name="state" string="Etat"/>
                 <field name="display" string="display" invisible="1"/>
-                <button name="action_open_histo" string="Consulter Historique Tache" type="object" invisible=""/>
-                <button name="action_open" string="Consulter/Editer Tache" type="object" icon="fa:edit"/>
 
+                <button name="action_open_histo" string="Consulter Historique Tache" type="object" invisible="1"/>
+                <button name="action_open" string="Consulter/Editer Tache" type="object" icon="fa:edit"/>
                 <button name="project_open" string="Consulter Projet" type="object" icon="fa:cogs"/>
                 <button name="action_open_flow" string="Consulter Workflow" type="object" icon="fa:sort-desc"
                         attrs="{'invisible': [('done4','=', False)]}"/>
-
                 <button name="action_open_group2" string="Consulter Retours Bons" type="object" icon="fa:paint-brush"
                         attrs="{'invisible': [('is_intervenant','=', False)]}"/>
                 <button name="action_open_group3" string="Consulter Retours Bonn controle" type="object"

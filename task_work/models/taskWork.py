@@ -213,23 +213,32 @@ class TaskWork(models.Model):
                 book.done33 = False
 
     def _isinter(self):
-
+        print('_isinter')
         for book in self:
-            book.is_intervenant = False  # to set to False.
+            book.is_intervenant = False
+            print('-1')
             if book.line_ids:
+                print('0')
                 tt = []
                 for kk in book.line_ids.ids:
                     rec_line = self.env['project.task.work.line'].browse(kk)
+                    print('0.5')
                     if rec_line.group_id2:
                         if rec_line.group_id2.ids not in tt:
+                            print('rec_line.group_id2.ids :', rec_line.group_id2.ids)
                             tt.append(rec_line.group_id2.ids)
+                            print('1')
                 if tt:
+                    print('2:', tt)
                     for kk in tt:
+                        print('3')
                         self.env.cr.execute(
                             'update base_group_merge_automatic_wizard set create_uid= %s where id in %s',
-                            (tuple(kk)))
+                            (self._uid, tuple(kk)))
+                        print('4')
                     test = self.env['base.group.merge.automatic.wizard'].search([('id', 'in', tt), (
                         'state', '<>', 'draft')])
+                    print('5')
                     if test:
                         book.is_intervenant = True
 
@@ -1128,7 +1137,7 @@ class TaskWorkLine(models.Model):
     done3 = fields.Boolean(string='is done')
     done4 = fields.Boolean(string='is done')
     auto = fields.Boolean(string='is done')
-    group_id2 = fields.Many2one('base.group', 'Done by', select="1", readonly=True,
+    group_id2 = fields.Many2one('base.group.merge.automatic.wizard', 'Done by', select="1", readonly=True,
                                 states={'affect': [('readonly', False)]}, )
     facture = fields.Boolean(string='Facture', readonly=True, states={'affect': [('readonly', False)]}, )
     date_inv = fields.Date(string='Date', select="1")
