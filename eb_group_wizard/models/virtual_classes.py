@@ -183,8 +183,8 @@ class WorkHisto(models.Model):
 
 class WorkHistoLine(models.Model):
     _name = "work.histo.line"
-    name = fields.Char('Name')
 
+    name = fields.Char('Name')
     type = fields.Char(string='work ID')
     create_by = fields.Char(string='task_id', select="1")
     work_histo_id = fields.Char(string='categ_id', select="1")

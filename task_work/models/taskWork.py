@@ -12,8 +12,8 @@ class TaskWork(models.Model):
     _description = 'Project Task Work'
     _rec_name = 'id'
 
-    # work_id = fields.Char(string='work ID')
-    # work_id2 = fields.Char(string='work ID')
+    work_id = fields.Char(string='work ID')
+    work_id2 = fields.Char(string='work ID')
 
     def _default_done(self):
 
@@ -571,7 +571,7 @@ class TaskWork(models.Model):
             'type': 'ir.actions.act_window',
             'view_type': 'form',
             'view_mode': 'form',
-            'target': 'new',
+            'target': 'popup',
             'res_model': 'base.invoices.merge.automatic.wizard',
             'view_id': self.env.ref('eb_invoices_wizard.view_merge_tasks_form').id,
             'context': {'types_affect': 'intervenant'},
@@ -826,7 +826,7 @@ class TaskWork(models.Model):
             'name': 'Consultation Travaux Validés',
             'type': 'ir.actions.act_window',
             'view_mode': 'tree,form',
-            'views': [[self.env.ref('med_eb_group_wizard.retour_bons_production').id, 'tree']],
+            'views': [[self.env.ref('eb_group_wizard.retour_bons_production').id, 'tree']],
 
             'target': 'new',
             'res_model': 'base.group.merge.automatic.wizard',
@@ -1042,6 +1042,14 @@ class TaskWork(models.Model):
                         },
             'domain': [],
         }
+    @api.model
+    def create(self, values):
+        if 'active_ids' in self.env.context and self.env.context.get('active_model') == 'project.task.work':
+            # If the context contains active_ids and active_model is 'project.task.work',
+            # it means the wizard is being called from the 'project.task.work' model
+            return self.browse(self.env.context['active_ids'])[0]
+        else:
+            return super(TaskWork, self).create(values)
 
 
 class TaskWorkLine(models.Model):

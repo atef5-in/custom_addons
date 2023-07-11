@@ -15,8 +15,8 @@ class EbMergegroups(models.Model):
     _description = "Declararion des bons"
     _rec_name = "id"
 
-    # obj = fields.Char('name')
-    # name = fields.Char('name')
+    obj = fields.Char('name')
+    name = fields.Char('name')
 
     reviewer_id1 = fields.Many2one('hr.employee', string='Wizard')
     coordin_id10 = fields.Many2one('hr.employee', string='Wizard')
@@ -576,23 +576,24 @@ class EbMergegroups(models.Model):
                         str(user.id) not in (work.affect_con_list or ' ')) and (
                         str(user.id) not in (work.affect_emp_list or ' ')):
                     res = super(EbMergegroups, self).fields_view_get(
-                        view_id=self.env.ref('med_eb_group_wizard.declaration_de_bon_correction_form').id,
+                        view_id=self.env.ref('eb_group_wizard.declaration²_de_bon_correction_form').id,
                         view_type=view_type, toolbar=toolbar, submenu=submenu)
-
+                    print('-1 ------------------- -1 ')
                 elif (work.affect_con_list != '' and (str(user.id) in (work.affect_con_list or ' '))) and (
                         str(user.id) not in (work.affect_cor_list or ' ')) and (
                         str(user.id) not in (work.affect_emp_list or ' ')):
                     res = super(EbMergegroups, self).fields_view_get(
-                        view_id=self.env.ref('med_eb_group_wizard.declaration_de_bon_control_form').id,
+                        view_id=self.env.ref('eb_group_wizard.declaration_de_bon_control_form').id,
                         view_type=view_type, toolbar=toolbar, submenu=submenu)
-
+                    print('0 ------------------- 0 ')
                 elif ((work.affect_emp_list != '' and (str(user.id) in (work.affect_emp_list or ' ')))
                       or work.current_emp.user_id.id == user) and (
                         str(user.id) not in (work.affect_con_list or ' ')) and (
                         str(user.id) not in (work.affect_cor_list or ' ')):
                     res = super(EbMergegroups, self).fields_view_get(
-                        view_id=self.env.ref('med_eb_group_wizard.declaration_bons_form').id,
+                        view_id=self.env.ref('eb_group_wizard.declaration_bons_form').id,
                         view_type=view_type, toolbar=toolbar, submenu=submenu)
+                    print('1 -------------------1 ')
 
                 elif ((str(user.id) not in (work.affect_emp_list or ' ')) or work.current_emp.user_id.id == user) and (
                         str(user.id) not in (work.affect_con_list or ' ')) and (
@@ -602,9 +603,10 @@ class EbMergegroups(models.Model):
 
                 else:
                     res = super(EbMergegroups, self).fields_view_get(
-                        view_id=self.env.ref('med_eb_group_wizard.declaration_bons_form').id,
+                        view_id=self.env.ref('eb_group_wizard.declaration_bons_form').id,
                         view_type=view_type,
                         toolbar=toolbar, submenu=submenu)
+                    print('2  -------------------2')
                 return res
         elif self.env.context['active_model'] == 'base.group.merge.automatic.wizard':
             print('here 3')
@@ -649,7 +651,7 @@ class EbMergegroups(models.Model):
             'view_type': 'form',
             'view_mode': 'form',
             'target': 'new',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_bons_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_bons_form').id,
             'res_model': 'base.group.merge.automatic.wizard',
             'res_id': self.ids[0],  # self.ids[0],  # ids[0],
             'context': {},
@@ -671,7 +673,7 @@ class EbMergegroups(models.Model):
                     'view_mode': 'form',
                     'target': 'new',
                     'res_model': 'base.group.merge.automatic.wizard',
-                    'view_id': self.env.ref('med_eb_group_wizard.declaration_bons_form').id,
+                    'view_id': self.env.ref('eb_group_wizard.declaration_bons_form').id,
                     'res_id': self.ids[0],  # ids[0],
                     'context': {},
                     'domain': []
@@ -684,7 +686,7 @@ class EbMergegroups(models.Model):
                     'view_mode': 'form',
                     'target': 'new',
                     'res_model': 'base.group.merge.automatic.wizard',
-                    'view_id': self.env.ref('med_eb_group_wizard.declaration_de_bon_control_form').id,
+                    'view_id': self.env.ref('eb_group_wizard.declaration_de_bon_control_form').id,
                     'res_id': self.ids[0],  # ids[0],
                     'context': {},
                     'domain': []
@@ -698,7 +700,7 @@ class EbMergegroups(models.Model):
                     'view_mode': 'form',
                     'target': 'new',
                     'res_model': 'base.group.merge.automatic.wizard',
-                    'view_id': self.env.ref('med_eb_group_wizard.declaration_de_bon_correction_form').id,
+                    'view_id': self.env.ref('eb_group_wizard.declaration_de_bon_correction_form').id,
                     # self.env.ref('your_view_id3').id,  # Replace 'your_view_id3' with the actual view ID
                     'res_id': self.ids[0],  # ids[0],
                     'context': {},
@@ -764,7 +766,7 @@ class EbMergegroups(models.Model):
             'type': 'ir.actions.act_window',
             'view_type': 'form',
             'view_mode': 'form',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_bons_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_bons_form').id,
             'target': 'new',
             'res_model': 'base.group.merge.automatic.wizard',
             'res_id': self.ids[0],  # ids[0],
@@ -830,7 +832,7 @@ class EbMergegroups(models.Model):
             'type': 'ir.actions.act_window',
             'view_type': 'form',
             'view_mode': 'form',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_de_bon_control_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_de_bon_control_form').id,
             # self.env.ref('module_name.view_id').id,  # Replace 'module_name' with the actual module name
             'target': 'new',
             'res_model': 'base.group.merge.automatic.wizard',
@@ -890,7 +892,7 @@ class EbMergegroups(models.Model):
             'type': 'ir.actions.act_window',
             'view_type': 'form',
             'view_mode': 'form',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_de_bon_correction_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_de_bon_correction_form').id,
             # self.env.ref('module_name.view_id').id,  # Replace 'module_name' with the actual module name,
             'target': 'new',
             'res_model': 'base.group.merge.automatic.wizard',
@@ -999,7 +1001,7 @@ class EbMergegroups(models.Model):
             'view_mode': 'form',
             'target': 'new',
             'res_model': 'base.group.merge.automatic.wizard',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_de_bon_control_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_de_bon_control_form').id,
             # self.env.ref('module_name.view_id').id,  # Replace 'module_name' with the actual module name,
             'res_id': self.ids[0],
             'context': {},
@@ -1078,7 +1080,7 @@ class EbMergegroups(models.Model):
             'view_mode': 'form',
             'target': 'new',
             'res_model': 'base.group.merge.automatic.wizard',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_de_bon_correction_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_de_bon_correction_form').id,
             'res_id': self.ids[0],
             'context': {},
             'domain': []
@@ -1098,7 +1100,7 @@ class EbMergegroups(models.Model):
             'view_mode': 'form',
             'target': 'new',
             'res_model': 'base.group.merge.automatic.wizard',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_bons_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_bons_form').id,
             'res_id': self.ids[0],
             'context': {},
             'domain': []
@@ -1114,7 +1116,7 @@ class EbMergegroups(models.Model):
             'view_mode': 'form',
             'target': 'new',
             'res_model': 'base.group.merge.automatic.wizard',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_bons_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_bons_form').id,
             'res_id': self.ids[0],
             'context': {},
             'domain': []
@@ -1130,7 +1132,7 @@ class EbMergegroups(models.Model):
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'base.group.merge.automatic.wizard',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_bons_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_bons_form').id,
             'res_id': self.ids[0],
             'target': 'new',
             'context': {},
@@ -1148,7 +1150,7 @@ class EbMergegroups(models.Model):
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'base.group.merge.automatic.wizard',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_bons_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_bons_form').id,
             'res_id': self.ids[0],
             'target': 'new',
             'context': {},
@@ -1166,7 +1168,7 @@ class EbMergegroups(models.Model):
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'base.group.merge.automatic.wizard',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_bons_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_bons_form').id,
             'res_id': this.id,
             'target': 'new',
             'context': {},
@@ -1205,7 +1207,7 @@ class EbMergegroups(models.Model):
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'base.group.merge.automatic.wizard',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_bons_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_bons_form').id,
             'res_id': self.ids[0],
             'target': 'new',
             'context': {},
@@ -1246,7 +1248,7 @@ class EbMergegroups(models.Model):
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'base.group.merge.automatic.wizard',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_bons_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_bons_form').id,
             'res_id': this.id,
             'target': 'new',
             'context': {},
@@ -1287,7 +1289,7 @@ class EbMergegroups(models.Model):
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'base.group.merge.automatic.wizard',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_bons_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_bons_form').id,
             'res_id': this.id,
             'target': 'new',
             'context': {},
@@ -1306,7 +1308,7 @@ class EbMergegroups(models.Model):
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'base.group.merge.automatic.wizard',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_bons_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_bons_form').id,
             'res_id': self.ids[0],
             'target': 'new',
             'context': {},
@@ -1321,7 +1323,7 @@ class EbMergegroups(models.Model):
             'view_mode': 'form',
             'res_model': 'base.flow.merge.automatic.wizard',
             # 'view_id': self.env.ref('your_module_name.your_view_id').id,  # Replace with the actual view ID
-            # 'view_id': self.env.ref('med_eb_group_wizard.declaration_bons_form').id,
+            # 'view_id': self.env.ref('eb_group_wizard.declaration_bons_form').id,
             'target': 'popup',
             'context': {'default_project_id': self.project_id.id},
             'domain': [],
@@ -1377,7 +1379,7 @@ class EbMergegroups(models.Model):
             'view_mode': 'form',
             'target': 'new',
             'res_model': 'base.group.merge.automatic.wizard',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_bons_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_bons_form').id,
             'res_id': self.ids[0],  # This.id
             'context': {},
             'domain': [],
@@ -1396,7 +1398,7 @@ class EbMergegroups(models.Model):
             'view_mode': 'form',
             'target': 'new',
             'res_model': 'base.group.merge.automatic.wizard',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_bons_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_bons_form').id,
             'res_id': self.ids[0],  # This.id
             'context': {},
             'domain': [],
@@ -1415,7 +1417,7 @@ class EbMergegroups(models.Model):
             'view_mode': 'form',
             'target': 'new',
             'res_model': 'base.group.merge.automatic.wizard',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_bons_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_bons_form').id,
             'res_id': self.ids[0],
             'context': {},
             'domain': [],
@@ -1440,7 +1442,7 @@ class EbMergegroups(models.Model):
             'view_mode': 'form',
             'target': 'new',
             'res_model': 'base.group.merge.automatic.wizard',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_de_bon_control_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_de_bon_control_form').id,
             # self.env.ref('your_module_name.your_view_id').id,  # Replace with the actual view ID
             'res_id': self.ids[0],
             'context': {},
@@ -1459,7 +1461,7 @@ class EbMergegroups(models.Model):
             'target': 'popup',
             'res_model': 'base.group.merge.automatic.wizard',
             'res_id': self.ids[0],
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_bons_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_bons_form').id,
             'context': {'form_view_initial_mode': 'edit', 'force_detailed_view': True},
             'flags': {'form': {'action_buttons': True, 'options': {'mode': 'edit'}}},
             'domain': [],
@@ -1478,7 +1480,7 @@ class EbMergegroups(models.Model):
             'target': 'popup',
             'res_model': 'base.group.merge.automatic.wizard',
             'res_id': self.ids[0],
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_de_bon_control_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_de_bon_control_form').id,
             'context': {'form_view_initial_mode': 'edit', 'force_detailed_view': True},
             'flags': {'form': {'action_buttons': True, 'options': {'mode': 'edit'}}},
             'domain': [],
@@ -1497,7 +1499,7 @@ class EbMergegroups(models.Model):
             'target': 'popup',
             'res_model': 'base.group.merge.automatic.wizard',
             'res_id': self.ids[0],
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_de_bon_correction_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_de_bon_correction_form').id,
             'context': {'form_view_initial_mode': 'edit', 'force_detailed_view': True},
             'flags': {'form': {'action_buttons': True, 'options': {'mode': 'edit'}}},
             'domain': [],
@@ -1548,7 +1550,7 @@ class EbMergegroups(models.Model):
             'view_mode': 'form',
             'target': 'new',
             'res_model': 'base.group.merge.automatic.wizard',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_de_bon_correction_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_de_bon_correction_form').id,
             'res_id': self.ids[0],
             'context': {},
             'domain': []
@@ -1747,7 +1749,7 @@ class EbMergegroups(models.Model):
                 'view_mode': 'form',
                 'target': 'new',
                 'res_model': 'base.group.merge.automatic.wizard',
-                'view_id': self.env.ref('med_eb_group_wizard.declaration_de_bon_correction_form').id,
+                'view_id': self.env.ref('eb_group_wizard.declaration_de_bon_correction_form').id,
                 # self.env.ref('module_name.view_id').id,  # Replace 'module_name' with your module name
                 'res_id': self.ids[0],  # ids[0],
                 'context': {},
@@ -1840,7 +1842,7 @@ class EbMergegroups(models.Model):
             'view_mode': 'form',
             'target': 'new',
             'res_model': 'base.group.merge.automatic.wizard',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_de_bon_control_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_de_bon_control_form').id,
             'res_id': self.ids[0],
             'context': {},
             'domain': []
@@ -1908,7 +1910,7 @@ class EbMergegroups(models.Model):
             'view_type': 'form',
             'view_mode': 'form',
             'target': 'new',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_bons_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_bons_form').id,
             'res_model': 'base.group.merge.automatic.wizard',
             'res_id': self.ids[0],  # self.ids[0],  # ids[0],
             'context': {},
@@ -2062,7 +2064,7 @@ class EbMergegroups(models.Model):
             'view_mode': 'form',
             'target': 'new',
             'res_model': 'base.group.merge.automatic.wizard',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_bons_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_bons_form').id,
             'res_id': self.ids[0],
             'context': {},
             'domain': []
@@ -2163,7 +2165,7 @@ class EbMergegroups(models.Model):
             'view_mode': 'form',
             'target': 'new',
             'res_model': 'base.group.merge.automatic.wizard',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_de_bon_control_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_de_bon_control_form').id,
             # self.env.ref('module_name.view_id').id
             'res_id': self.ids[0],  # ids[0],
             'context': {},
@@ -2264,7 +2266,7 @@ class EbMergegroups(models.Model):
             'view_mode': 'form',
             'target': 'new',
             'res_model': 'base.group.merge.automatic.wizard',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_de_bon_correction_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_de_bon_correction_form').id,
             'res_id': self.ids[0],
             'context': {},
             'domain': []
@@ -2344,7 +2346,7 @@ class EbMergegroups(models.Model):
             'view_mode': 'form',
             'target': 'new',
             'res_model': 'base.group.merge.automatic.wizard',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_bons_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_bons_form').id,
             'res_id': self.ids[0],  # ids[0],
             'context': {},
             'domain': []
@@ -2410,7 +2412,7 @@ class EbMergegroups(models.Model):
                 'view_mode': 'form',
                 'target': 'new',
                 'res_model': 'base.group.merge.automatic.wizard',
-                'view_id': self.env.ref('med_eb_group_wizard.declaration_de_bon_control_form').id,
+                'view_id': self.env.ref('eb_group_wizard.declaration_de_bon_control_form').id,
                 # self.env.ref('module_name.view_id').id,
                 'res_id': self.ids[0],  # ids[0],
                 'context': {},
@@ -2474,7 +2476,7 @@ class EbMergegroups(models.Model):
             'view_mode': 'form',
             'target': 'new',
             'res_model': 'base.group.merge.automatic.wizard',
-            'view_id': self.env.ref('med_eb_group_wizard.declaration_de_bon_correction_form').id,
+            'view_id': self.env.ref('eb_group_wizard.declaration_de_bon_correction_form').id,
             # self.env.ref('module_name.view_id').id,
             'res_id': ids[0],  # self.ids[0],
             'context': {},
@@ -2525,7 +2527,7 @@ class EbMergegroups(models.Model):
     #             'view_mode': 'form',
     #             # 'target': 'new',
     #             'res_model': 'base.group.merge.automatic.wizard',
-    #             'view_id': self.env.ref('med_eb_group_wizard.declaration_bons_form').id,  # 1543,
+    #             'view_id': self.env.ref('eb_group_wizard.declaration_bons_form').id,  # 1543,
     #             'res_id': self.ids[0],
     #             'context': {},
     #             'domain': []
