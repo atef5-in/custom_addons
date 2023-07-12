@@ -5,5 +5,3 @@ access.project.status,access_project_status,task_work.model_project_status,base.
 access.hr.payslip,access_hr_payslip,task_work.model_hr_payslip,base.group_user,1,1,1,1
 access.project.issue,access_project_issue,task_work.model_project_issue,base.group_user,1,1,1,1
 access.project.issue.version,access_project_issue_version,task_work.model_project_issue_version,base.group_user,1,1,1,1
-access.base.group,access_base_group,task_work.model_base_group,base.group_user,1,1,1,1
-access.base.flow.merge.line,access_base_flow_merge_line,task_work.model_base_flow_merge_line,base.group_user,1,1,1,1

@@ -1126,8 +1126,6 @@ class TaskWorkLine(models.Model):
     done3 = fields.Boolean(string='is done')
     done4 = fields.Boolean(string='is done')
     auto = fields.Boolean(string='is done')
-    group_id2 = fields.Many2one('base.group', 'Done by', select="1", readonly=True,
-                                states={'affect': [('readonly', False)]}, )
     facture = fields.Boolean(string='Facture', readonly=True, states={'affect': [('readonly', False)]}, )
     date_inv = fields.Date(string='Date', select="1")
     num = fields.Char(string='Work summary', readonly=True, states={'affect': [('readonly', False)]}, )
@@ -1268,9 +1266,4 @@ class HrPayslip(models.Model):
 
 class ProjectIssue(models.Model):
     _name = "project.issue"
-    name = fields.Char('Name')
-
-
-class BaseGroup(models.Model):
-    _name = "base.group"
     name = fields.Char('Name')
