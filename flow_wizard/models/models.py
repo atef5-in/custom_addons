@@ -828,60 +828,6 @@ class ProjectTaskWork(models.Model):
         }
 
 
-class WorkHisto(models.Model):
-    _name = 'work.histo'
-    _description = 'Work Histo'
-
-    name = fields.Char(string='Name')
-    work_id = fields.Many2one('project.task.work', string='Work')
-    histo_line_ids = fields.One2many('work.histo.line', 'work_histo_id', string='Histo Lines')
-
-
-class WorkHistoLine(models.Model):
-    _name = 'work.histo.line'
-    _description = 'Work Histo Line'
-
-    actions = fields.Selection([
-        ('keep', 'Laisser Les Taches Actives'),
-        ('permis', 'Terminer Les Taches'),
-        ('archiv', 'Archiver Les Taches'),
-        ('suspend', 'Suspendre Temporairement Les Taches'),
-        ('treated', 'Cloturer Définitivement Les Taches'),
-        ('cancel', 'Annuler Les Taches')
-    ], string='Actions')
-
-    type = fields.Selection([
-        ('aw', 'AW')
-    ], string='Type')
-    create_by = fields.Char(string='Created By')
-    work_histo_id = fields.Many2one('work.histo', string='Work Histo')
-    date = fields.Datetime(string='Date')
-    coment1 = fields.Text(string='Comment 1')
-    id_object = fields.Integer(string='Object ID')
-    execute_by = fields.Boolean(default="False")
-
-
 class LinkLine(models.Model):
     _inherit = 'link.line'
     flow_id = fields.Many2one('base.flow.merge.automatic.wizard', string='Event')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
