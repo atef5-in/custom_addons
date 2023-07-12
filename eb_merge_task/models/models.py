@@ -283,9 +283,8 @@ class EbMergeTasks(models.Model):
         if current.project_id:
             if not current.line_ids1:
                 raise UserError(_("Action impossible! Aucune Ligne à Créer!"))
-
             for s2 in current.line_ids1:
-                if current.exist:
+                if current.exist is True:
                     found = self.env['project.task.work'].search([
                         ('project_id', '=', current.project_id.id),
                         ('zone', '=', s2.zone),
@@ -298,7 +297,6 @@ class EbMergeTasks(models.Model):
                     ('sequence', '=', seq)
                 ])
                 res_user = self.env['res.users'].browse(self._uid)
-
                 while kk:
                     seq += 1
                     kk = self.env['project.task.work'].search([
@@ -307,72 +305,113 @@ class EbMergeTasks(models.Model):
                     ])
 
                 if s2.task_id.kit_id:
-                    self.env.cr.execute("""
-                        INSERT INTO project_task_work (kit_id, task_id, categ_id, product_id, name, uom_id, date_start, date_end,
-                        poteau_i, poteau_t, color, hours, total_t, project_id, gest_id, uom_id_r, etape, state, zone, secteur, sequence, active,
-                        w_id, display, zo, sect, gest_id3, current_gest, current_sup, reviewer_id1, coordin_id1, coordin_id2, coordin_id3,
-                        coordin_id4, coordin_id5, coordin_id6, coordin_id7, coordin_id8, coordin_id9, coordin_id10, partner_id, work_orig)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    """, (
-                        s2.task_id.kit_id.id, s2.task_id.id, s2.categ_id.id, s2.product_id.id,
-                        s2.name.replace("'", "''"),
-                        s2.uom_id.id, s2.date_start, s2.date_end, s2.poteau_i, s2.poteau_t, int(s2.color), s2.hours,
-                        s2.total_t,
-                        s2.project_id.id, s2.gest_id.id, s2.uom_id.id, s2.etape, 'draft', s2.zone, s2.secteur, seq,
-                        True,
-                        current.id, s2.is_display, 'Zone ' + s2.zo, 'Secteur ' + str(s2.secteur).zfill(2),
-                        int(s2.task_id.coordin_id.id), int(s2.task_id.coordin_id.id), int(s2.gest_id.id),
-                        int(s2.task_id.reviewer_id1.id), int(s2.task_id.coordin_id1.id), int(s2.task_id.coordin_id2.id),
-                        int(s2.task_id.coordin_id3.id), int(s2.task_id.coordin_id4.id), int(s2.task_id.coordin_id5.id),
-                        int(s2.task_id.coordin_id6.id), int(s2.task_id.coordin_id7.id), int(s2.task_id.coordin_id8.id),
-                        int(s2.task_id.coordin_id9.id), int(s2.task_id.coordin_id10.id),
-                        int(s2.project_id.partner_id.id),
-                        int(s2.id)
-                    ))
+                    self.env['project.task.work'].create({
+                        'kit_id': s2.task_id.kit_id.id,
+                        'task_id': s2.task_id.id,
+                        'categ_id': s2.categ_id.id,
+                        'product_id': s2.product_id.id,
+                        'name': s2.name.replace("'", "''"),
+                        'uom_id': s2.uom_id.id,
+                        'date_start': s2.date_start,
+                        'date_end': s2.date_end,
+                        'poteau_i': s2.poteau_i,
+                        'poteau_t': s2.poteau_t,
+                        'color': s2.color,
+                        'hours': s2.hours,
+                        'total_t': s2.total_t,
+                        'project_id': s2.project_id.id,
+                        'gest_id': s2.gest_id.id,
+                        'uom_id_r': s2.uom_id.id,
+                        'etape': s2.etape,
+                        'state': 'draft',
+                        'zone': s2.zone,
+                        'secteur': s2.secteur,
+                        'sequence': seq,
+                        'active': True,
+                        'w_id': current.id,
+                        'display': s2.is_display,
+                        'zo': 'Zone ' + s2.zo,
+                        'sect': 'Secteur ' + str(s2.secteur).zfill(2),
+                        'gest_id3': s2.task_id.coordin_id.id,
+                        'current_gest': s2.task_id.coordin_id.id,
+                        'current_sup': s2.gest_id.id,
+                        'reviewer_id1': s2.task_id.reviewer_id1.id,
+                        'coordin_id1': s2.task_id.coordin_id1.id,
+                        'coordin_id2': s2.task_id.coordin_id2.id,
+                        'coordin_id3': s2.task_id.coordin_id3.id,
+                        'coordin_id4': s2.task_id.coordin_id4.id,
+                        'coordin_id5': s2.task_id.coordin_id5.id,
+                        'coordin_id6': s2.task_id.coordin_id6.id,
+                        'coordin_id7': s2.task_id.coordin_id7.id,
+                        'coordin_id8': s2.task_id.coordin_id8.id,
+                        'coordin_id9': s2.task_id.coordin_id9.id,
+                        'coordin_id10': s2.task_id.coordin_id10.id,
+                        'partner_id': s2.project_id.partner_id.id,
+                        'work_orig': s2.id
+                    })
+
                 else:
                     for s3 in current.work_ids:
-                        self.env.cr.execute("""
-                            INSERT INTO project_task_work (task_id, categ_id, product_id, name, uom_id, date_start, date_end,
-                            poteau_i, poteau_t, color, hours, total_t, project_id, gest_id, uom_id_r, etape, state, zone, secteur, sequence,
-                            active, w_id, display, zo, sect, gest_id3, current_gest, current_sup, reviewer_id1, coordin_id1, coordin_id2,
-                            coordin_id3, coordin_id4, coordin_id5, coordin_id6, coordin_id7, coordin_id8, coordin_id9, coordin_id10,
-                            partner_id, work_orig)
-                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                            %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                        """, (
-                            s2.task_id.id, s2.categ_id.id, s2.product_id.id, s2.name.replace("'", "''"), s2.uom_id.id,
-                            s2.date_start, s2.date_end, s2.poteau_i, s2.poteau_t, int(s2.color), s2.hours, s2.total_t,
-                            s2.project_id.id, s2.gest_id.id, s2.uom_id.id, s2.etape, 'draft', s2.zone, s2.secteur, seq,
-                            True,
-                            current.id, s2.is_display, 'Zone ' + s2.zo, 'Secteur ' + str(s2.secteur).zfill(2),
-                            int(s2.task_id.coordin_id.id), int(s2.task_id.coordin_id.id), int(s2.gest_id.id),
-                            int(s2.task_id.reviewer_id1.id), int(s2.task_id.coordin_id1.id),
-                            int(s2.task_id.coordin_id2.id),
-                            int(s2.task_id.coordin_id3.id), int(s2.task_id.coordin_id4.id),
-                            int(s2.task_id.coordin_id5.id),
-                            int(s2.task_id.coordin_id6.id), int(s2.task_id.coordin_id7.id),
-                            int(s2.task_id.coordin_id8.id),
-                            int(s2.task_id.coordin_id9.id), int(s2.task_id.coordin_id10.id),
-                            int(s2.project_id.partner_id.id),
-                            int(s2.id)
-                        ))
-
-                        self.env.cr.execute("""
-                            SELECT id FROM project_task_work WHERE project_id=%s AND task_id=%s AND zone=%s AND secteur=%s
-                        """, (s2.project_id.id, s2.task_id.id, s2.zone, s2.secteur))
-                        sql_result = self.env.cr.fetchone()
-                        sql_work = self.env['work.histo'].search([('work_id', '=', s3.id)])
+                        task_work = self.env['project.task.work'].create({
+                            'task_id': s2.task_id.id,
+                            'categ_id': s2.categ_id.id,
+                            'product_id': s2.product_id.id,
+                            'name': s2.name.replace("'", "''"),
+                            'uom_id': s2.uom_id.id,
+                            'date_start': s2.date_start,
+                            'date_end': s2.date_end,
+                            'poteau_i': s2.poteau_i,
+                            'poteau_t': s2.poteau_t,
+                            'color': s2.color,
+                            'hours': s2.hours,
+                            'total_t': s2.total_t,
+                            'project_id': s2.project_id.id,
+                            'gest_id': s2.gest_id.id,
+                            'uom_id_r': s2.uom_id.id,
+                            'etape': s2.etape,
+                            'state': 'draft',
+                            'zone': s2.zone,
+                            'secteur': s2.secteur,
+                            'sequence': seq,
+                            'active': True,
+                            'w_id': current.id,
+                            'display': s2.is_display,
+                            'zo': 'Zone ' + s2.zo,
+                            'sect': 'Secteur ' + str(s2.secteur).zfill(2),
+                            'gest_id3': s2.task_id.coordin_id.id,
+                            'current_gest': s2.task_id.coordin_id.id,
+                            'current_sup': s2.gest_id.id,
+                            'reviewer_id1': s2.task_id.reviewer_id1.id,
+                            'coordin_id1': s2.task_id.coordin_id1.id,
+                            'coordin_id2': s2.task_id.coordin_id2.id,
+                            'coordin_id3': s2.task_id.coordin_id3.id,
+                            'coordin_id4': s2.task_id.coordin_id4.id,
+                            'coordin_id5': s2.task_id.coordin_id5.id,
+                            'coordin_id6': s2.task_id.coordin_id6.id,
+                            'coordin_id7': s2.task_id.coordin_id7.id,
+                            'coordin_id8': s2.task_id.coordin_id8.id,
+                            'coordin_id9': s2.task_id.coordin_id9.id,
+                            'coordin_id10': s2.task_id.coordin_id10.id,
+                            'partner_id': s2.project_id.partner_id.id,
+                            'work_orig': s2.id
+                        })
+                        sql_result = self.env['project.task.work'].search([
+                            ('project_id', '=', s2.project_id.id),
+                            ('task_id', '=', s2.task_id.id),
+                            ('zone', '=', s2.zone),
+                            ('secteur', '=', s2.secteur)
+                        ], limit=1)
+                        sql_work = self.env['work.histo'].search([('work_id', '=', s3.id)], limit=1)
                         if sql_work:
-                            histo = self.env['work.histo'].create({
+                            self.env['work.histo'].create({
                                 'task_id': s2.task_id.id,
-                                'work_id': sql_result,
+                                'work_id': sql_result.id,
                                 'categ_id': s2.categ_id.id,
                                 'product_id': s2.product_id.id,
                                 'name': s2.name,
-                                'work_sup_id': sql_work[0],
+                                'work_sup_id': sql_work.id,
                                 'date': s2.date_start,
-                                'create_a': datetime.now(),
+                                'create_a': fields.datetime.now(),
                                 'create_by': res_user.employee_id.name,
                                 'zone': s2.zone,
                                 'secteur': s2.secteur,
@@ -380,14 +419,14 @@ class EbMergeTasks(models.Model):
                                 'partner_id': s2.project_id.partner_id.id,
                             })
                         else:
-                            histo = self.env['work.histo'].create({
+                            self.env['work.histo'].create({
                                 'task_id': s2.task_id.id,
-                                'work_id': sql_result,
+                                'work_id': sql_result.id,
                                 'categ_id': s2.categ_id.id,
                                 'product_id': s2.product_id.id,
                                 'name': s2.name,
                                 'date': s2.date_start,
-                                'create_a': datetime.now(),
+                                'create_a': fields.datetime.now(),
                                 'create_by': res_user.employee_id.name,
                                 'zone': s2.zone,
                                 'secteur': s2.secteur,
@@ -395,140 +434,112 @@ class EbMergeTasks(models.Model):
                                 'partner_id': s2.project_id.partner_id.id,
                             })
 
-                if len(current.work_ids) > 0:
-                    for s3 in current.work_ids:
-                        if current.type == '1':
-                            s3.write({'active': False, 'w_id': current.id})
-                        else:
-                            if current.choix == '2':
-                                s3.write({'active': False, 'w_id': current.id})
+                            if len(current.work_ids) > 0:
+                                for s3 in current.work_ids:
+                                    if current.type == '1':
+                                        s3.write({'active': False, 'w_id': current.id})
+                                    else:
+                                        if current.choix == '2':
+                                            s3.write({'active': False, 'w_id': current.id})
+                                        else:
+                                            s3.write({'w_id': current.id})
                             else:
-                                s3.write({'w_id': current.id})
-                else:
-                    l = []
-                    v = []
-                    res_cpt = []
-                    for tt in current.task_ids.ids:
-                        this_p = self.env['project.task'].browse(tt)
-                        if this_p.kit_id:
-                            v.append(this_p.kit_id.id)
+                                v = []
+                                res_cpt = []
+                                for tt in current.task_ids.ids:
+                                    this_p = self.env['project.task'].browse(tt)
+                                    if this_p.kit_id:
+                                        v.append(this_p.kit_id.id)
 
-                    if len(v) > 0:
-                        tasks = self.env['project.task'].search([
-                            ('project_id', '=', current.project_id.id),
-                            ('state', 'in', ['draft', 'affect']),
-                            ('kit_id', 'in', v),
-                            ('active', '=', True),
-                            ('is_copy', '=', False)
-                        ])
-                        ll1 = tasks.ids
+                                if len(v) > 0:
+                                    self.env.cr.execute(
+                                        'SELECT id FROM project_task_work WHERE project_id=%s AND state IN %s AND kit_id IN %s AND active=True AND is_copy=False',
+                                        (current.project_id.id, ('draft', 'affect'), tuple(v)))
+                                    ll1 = self.env.cr.fetchall()
 
-                        for nn in ll1:
-                            wrk = self.env['project.task.work'].browse(nn)
-                            res_cpt.append(wrk.id)
+                                    for nn in ll1:
+                                        wrk = self.env['project.task.work'].browse(nn)
+                                        res_cpt.append(wrk.id)
 
-                        for kk in res_cpt:
-                            if current.type == '1':
-                                self.env['project.task.work'].browse(kk).write({'active': False, 'w_id': current.id})
-                            else:
-                                if current.choix == '2':
-                                    self.env['project.task.work'].browse(kk).write(
-                                        {'active': False, 'w_id': current.id})
-                                else:
-                                    self.env['project.task.work'].browse(kk).write({'w_id': current.id})
+                                    for kk in res_cpt:
+                                        if current.type == '1':
+                                            self.env['project.task.work'].write(kk,
+                                                                                {'active': False, 'w_id': current.id})
+                                        else:
+                                            if current.choix == '2':
+                                                self.env['project.task.work'].write(kk, {'active': False,
+                                                                                         'w_id': current.id})
+                                            else:
+                                                self.env['project.task.work'].write(kk, {'w_id': current.id})
 
-                    current.write({'state': 'open'})
-                    view = self.env.ref('sh_message.sh_message_sh_message_wizard')
-                    if self.env.cr.dbname == 'DEMO222':
-                        found = self.env['project.task.work'].search([('w_id', '=', current.id)])
-                        if found:
-                            for jj in found:
-                                s2 = jj
+                            self.write({'state': 'open'})
 
-                                sq40 = (
-                                           "INSERT INTO app_entity_26 (id,date_added,date_updated,created_by,parent_item_id,field_243,"
-                                           "field_253,field_255,field_256,field_260,field_261,field_259,field_258,field_264,field_271,"
-                                           "field_272,field_268,field_244,field_250,field_251,field_269,field_263,field_287,field_273,"
-                                           "field_274) VALUES (%s,'%s','%s','%s','%s','%s',%s,'%s','%s','%s','%s','%s','%s',%s,'%s',"
-                                           "%s,'%s','%s','%s','%s','%s','%s','%s','%s','%s')") % (
-                                           s2.id,
-                                           int(datetime.strptime(s2.date_start or s2.create_date[:10],
-                                                                 '%Y-%m-%d').timestamp()) or '',
-                                           int(datetime.strptime(s2.date_start or s2.create_date[:10],
-                                                                 '%Y-%m-%d').timestamp()) or '',
-                                           1,
-                                           s2.project_id.id,
-                                           s2.name.encode('ascii', 'ignore').replace("'", "\\'"),
-                                           s2.project_id.id,
-                                           s2.sequence or '',
-                                           str(s2.project_id.partner_id.id) or '',
-                                           s2.product_id.name.encode('ascii', 'ignore').replace("'", "\\'") or '',
-                                           s2.categ_id.name.encode('ascii', 'ignore').replace("'", "\\'") or '',
-                                           str(s2.task_id.coordin_id.id) or '',
-                                           str(s2.gest_id.id) or '',
-                                           s2.poteau_t or 0,
-                                           int(datetime.strptime(s2.date_start_r or '2000-01-01',
-                                                                 '%Y-%m-%d').timestamp()) or '',
-                                           int(datetime.strptime(s2.date_end_r or '2000-01-01',
-                                                                 '%Y-%m-%d').timestamp()) or '',
-                                           str(s2.task_id.id) or '',
-                                           '72',
-                                           int(datetime.strptime(s2.date_start or s2.create_date[:10],
-                                                                 '%Y-%m-%d').timestamp()) or '',
-                                           int(datetime.strptime(s2.date_end or '2000-01-01',
-                                                                 '%Y-%m-%d').timestamp()) or '',
-                                           str(s2.employee_id.id if s2.employee_id else '') or '',
-                                           str(s2.uom_id.id) or '',
-                                           '',
-                                           str(s2.zone) or '',
-                                           str(s2.secteur) or '')
+                            if self.env.cr.dbname == 'DEMO222':
+                                found = self.env['project.task.work'].search([('w_id', '=', current.id)])
 
-                                sq41 = (
-                                           "INSERT INTO app_entity_26_values (items_id,fields_id,value) VALUES ('%s','%s','%s')") % (
-                                           s2.id, 244, '72')
-                                sq42 = (
-                                           "INSERT INTO app_entity_26_values (items_id,fields_id,value) VALUES ('%s','%s','%s')") % (
-                                           s2.id, 253, s2.project_id.id)
-                                sq43 = (
-                                           "INSERT INTO app_entity_26_values (items_id,fields_id,value) VALUES ('%s','%s','%s')") % (
-                                           s2.id, 256, s2.project_id.partner_id.id)
-                                sq44 = (
-                                           "INSERT INTO app_entity_26_values (items_id,fields_id,value) VALUES ('%s','%s','%s')") % (
-                                           s2.id, 268, s2.task_id.id)
-                                if s2.gest_id:
-                                    sq45 = (
-                                               "INSERT INTO app_entity_26_values (items_id,fields_id,value) VALUES ('%s','%s','%s')") % (
-                                               s2.id, 258, s2.gest_id.id)
-                                    self.env.cr.execute(sq45)
-                                if s2.task_id.coordin_id3:
-                                    sq46 = (
-                                               "INSERT INTO app_entity_26_values (items_id,fields_id,value) VALUES ('%s','%s','%s')") % (
-                                               s2.id, 259, s2.task_id.coordin_id3.id)
-                                    self.env.cr.execute(sq46)
-                                if s2.employee_id:
-                                    sq47 = (
-                                               "INSERT INTO app_entity_26_values (items_id,fields_id,value) VALUES ('%s','%s','%s')") % (
-                                               s2.id, 269, s2.employee_id.id)
-                                    self.env.cr.execute(sq47)
-                                self.env.cr.execute(sq40)
-                                self.env.cr.execute(sq41)
-                                self.env.cr.execute(sq42)
-                                self.env.cr.execute(sq43)
-                                self.env.cr.execute(sq44)
-                                self.env.cr.commit()
+                                if found:
+                                    for jj in found:
+                                        s2 = jj
 
-                    view_id = view and view.id or False
-                    return {
-                        'name': 'Taches générées avec Succès',
-                        'type': 'ir.actions.act_window',
-                        'view_type': 'form',
-                        'view_mode': 'form',
-                        'res_model': 'sh.message.wizard',
-                        'views': [(view_id, 'form')],
-                        'view_id': view_id,
-                        'target': 'new',
-                        'context': self.env.context
-                    }
+                                        sq40 = "INSERT INTO app_entity_26 (id,date_added,date_updated,created_by,parent_item_id,field_243,field_253,field_255,field_256,field_260,field_261,field_259,field_258,field_264,field_271,field_272,field_268,field_244,field_250,field_251,field_269,field_263,field_287,field_273,field_274) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+                                        sq41 = "INSERT INTO app_entity_26_values (items_id,fields_id,value) VALUES (%s,%s,%s)"
+                                        sq42 = "INSERT INTO app_entity_26_values (items_id,fields_id,value) VALUES (%s,%s,%s)"
+                                        sq43 = "INSERT INTO app_entity_26_values (items_id,fields_id,value) VALUES (%s,%s,%s)"
+                                        sq44 = "INSERT INTO app_entity_26_values (items_id,fields_id,value) VALUES (%s,%s,%s)"
+
+                                        self.env.cr.execute(sq40, (
+                                            s2.id,
+                                            int(fields.datetime.strptime(s2.date_start or s2.create_date[:10],
+                                                                         '%Y-%m-%d').timestamp()) or '',
+                                            int(fields.datetime.strptime(s2.date_start or s2.create_date[:10],
+                                                                         '%Y-%m-%d').timestamp()) or '',
+                                            1,
+                                            s2.project_id.id,
+                                            s2.name.encode('ascii', 'ignore').replace("'", "\\'"),
+                                            s2.project_id.id,
+                                            s2.sequence or '',
+                                            str(s2.project_id.partner_id.id) or '',
+                                            s2.product_id.name.encode('ascii', 'ignore').replace("'", "\\'") or '',
+                                            s2.categ_id.name.encode('ascii', 'ignore').replace("'", "\\'") or '',
+                                            str(s2.task_id.coordin_id.id) or '',
+                                            str(s2.gest_id.id) or '',
+                                            s2.poteau_t or 0,
+                                            int(fields.datetime.strptime(s2.date_start_r or '2000-01-01',
+                                                                         '%Y-%m-%d').timestamp()) or '',
+                                            int(fields.datetime.strptime(s2.date_end_r or '2000-01-01',
+                                                                         '%Y-%m-%d').timestamp()) or '',
+                                            str(s2.task_id.id) or '',
+                                            '72',
+                                            int(fields.datetime.strptime(s2.date_start or s2.create_date[:10],
+                                                                         '%Y-%m-%d').timestamp()) or '',
+                                            int(fields.datetime.strptime(s2.date_end or '2000-01-01',
+                                                                         '%Y-%m-%d').timestamp()) or '',
+                                            str(s2.employee_id.id if s2.employee_id else '') or '',
+                                            str(s2.uom_id.id) or '',
+                                            '',
+                                            str(s2.zone) or '',
+                                            str(s2.secteur) or ''
+                                        ))
+
+                                        self.env.cr.execute(sq41, (s2.id, 244, '72'))
+                                        self.env.cr.execute(sq42, (s2.id, 253, s2.project_id.id))
+                                        self.env.cr.execute(sq43, (s2.id, 256, s2.project_id.partner_id.id))
+                                        self.env.cr.execute(sq44, (s2.id, 268, s2.task_id.id))
+
+                                        self.env.cr.commit()
+
+                            view_id = self.env.ref('sh.message.wizard.view_id').id
+                            return {
+                                'name': 'Taches générées avec Succès',
+                                'type': 'ir.actions.act_window',
+                                'view_type': 'form',
+                                'view_mode': 'form',
+                                'res_model': 'sh.message.wizard',
+                                'views': [(view_id, 'form')],
+                                'view_id': view_id,
+                                'target': 'new',
+                                'context': self._context
+                            }
 
     def cancel_(self):
 
