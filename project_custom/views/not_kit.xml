@@ -200,7 +200,7 @@
                                 <field name="zone" string="Zone " readonly="1"/>
                                 <field name="etape" string="Etape" readonly="1" invisible="0"/>
                                 <field name="secteur" string="Sect" readonly="1"/>
-<!--                                -->
+                                <!--                                -->
                                 <field name="is_intervenant" string="Date" invisible="1"/>
                                 <field name="date_start" string="Date Déb." readonly="1"/>
                                 <field name="date_end" string="Date Fin" readonly="1"/>
@@ -217,6 +217,7 @@
                                 <field name="paylist_id" string="Facture"
                                        options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
                                        invisible="1"/>
+                                <field name="r_id" string="Risk" invisible="1"/>
                                 <field name="done" string="Libellé " readonly="1" invisible="1"/>
                                 <field name="done1" string="Libellé " readonly="1" invisible="1"/>
                                 <field name="done2" string="Libellé " readonly="1" invisible="1"/>

@@ -214,6 +214,7 @@
                                     <field name="paylist_id" string="Facture"
                                            options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
                                            invisible="1"/>
+                                    <field name="r_id" string="Risk" invisible="1"/>
                                     <field name="done" string="Libellé " readonly="1" invisible="1"/>
                                     <field name="done1" string="Libellé " readonly="1" invisible="1"/>
                                     <field name="done2" string="Libellé " readonly="1" invisible="1"/>

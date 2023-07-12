@@ -563,6 +563,8 @@ class TaskWork(models.Model):
     progress_amount = fields.Float(compute='_get_progress_amount', string='% Montant')
     risk = fields.Char(compute='_get_risk', string='Risk')
     link_ids = fields.One2many('link.line', 'work_id', string='Work done')
+    r_id = fields.Many2one('risk.management.category', string='r ID', readonly=True,
+                           states={'draft': [('readonly', False)]}, )
 
     def action_affect(self):
 
@@ -1248,6 +1250,11 @@ class ProjectIssueVersion(models.Model):
 # class BaseGroupMergeAutomaticWizard(models.Model):
 #     _name = "base.group.merge.automatic.wizard"
 #     name = fields.Char('Name')
+
+
+class RiskManagementCategory(models.Model):
+    _inherit = 'risk.management.category'
+    work_id = fields.Many2one('project.task.work', string='Wizard')
 
 
 class LinkLine(models.Model):

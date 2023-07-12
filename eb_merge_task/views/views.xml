@@ -190,6 +190,18 @@
                                     <field name="to_int" string="Plan A"
                                            attrs="{'invisible':[('aggr_ids','=','2')]}"/>
 
+                                    <field name="plan_id" string="Plan de"
+                                           attrs="{'invisible':[('aggr_ids','=','1')]}"
+                                           options="{'no_create': True, 'no_create_edit':True}"
+                                           invisible="1"/>
+                                    <field name="plan_id2" string="Plan A"
+                                           attrs="{'invisible':[('aggr_ids','=','1')]}"
+                                           options="{'no_create': True, 'no_create_edit':True}"
+                                           invisible="1"/>
+                                    <field name="risk_id" string="Plan Relevé"
+                                           attrs="{'invisible':[('aggr_ids','=','1')]}"
+                                           options="{'no_create': True, 'no_create_edit':True}"/>
+
                                     <field name="plans" string="Plan de"
                                            attrs="{'invisible':[('aggr_ids','=','1')]}"
                                            options="{'no_create': True, 'no_create_edit':True}"/>

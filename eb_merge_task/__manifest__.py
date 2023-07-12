@@ -7,7 +7,7 @@
     'author': "A.A",
     'summary': '  ',
     'description': """    """,
-    'depends': ['base', 'project', 'task_custom'],
+    'depends': ['base', 'project', 'task_custom', 'risk_management'],
     'data': [
         'security/ir.model.access.csv',
         'views/views.xml',

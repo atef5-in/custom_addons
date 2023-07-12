@@ -20,7 +20,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'project_custom', 'account'],
+    'depends': ['base', 'project_custom', 'account', 'risk_management'],
 
     'images': ['static/description/banner.jpg'],
 

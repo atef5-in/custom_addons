@@ -36,6 +36,9 @@ class MergeFacturesLine(models.Model):
     code = fields.Char(string='name')
     price = fields.Float(string='Wizard')
     total = fields.Float(string='Wizard', store=True, readonly=True, compute='_compute_amount')
+    plan_id = fields.Many2one('risk.management.response.category', string='Wizard')
+    plan_id2 = fields.Many2one('risk.management.response.category', string='Wizard')
+    risk_id = fields.Many2one('risk.management.category', string='Wizard')
 
     # verify this onchange
     @api.onchange('poteau_t', 'price')

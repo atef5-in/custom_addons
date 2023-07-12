@@ -62,6 +62,7 @@
                 <field name="affect_emp_list" string="Aff. Employés id" invisible="1"/>
                 <field name="affect_con_list" string="Aff. Con id" invisible="1"/>
                 <field name="affect_cor_list" string="Aff. Corr id" invisible="1"/>
+                <field name="r_id" string="Risk" invisible="1"/>
                 <field name="paylist_id" string="Facture"
                        options="{'no_create': True, 'no_create_edit':True,'no_open':True}" invisible="1"/>
                 <field name="done" string="Libellé " readonly="1" invisible="1"/>
