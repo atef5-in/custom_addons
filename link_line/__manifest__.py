@@ -20,7 +20,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'task_work', 'flow_wizard'],
+    'depends': ['base'],
 
     # always loaded
     'data': [

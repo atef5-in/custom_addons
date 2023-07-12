@@ -455,7 +455,6 @@ class TaskWork(models.Model):
                                ],
                               string='Status', copy=False)
     kanban_color = fields.Integer(compute='_check_color', string='Couleur')
-    link_ids = fields.One2many('link.type', 'work_id', string='Work done')
     zone = fields.Integer(string='Zone', readonly=True, states={'draft': [('readonly', False)]}, )
     secteur = fields.Integer(string='Secteur', readonly=True, states={'draft': [('readonly', False)]}, )
     zo = fields.Char(string='Zone', readonly=True, states={'draft': [('readonly', False)]}, )
@@ -563,6 +562,7 @@ class TaskWork(models.Model):
     progress_qty = fields.Float(compute='_get_progress_qty', string='% Qté')
     progress_amount = fields.Float(compute='_get_progress_amount', string='% Montant')
     risk = fields.Char(compute='_get_risk', string='Risk')
+    link_ids = fields.One2many('link.line', 'work_id', string='Work done')
 
     def action_affect(self):
 
@@ -1250,20 +1250,16 @@ class ProjectIssueVersion(models.Model):
 #     name = fields.Char('Name')
 
 
+class LinkLine(models.Model):
+    _inherit = 'link.line'
+    work_id = fields.Many2one('project.task.work', string='Event')
+
+
 class ProjectStatus(models.Model):
     _name = 'project.status'
     _description = 'Project Status'
 
     name = fields.Char(String='Status Permis')
-
-
-class LinkType(models.Model):
-    _name = "link.type"
-
-    work_id = fields.Many2one('project.task.work', string='project ID')
-    ftp = fields.Char()
-    name = fields.Char()
-    source = fields.Char()
 
 
 class HrPayslip(models.Model):

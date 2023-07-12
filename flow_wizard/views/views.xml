@@ -132,15 +132,15 @@
                         <page string="Liens">
                             <group>
 
-<!--                                <field name="link_ids" nolabel="1">-->
-<!--                                    <tree string="Taches" editable="bottom">-->
-<!--                                        <field name="name" string="Description"/>-->
-<!--                                        <field name="ftp" string="FTP"/>-->
-<!--                                        <field name="flow_id" string="Flow_id" invisible="1"/>-->
-<!---->
-<!--                                    </tree>-->
-<!---->
-<!--                                </field>-->
+                                <field name="link_ids" nolabel="1">
+                                    <tree string="Taches" editable="bottom">
+                                        <field name="name" string="Description"/>
+                                        <field name="ftp" string="FTP"/>
+                                        <field name="flow_id" string="Flow_id" invisible="1"/>
+
+                                    </tree>
+
+                                </field>
                                 <group>
                                     <field name="attach_ids" widget="many2many_binary" class="oe_inline"
                                            string="Pièces Jointes">

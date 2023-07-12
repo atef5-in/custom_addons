@@ -200,6 +200,8 @@ class EbMergeflows(models.Model):
             flow.amount_tvq = flow.amount_untaxed * tvq
             flow.amount_total = flow.amount_untaxed + flow.amount_tps + flow.amount_tvq
 
+    link_ids = fields.One2many('link.line', 'flow_id', string="Work done", readonly=True,
+                               states={'draft': [('readonly', False)]}, )
     current_user = fields.Many2one('res.users', compute='_get_current_user')
     gest_id = fields.Many2one('hr.employee', string='Wizard')
     work_ids = fields.Many2many('project.task.work', string='flows', readonly=True,
@@ -857,3 +859,29 @@ class WorkHistoLine(models.Model):
     coment1 = fields.Text(string='Comment 1')
     id_object = fields.Integer(string='Object ID')
     execute_by = fields.Boolean(default="False")
+
+
+class LinkLine(models.Model):
+    _inherit = 'link.line'
+    flow_id = fields.Many2one('base.flow.merge.automatic.wizard', string='Event')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

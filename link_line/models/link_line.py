@@ -9,8 +9,6 @@ class LinkLine(models.Model):
     name = fields.Char(string='Work summary', readonly=False)
     ftp = fields.Char(string='ftp')
     model = fields.Char(string='model')
-    work_id = fields.Many2one('project.task.work', string='Event')
-    flow_id = fields.Many2one('base.flow.merge.automatic.wizard', string='Event')
     affect_id = fields.Many2one('base.invoices.merge.automatic.wizard', string='Event')
     source = fields.Char(string='Source')
     id_record = fields.Integer(string='Id record')
@@ -41,16 +39,3 @@ class LinkLine(models.Model):
                 'context': {},
                 'domain': []
             }
-
-
-class ProjectTaskWork(models.Model):
-    _inherit = 'project.task.work'
-
-    link_ids = fields.One2many('link.line', 'work_id', string='Work done')
-
-
-class BaseFlowMergeAutomaticWizard(models.Model):
-    _inherit = 'base.flow.merge.automatic.wizard'
-
-    link_ids = fields.One2many('link.line', 'flow_id', string="Work done", readonly=True,
-                               states={'draft': [('readonly', False)]}, )
