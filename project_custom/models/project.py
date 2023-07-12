@@ -731,6 +731,7 @@ class AgreementFees(models.Model):
 
 class ProjectTypeCustom(models.Model):
     _name = "project.type.custom"
+    name = fields.Char(string='Type du Projet')
 
 
 class ProjectIssue(models.Model):
@@ -740,12 +741,6 @@ class ProjectIssue(models.Model):
     task_id = fields.Char()
     work_id = fields.Char()
     state = fields.Char()
-
-
-class ResCountryState(models.Model):
-    _inherit = 'res.country.state'
-
-    region = fields.Char()
 
 
 class HrEmployee(models.Model):
