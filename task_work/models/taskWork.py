@@ -215,7 +215,7 @@ class TaskWork(models.Model):
     def _isinter(self):
 
         for book in self:
-            book.is_intervenant = False #to set to False.
+            book.is_intervenant = False  # to set to False.
             if book.line_ids:
                 tt = []
                 for kk in book.line_ids.ids:
@@ -528,8 +528,6 @@ class TaskWork(models.Model):
                              states={'draft': [('readonly', False)]}, )
     uom_id_r = fields.Many2one('product.uom', string='Unité Réelle', readonly=True,
                                states={'affect': [('readonly', False)]}, )
-    # w_id = fields.Many2one('base.task.merge.automatic.wizard', string='Company', readonly=True,
-    #                        states={'draft': [('readonly', False)]}, )
     pourc = fields.Float('Pour C', readonly=True, states={'draft': [('readonly', False)]}, )
     rank = fields.Char('Rank', readonly=True, states={'draft': [('readonly', False)]}, )
     display = fields.Boolean(string='Réalisable')
@@ -1042,6 +1040,7 @@ class TaskWork(models.Model):
                         },
             'domain': [],
         }
+
     @api.model
     def create(self, values):
         if 'active_ids' in self.env.context and self.env.context.get('active_model') == 'project.task.work':
@@ -1245,11 +1244,6 @@ class ProjectIssueVersion(models.Model):
     works_id = fields.Many2one('project.project', string='Work ID')
 
 
-# class BaseGroupMergeAutomaticWizard(models.Model):
-#     _name = "base.group.merge.automatic.wizard"
-#     name = fields.Char('Name')
-
-
 class RiskManagementCategory(models.Model):
     _inherit = 'risk.management.category'
     work_id = fields.Many2one('project.task.work', string='Wizard')
@@ -1277,45 +1271,6 @@ class ProjectIssue(models.Model):
     name = fields.Char('Name')
 
 
-# class BaseTaskMergeAutomaticWizard(models.Model):
-#     _name = "base.task.merge.automatic.wizard"
-#     name = fields.Char('Name')
-
-
 class BaseGroup(models.Model):
     _name = "base.group"
     name = fields.Char('Name')
-
-
-class BaseInvoiceMergeAutomaticWizard(models.Model):
-    _name = "base.invoice.merge.automatic.wizard"
-    name = fields.Char('Name')
-
-
-class BaseFlowMergeLine(models.Model):
-    _name = "base.flow.merge.line"
-    work_id = fields.Many2one('project.task.work', string='Tache')
-
-# class BonShowInherit(models.Model):
-#     _inherit = 'bon.show'
-#
-#     work_id = fields.Many2one('project.task.work', 'Nationality', readonly=True,
-#                               states={'draft': [('readonly', False)]}, )
-#     line_ids = fields.Many2many('project.task.work.line', 'bon_show_project_task_work_line_rel', 'bon_show_id',
-#                                 'project_task_work_line_id', string='Legumes', readonly=True,
-#                                 states={'draft': [('readonly', False)]}, )
-
-#
-# class BonShowLine2Inherit(models.Model):
-#     _inherit = 'bon.show.line2'
-#
-#     work_id = fields.Many2one('project.task.work', string='Nationality')
-#     line_id = fields.Many2one('project.task.work.line', string='Tags')
-#
-#
-# class BonShowLine1Inherit(models.Model):
-#     _inherit = 'bon.show.line1'
-#
-#     work_id = fields.Many2one('project.task.work', string='Task')
-#     line_id = fields.Many2one('project.task.work.line', string='Task')
-#
