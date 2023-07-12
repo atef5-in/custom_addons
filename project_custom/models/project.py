@@ -741,9 +741,3 @@ class ProjectIssue(models.Model):
     task_id = fields.Char()
     work_id = fields.Char()
     state = fields.Char()
-
-
-class HrEmployee(models.Model):
-    _inherit = 'hr.employee'
-
-    is_resp = fields.Boolean(default=True)
