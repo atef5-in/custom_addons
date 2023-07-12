@@ -2624,3 +2624,9 @@ class EbMergegroups(models.Model):
     #     packaging_copy = packaging_obj.copy(self.dst_task_id.id)
     #     packaging_copy.write({'name': 'dfsdf'})
     #     return True
+
+
+class ProjectTaskWork(models.Model):
+    _inherit = 'project.task.work'
+    group_id2 = fields.Many2one('base.group.merge.automatic.wizard', string='group 2 ID', select="1", readonly=True,
+                                states={'draft': [('readonly', False)]}, )

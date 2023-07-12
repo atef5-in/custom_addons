@@ -494,8 +494,6 @@ class TaskWork(models.Model):
     employee_id = fields.Many2one('hr.employee', 'Employé', readonly=True, states={'draft': [('readonly', False)]}, )
     issue_id = fields.Many2one('project.issue', 'Issue ID', select="1", readonly=True,
                                states={'draft': [('readonly', False)]}, )
-    group_id2 = fields.Many2one('base.group.merge.automatic.wizard', string='group 2 ID', select="1", readonly=True,
-                                states={'draft': [('readonly', False)]}, )
     dependency_task_ids = fields.Many2many('project.task.work', 'project_task_dependency_work_rel',
                                            'dependency_work_id', 'work_id', string='Dependencies')
     state = fields.Selection([('draft', 'T. Planifiés'),
