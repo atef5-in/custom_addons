@@ -372,7 +372,5 @@
                 (0, 0, {'view_mode': 'form', 'view_id': ref('project_custom.view_custom_project_form')})]"/>
         </record>
 
-        <menuitem id="menu_project" name="Projets" sequence="-1000" action="action_project"/>
-
     </data>
 </odoo>

@@ -183,7 +183,8 @@
                 (0, 0, {'view_mode': 'form', 'view_id': ref('bon_show.view_ft_form')})]"/>
         </record>
 
-        <menuitem id="menu_ft" name="Feuilles du temps" sequence="-200" action="action_ft"/>
+        <menuitem id="menu_ft" name="Feuilles du temps" sequence="30" parent="project_custom.menu_project"
+                  action="action_ft"/>
 
     </data>
 </odoo>

@@ -96,6 +96,5 @@
                 (0, 0, {'view_mode': 'form', 'view_id': ref('task_custom.view_task_form')})]"/>
         </record>
 
-        <menuitem id="menu_task" name="Activités" sequence="-900" action="action_task"/>
     </data>
 </odoo>

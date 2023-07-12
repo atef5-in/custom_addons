@@ -49,8 +49,6 @@
                             (0, 0, {'view_mode': 'form', 'view_id': ref('product_custom.view_product_category_form')})]"/>
         </record>
 
-        <menuitem id="menu_product_category" name="Liste de Départements" sequence="-780"
-                  action="action_product_category"/>
 
     </data>
 </odoo>

@@ -179,7 +179,8 @@
                 (0, 0, {'view_mode': 'form', 'view_id': ref('bon_show.view_facture_form')})]"/>
         </record>
 
-        <menuitem id="menu_facture" name="Factures" sequence="-100" action="action_facture"/>
+        <menuitem id="menu_facture" name="Factures" sequence="40" parent="project_custom.menu_project"
+                  action="action_facture"/>
 
     </data>
 </odoo>

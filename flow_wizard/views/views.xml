@@ -228,6 +228,7 @@
         <field name="res_model">base.flow.merge.automatic.wizard</field>
         <field name="view_mode">tree,form</field>
     </record>
-    <menuitem id="menu_action_workflow" name="Actions WorkFlow" sequence="0" action="action_work_flow"/>
+    <menuitem id="menu_action_workflow" name="Actions WorkFlow" sequence="50" parent="project_custom.menu_project"
+              action="action_work_flow"/>
 
 </odoo>

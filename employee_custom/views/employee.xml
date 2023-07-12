@@ -259,7 +259,5 @@
                 (0, 0, {'view_mode': 'form', 'view_id': ref('employee_custom.view_employee_form')})]"/>
         </record>
 
-        <menuitem id="menu_employee" name="Liste des Employés" sequence="-600" action="action_employee"/>
-
     </data>
 </odoo>

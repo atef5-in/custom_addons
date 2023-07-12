@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 {
     'name': "Project Custom",
 
@@ -26,6 +27,7 @@
         'security/security.xml',
         'views/project.xml',
         'views/not_kit.xml',
+        'views/menu.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

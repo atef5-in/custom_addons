@@ -81,8 +81,5 @@
             <field name="context">{}</field>
         </record>
 
-        <menuitem id="menu_remuneration_av" name="Affectation Avancée Rémunération" sequence="-250"
-                  action="action_remuneration_av"/>
-
     </data>
 </odoo>

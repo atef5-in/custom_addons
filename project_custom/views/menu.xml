@@ -1,0 +1,53 @@
+<odoo>
+    <!--    main menus-->
+    <menuitem id="menu_gest" name="Données de Base" sequence="-1000"/>
+    <menuitem id="menu_project" name="Projets" sequence="-999"/>
+    <menuitem id="menu_sale" name="Vente" sequence="-998"/>
+    <menuitem id="menu_purchase" name="Achats" sequence="-997"/>
+    <menuitem id="menu_rh" name="Ressources Humaines" sequence="-996"/>
+    <menuitem id="menu_stat" name="Analyses et Statistiques" sequence="-995"/>
+    <menuitem id="menu_tab_bord" name="Tableau de Bord Admin" sequence="-994"/>
+    <menuitem id="menu_discuss" name="Messagerie" sequence="-993"/>
+
+    <!--    menu_gest submenus-->
+
+    <menuitem id="menu_home" name="Acceuil" parent="menu_gest" sequence="0"/>
+    <menuitem id="menu_gest_data" name="Données de Gestion" parent="menu_gest" sequence="10"/>
+    <menuitem id="menu_tech_data" name="Données Techniques" parent="menu_gest" sequence="20"/>
+
+    <!--    ***** menu_gest_data submenus-->
+
+    <menuitem id="menu_product_category" name="Liste de Départements" parent="menu_gest_data" sequence="0"
+              action="product_custom.action_product_category"/>
+    <menuitem id="menu_kit" name="Liste des Kits" parent="menu_gest_data" sequence="10"
+              action="product_custom.action_kit"/>
+    <menuitem id="menu_product" name="Liste de services" parent="menu_gest_data" sequence="20"
+              action="product_custom.action_product"/>
+    <menuitem id="menu_employee" name="Liste des Employés" parent="menu_gest_data" sequence="30"
+              action="employee_custom.action_employee"/>
+    <menuitem id="menu_remuneration_av" name="Affectation Avancée Rémunération" parent="menu_gest_data" sequence="40"
+              action="employee_custom.action_remuneration_av"/>
+
+    <!--    menu_project submenus-->
+
+    <menuitem id="menu_project_cr" name="Projets" parent="menu_project" sequence="0"
+              action="project_custom.action_project"/>
+    <menuitem id="menu_task" name="Activités" parent="menu_project" sequence="10"
+              action="task_custom.action_task"/>
+    <menuitem id="menu_work" name="Tâches" parent="menu_project" sequence="20"
+              action="task_work.action_task_work"/>
+
+
+    <!--    menu_rh submenus-->
+
+
+    <!--    menu_stat submenus-->
+
+
+    <!--    menu_tab_bord submenus-->
+
+
+    <!--    menu_discuss submenus-->
+
+
+</odoo>

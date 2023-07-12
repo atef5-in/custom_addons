@@ -260,5 +260,4 @@
             </field>
         </record>
 
-    <menuitem id="menu_work" name="Tâches" sequence="-800" action="action_task_work"/>
 </odoo>

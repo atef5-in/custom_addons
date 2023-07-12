@@ -83,7 +83,5 @@
                 (0, 0, {'view_mode': 'form', 'view_id': ref('product_custom.view_product_form')})]"/>
         </record>
 
-        <menuitem id="menu_product" name="Liste de services" sequence="-700" action="action_product"/>
-
     </data>
 </odoo>
