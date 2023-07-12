@@ -569,13 +569,15 @@ class TaskWork(models.Model):
             'type': 'ir.actions.act_window',
             'view_type': 'form',
             'view_mode': 'form',
-            'target': 'popup',
+            'target': 'new',
             'res_model': 'base.invoices.merge.automatic.wizard',
             'view_id': self.env.ref('eb_invoices_wizard.view_merge_tasks_form').id,
-            'context': {'types_affect': 'intervenant'},
+            'context': {'active_ids': self.ids,
+                        'active_model': self._name,
+                        'types_affect': 'intervenant'},
             'domain': []
         }
-
+    
     def button_write1(self):
 
         self.write({'state': 'tovalid'})
