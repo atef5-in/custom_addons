@@ -6,9 +6,11 @@ from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 
 
-class EbMergeInvoicess(models.Model):
+class EbMergeInvoices(models.Model):
     _name = "base.invoices.merge.automatic.wizard"
     _description = "Merge invoicess"
+
+
 
     def default_get(self, fields_list):
 
@@ -552,100 +554,104 @@ class EbMergeInvoicess(models.Model):
             'domain': [('id', 'in', work_ids)],
         }
 
-    def button_cancel(self):
-        work_obj = self.env['project.task.work']
-        line_obj = self.env['base.invoices.merge.automatic.wizard']
-        line_obj1 = self.env['base.invoices.merge.line']
-        work_line = self.env['project.task.work']
-        emp_obj = self.env['hr.employee']
-        for rec in self:
-            for tt in rec.work_ids:
-                for msg_id in tt.ids:
-                    wk = work_obj.browse(msg_id)
-                    if rec.types_affect == 'intervenant':
-                        if rec.employee_id2 and str(wk.affect_emp_list).find(
-                                str(rec.employee_id2.user_id.id)) != -1 and wk.state == 'affect':
-                            work_line.write(wk, {'state': 'draft'})
-                            work_line.write(wk, {
-                                'job': '',
-                                'current_emp': False,
-                                'employee_id': False,
-                                'state': 'draft'
-                            })
-                            work_obj.write(wk, {
-                                'affect_emp_list': wk.affect_emp_list.replace(str(rec.employee_id2.user_id.id), ''),
-                                'affect_e_l': wk.affect_e_l.replace(str(rec.employee_id2.user_id.login), ''),
-                                'affect_emp': wk.affect_emp.replace(
-                                    str(rec.employee_id2.name if rec.employee_id2 else ''), '')
-                            })
-                        else:
-                            raise UserError(
-                                _("Champs Intervenant vide ou employée n'existe pas dans liste des intervenants"))
-                    elif rec.types_affect == 'controle':
-                        if rec.employee_id2 and str(wk.affect_con).find(str(rec.employee_id2.name)) != -1:
-                            work_obj.write(wk, {
-                                'affect_con_list': wk.affect_con_list.replace(str(rec.employee_id2.id), ''),
-                                'affect_con': wk.affect_con.replace(str(rec.employee_id2.name), '')
-                            })
-                        else:
-                            raise UserError(
-                                _("Champs Intervenant vide ou employée n'existe pas dans liste des controleurs"))
-                    elif rec.types_affect == 'correction':
-                        if rec.employee_id2 and str(wk.affect_cor).find(str(rec.employee_id2.name)) != -1:
-                            work_obj.write(wk, {
-                                'affect_cor_list': wk.affect_cor_list.replace(str(rec.employee_id2.id), ''),
-                                'affect_cor': wk.affect_cor.replace(str(rec.employee_id2.name), '')
-                            })
-                        else:
-                            raise UserError(
-                                _("Champs Intervenant vide ou employée n'existe pas dans liste des correcteurs"))
-
-                    if self.env.cr.dbname == 'DEMOddddddd':
-                        sql = "SELECT field_250 FROM app_entity_26 WHERE id = %s"
-                        self.env.cr.execute(sql, (wk.id,))
-                        datas = self.env.cr.fetchone()
-                        if datas:
-                            sql1 = "UPDATE app_entity_26 SET field_269=%s WHERE id = %s"
-                            self.env.cr.execute(sql1, ('', wk.id))
-                            sql2 = "UPDATE app_entity_26 SET field_244=%s WHERE id = %s"
-                            self.env.cr.execute(sql2, ('72', wk.id))
-                        self.env.cr.commit()
-                line_obj1.write(tt, {'state': 'draft'})
-        if rec.mail_send == 'yes':
-            if rec.note is False:
-                rec.write({'note': ' '})
-            if not rec.employee_ids:
-                raise UserError(_("Vous devez sélectionner un destinataire."))
-            else:
-                kk = ''
-                for line in rec.employee_ids.ids:
-                    emp = emp_obj.browse(line)
-                    kk += emp.work_email + ','
-                rec.write({'to': kk})
-                if rec.employee_ids1:
-                    ll = ''
-                    for line in rec.employee_ids1.ids:
-                        emp = emp_obj.browse(line)
-                        ll += emp.work_email + ','
-                    rec.write({'cc': ll})
-                if rec.employee_ids2:
-                    mm = ''
-                    for line in rec.employee_ids2.ids:
-                        emp = emp_obj.browse(line)
-                        mm += emp.work_email + ','
-                    rec.write({'cci': mm})
-        rec.write({'state': 'draft'})
-        line_obj.write(rec, {'state': 'draft'})
-        view = self.env.ref('module_name.sh_message_wizard')
-        return {
-            'name': 'Affectation les Travaux',
-            'type': 'ir.actions.act_window',
-            'view_mode': 'form',
-            'res_model': 'base.invoices.merge.automatic.wizard',
-            'res_id': rec.id,
-            'context': {'default_state': 'draft'},
-            'target': 'new',
-        }
+    # def button_cancel(self):
+    #     work_obj = self.env['project.task.work']
+    #     line_obj = self.env['base.invoices.merge.automatic.wizard']
+    #     line_obj1 = self.env['base.invoices.merge.line']
+    #     work_line = self.env['project.task.work']
+    #     emp_obj = self.env['hr.employee']
+    #     for rec in self:
+    #         for tt in rec.work_ids:
+    #             for msg_id in tt.ids:
+    #                 wk = work_obj.browse(msg_id)
+    #                 if rec.types_affect == 'intervenant':
+    #                     if rec.employee_id2 and str(wk.affect_emp_list).find(
+    #                             str(rec.employee_id2.user_id.id)) != -1 and wk.state == 'affect':
+    #                         work_line.write({'state': 'draft'})
+    #                         work_line.write({
+    #                             'job': '',
+    #                             'current_emp': False,
+    #                             'employee_id': False,
+    #                             'state': 'draft'
+    #                         })
+    #                         work_obj.write({
+    #                             'affect_emp_list': wk.affect_emp_list.replace(str(rec.employee_id2.user_id.id), ''),
+    #                             'affect_e_l': wk.affect_e_l.replace(str(rec.employee_id2.user_id.login), ''),
+    #                             'affect_emp': wk.affect_emp.replace(
+    #                                 str(rec.employee_id2.name if rec.employee_id2 else ''), '')
+    #                         })
+    #                     else:
+    #                         raise UserError(
+    #                             _("Champs Intervenant vide ou employée n'existe pas dans liste des intervenants"))
+    #                 elif rec.types_affect == 'controle':
+    #                     if rec.employee_id2 and str(wk.affect_con).find(str(rec.employee_id2.name)) != -1:
+    #                         work_obj.write(wk, {
+    #                             'affect_con_list': wk.affect_con_list.replace(str(rec.employee_id2.id), ''),
+    #                             'affect_con': wk.affect_con.replace(str(rec.employee_id2.name), '')
+    #                         })
+    #                     else:
+    #                         raise UserError(
+    #                             _("Champs Intervenant vide ou employée n'existe pas dans liste des controleurs"))
+    #                 elif rec.types_affect == 'correction':
+    #                     if rec.employee_id2 and str(wk.affect_cor).find(str(rec.employee_id2.name)) != -1:
+    #                         work_obj.write(wk, {
+    #                             'affect_cor_list': wk.affect_cor_list.replace(str(rec.employee_id2.id), ''),
+    #                             'affect_cor': wk.affect_cor.replace(str(rec.employee_id2.name), '')
+    #                         })
+    #                     else:
+    #                         raise UserError(
+    #                             _("Champs Intervenant vide ou employée n'existe pas dans liste des correcteurs"))
+    #
+    #                 if self.env.cr.dbname == 'DEMOddddddd':
+    #                     sql = "SELECT field_250 FROM app_entity_26 WHERE id = %s"
+    #                     self.env.cr.execute(sql, (wk.id,))
+    #                     datas = self.env.cr.fetchone()
+    #                     if datas:
+    #                         sql1 = "UPDATE app_entity_26 SET field_269=%s WHERE id = %s"
+    #                         self.env.cr.execute(sql1, ('', wk.id))
+    #                         sql2 = "UPDATE app_entity_26 SET field_244=%s WHERE id = %s"
+    #                         self.env.cr.execute(sql2, ('72', wk.id))
+    #                     self.env.cr.commit()
+    #             line_obj1.write({'state': 'draft'})
+    #     if rec.mail_send == 'yes':
+    #         if rec.note is False:
+    #             rec.write({'note': ' '})
+    #         if not rec.employee_ids:
+    #             raise UserError(_("Vous devez sélectionner un destinataire."))
+    #         else:
+    #             kk = ''
+    #             for line in rec.employee_ids.ids:
+    #                 emp = emp_obj.browse(line)
+    #                 kk += emp.work_email + ','
+    #             rec.write({'to': kk})
+    #             if rec.employee_ids1:
+    #                 ll = ''
+    #                 for line in rec.employee_ids1.ids:
+    #                     emp = emp_obj.browse(line)
+    #                     ll += emp.work_email + ','
+    #                 rec.write({'cc': ll})
+    #             if rec.employee_ids2:
+    #                 mm = ''
+    #                 for line in rec.employee_ids2.ids:
+    #                     emp = emp_obj.browse(line)
+    #                     mm += emp.work_email + ','
+    #                 rec.write({'cci': mm})
+    #     rec.write({'state': 'draft'})
+    #     line_obj.write({'state': 'draft'})
+    #     view = self.env['sh.message.wizard']
+    #     view_id = view and view.id or False
+    #
+    #     return {
+    #         'name': 'Affectation les Travaux',
+    #         'type': 'ir.actions.act_window',
+    #         'view_mode': 'form',
+    #         'res_model': 'base.invoices.merge.automatic.wizard',
+    #         'res_id': rec.id,
+    #         'context': {'default_state': 'draft'},
+    #         'views': [(view_id, 'form')],
+    #         'view_id': view_id,
+    #         'target': 'new',
+    #     }
 
         # return {
         #     'name': 'Annualtaion d"affectation faite avec Succès',
@@ -656,9 +662,123 @@ class EbMergeInvoicess(models.Model):
         #     'views': [(view_id, 'form')],
         #     'view_id': view_id,
         #     'target': 'new',
-        #     'context': context,
+        #     'context': self.env.context,
         # }
 
+    def button_cancel(self):
+        print("button cancel")
+        work_obj = self.env['project.task.work']
+        line_obj = self.env['base.invoices.merge.automatic.wizard']
+        line_obj1 = self.env['base.invoices.merge.line']
+        work_line = self.env['project.task.work']
+        emp_obj = self.env['hr.employee']
+        this = self
+
+        for tt in this.work_ids:
+            for msg_id in tt.ids:
+                wk = work_obj.browse(msg_id)
+                if this.types_affect == 'intervenant':
+                    print('employee_id2:', this.employee_id2)
+                    print('wk.affect_emp_list:', wk.affect_emp_list)
+                    if this.employee_id2 and str(wk.affect_emp_list).find(
+                            str(this.employee_id2.user_id.id)) != -1 and wk.state == 'affect':
+                        work_line.write({'state': 'draft'})
+                        work_line.write({
+                            'job': '',
+                            'current_emp': False,
+                            'employee_id': False,
+                            'state': 'draft',
+                        })
+
+                        work_obj.write({
+                            'affect_emp_list': wk.affect_emp_list.replace(str(this.employee_id2.user_id.id), ''),
+                            'affect_e_l': wk.affect_e_l.replace(str(this.employee_id2.user_id.login), ''),
+                            'affect_emp': wk.affect_emp.replace(
+                                str(this.employee_id2.name if this.employee_id2 else ''), ''),
+                        })
+                    else:
+                        raise ValidationError(
+                            _("Champs Intervenant vide ou employée n'existe pas dans liste des intervenants"))
+                elif this.types_affect == 'controle':
+                    if this.employee_id2 and str(wk.affect_con).find(str(this.employee_id2.name)) != -1:
+                        work_obj.write({
+                            'affect_con_list': wk.affect_con_list.replace(str(this.employee_id2.id), ''),
+                            'affect_con': wk.affect_con.replace(str(this.employee_id2.name), ''),
+                        })
+                    else:
+                        raise ValidationError(
+                            _("Champs Intervenant vide ou employée n'existe pas dans liste des controleurs"))
+                elif this.types_affect == 'correction':
+                    if this.employee_id2 and str(wk.affect_cor).find(str(this.employee_id2.name)) != -1:
+                        work_obj.write({
+                            'affect_cor_list': wk.affect_cor_list.replace(str(this.employee_id2.id), ''),
+                            'affect_cor': wk.affect_cor.replace(str(this.employee_id2.name), ''),
+                        })
+                    else:
+                        raise ValidationError(
+                            _("Champs Intervenant vide ou employée n'existe pas dans liste des correcteurs"))
+
+                for rec in self:
+                    if self.env.cr.dbname == 'DEMOddddddd':
+                        sql = "SELECT field_250 FROM app_entity_26 WHERE id = %s"
+                        self.env.cr.execute(sql, (wk.id,))
+                        datas = self.env.cr.fetchone()
+
+                        if datas:
+                            sql1 = "UPDATE app_entity_26 SET field_269 = %s WHERE id = %s"
+                            self.env.cr.execute(sql1, ('', wk.id))
+
+                            sql2 = "UPDATE app_entity_26 SET field_244 = %s WHERE id = %s"
+                            self.env.cr.execute(sql2, ('72', wk.id))
+
+                        self.env.cr.commit()
+
+                line_obj1.browse(tt.id).write({'state': 'draft'})
+
+            # line_obj1.write({'state': 'draft'})
+
+        if this.mail_send == 'yes':
+            if not this.note:
+                this.note = ' '
+            if not this.employee_ids:
+                raise ValidationError(_('Erreur ! Vous devez sélectionner un destinataire.'))
+            else:
+                kk = ''
+                for line in this.employee_ids.ids:
+                    emp = emp_obj.browse(line)
+                    kk = kk + emp.work_email + ','
+                this.to = kk
+                if this.employee_ids1:
+                    ll = ''
+                    for line in this.employee_ids1.ids:
+                        emp = emp_obj.browse(line)
+                        ll = ll + emp.work_email + ','
+                    this.cc = ll
+                if this.employee_ids2:
+                    mm = ''
+                    for line in this.employee_ids2.ids:
+                        emp = emp_obj.browse(line)
+                        mm = mm + emp.work_email + ','
+                    this.cci = mm
+
+        this.state = 'draft'
+        self.env['email.template'].sudo().browse(33).send_mail(this.id, force_send=True)
+
+        line_obj.write({'state': 'draft'})
+
+        view = self.env.ref('module_name.sh_message_sh_message_wizard')
+        view_id = view and view.id or False
+
+        return {
+            'name': 'Affectation les Travaux',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': 'base.invoices.merge.automatic.wizard',
+            'res_id': this.id,
+            'context': {'default_state': 'draft'},
+            'target': 'new',
+            'domain': []
+        }
     # def action_calendar(self, cr, uid, ids, context=None):
     #     current = ids[0]
     #     list = []
@@ -748,7 +868,7 @@ class EbMergeInvoicess(models.Model):
     #         },
     #         'domain': [('id', 'in', list_ids)]
     #     }
-    #
+
     def button_save_(self):
         this = self
         work_obj = self.env['base.invoices.merge.automatic.wizard']
@@ -1057,7 +1177,7 @@ class EbMergeInvoicess(models.Model):
                     elif rec.categ_id.id == 5:
                         product = 132
 
-                    base_group_line = self.env['base.group.merge.line'].create({
+                    self.env['base.group.merge.line'].create({
                         'create_date': fields.Date.today(),
                         'date_start_r': fields.Date.today(),
                         'date_end_r': fields.Date.today(),
@@ -1075,15 +1195,11 @@ class EbMergeInvoicess(models.Model):
                     })
 
                     move_line = {
-                        'product_id': product,
                         'employee_id': res_user.employee_id.id,
                         'state': 'valid',
                         'work_id': rec.id,
                         'task_id': rec.task_id.id,
-                        'group_id2': base_group_id,
                         'sequence': rec.sequence,
-                        'done3': True,
-                        'date': fields.Date.today(),
                         'uom_id': 5,
                         'date_start_r': fields.Date.today(),
                         'date_end_r': fields.Date.today(),
@@ -1091,64 +1207,58 @@ class EbMergeInvoicess(models.Model):
                         'hours_r': total,
                         'color1': 1,
                         'project_id': rec.project_id.id,
-                        'partner_id': rec.project_id.partner_id.id,
                         'gest_id': rec.gest_id.id,
                         'zone': rec.zone,
                         'secteur': rec.secteur,
                     }
-                    one = self.env['base.invoices.merge.automatic.wizard'].create(move_line)
+                    self.env['base.invoices.merge.automatic.wizard'].create(move_line)
 
-            if self.mail_send == 'yes':
-                if self.note is False:
-                    self.write({'note': ' '})
-
-            if not self.employee_ids:
-                raise UserError(_('Erreur !'), _('Vous devez sélectionner un destinataire.'))
-            else:
-                kk = ''
-                for line in self.employee_ids:
-                    emp = line
-                    kk = kk + emp.work_email + ','
-                self.write({'to': kk})
-                if self.employee_ids1:
-                    ll = ''
-                    for line in self.employee_ids1:
-                        emp = line
-                        ll = ll + emp.work_email + ','
-                    self.write({'cc': ll})
-                if self.employee_ids2:
-                    mm = ''
-                    for line in self.employee_ids2:
-                        emp = line
-                        mm = mm + emp.work_email + ','
-                    self.write({'cci': mm})
-
-            if self.employee_id2 and self.types_affect == 'intervenant':
-                template = self.env.ref('module_name.email_template_id')
-                template.send_mail(self.id, force_send=True)
-            elif self.employee_id2 and self.types_affect == 'controle' and self.group_id:
-                template = self.env.ref('module_name.email_template_id')
-                template.send_mail(self.id, force_send=True)
-            elif self.employee_id2 and self.types_affect == 'controle' and not self.group_id:
-                template = self.env.ref('module_name.email_template_id')
-                template.send_mail(self.id, force_send=True)
-            elif self.employee_id2 and self.types_affect == 'correction' and self.group_id:
-                template = self.env.ref('module_name.email_template_id')
-                template.send_mail(self.id, force_send=True)
-            elif self.employee_id2 and self.types_affect == 'correction' and not self.group_id:
-                template = self.env.ref('module_name.email_template_id')
-                template.send_mail(self.id, force_send=True)
-
-            for rec in self.work_ids:
-                for line in self.link_ids:
-                    self.env['link.line'].create({
-                        'ftp': line.ftp,
-                        'name': line.name,
-                        'work_id': rec.id,
-                        'affect_id': line.id,
-                        'source': 'affectation',
-                        'id_record': self.id
-                    })
+            # if self.mail_send == 'yes':
+            #     if not self.note:
+            #         self.note = ' '
+            #     if not self.employee_ids:
+            #         raise ValidationError(_('Erreur ! Vous devez sélectionner un destinataire.'))
+            #     else:
+            #         kk = ''
+            #         for line in self.employee_ids.ids:
+            #             emp = self.env['hr.employee'].browse(line)
+            #             kk = kk + emp.work_email + ','
+            #         self.to = kk
+            #         if self.employee_ids1:
+            #             ll = ''
+            #             for line in self.employee_ids1.ids:
+            #                 emp = self.env['hr.employee'].browse(line)
+            #                 ll = ll + emp.work_email + ','
+            #             self.cc = ll
+            #         if self.employee_ids2:
+            #             mm = ''
+            #             for line in self.employee_ids2.ids:
+            #                 emp = self.env['hr.employee'].browse(line)
+            #                 mm = mm + emp.work_email + ','
+            #             self.cci = mm
+            #
+            # if self.employee_id2 and self.types_affect == 'intervenant':
+            #     self.env['mail.template'].sudo().browse(25).send_mail(self.id, force_send=True)
+            #     ##Ne pas oublier d'ajouter la condition par bon
+            # elif self.employee_id2 and self.types_affect == 'controle' and self.group_id:
+            #     self.env['mail.template'].sudo().browse(30).send_mail(self.id, force_send=True)
+            # elif self.employee_id2 and self.types_affect == 'controle' and not self.group_id:
+            #     self.env['mail.template'].sudo().browse(34).send_mail(self.id, force_send=True)
+            # elif self.employee_id2 and self.types_affect == 'correction' and self.group_id:
+            #     self.env['mail.template'].sudo().browse(31).send_mail(self.id, force_send=True)
+            # elif self.employee_id2 and self.types_affect == 'correction' and not self.group_id:
+            #     self.env['mail.template'].sudo().browse(35).send_mail(self.id, force_send=True)
+            #
+            # for rec in self.work_ids:
+            #     for line in self.link_ids:
+            #         self.env['link.line'].create({
+            #             'ftp': line.ftp,
+            #             'name': line.name,
+            #             'work_id': rec.id,
+            #             'affect_id': line.id,
+            #             'source': 'affectation',
+            #             'id_record': self.id
+            #         })
 
             return {
                 'name': 'Affectation les Travaux',
@@ -1165,3 +1275,4 @@ class ProjectTaskWorkLine(models.Model):
     _inherit = 'project.task.work.line'
 
     wizard_id = fields.Many2one('base.invoices.merge.automatic.wizard', string='Event')
+

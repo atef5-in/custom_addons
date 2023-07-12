@@ -577,7 +577,7 @@ class TaskWork(models.Model):
                         'types_affect': 'intervenant'},
             'domain': []
         }
-    
+
     def button_write1(self):
 
         self.write({'state': 'tovalid'})

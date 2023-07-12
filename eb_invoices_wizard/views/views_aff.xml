@@ -9,11 +9,26 @@
                     <header>
                         <button name="action_open" type="object" string="Consulter Ces Taches" class="btn-primary"
                                 icon="gtk-save"/>
+                        <button name="button_approve" type="object" string="Valider l'Affectation" class="oe_highlight"
+                                confirm="Confirmer L'affectation?"/>
+                        <button name="button_cancel" type="object" string="Annuler l'Affectation" class="oe_highlight"
+                                confirm="Annuler l'Affectation?" states='affect'/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,affect"
                                statusbar_colors="{&quot;draft&quot;:&quot;blue&quot;}" readonly="1"/>
                     </header>
                     <sheet string="Project">
                         <!-- <h5>***If Assigned to: is empty , the user from the destination task will be assigned!</h5> -->
+                        <group>
+                            <group>
+                                <field name="types_affect" string="Type Affectation"
+                                       attrs="{'readonly': ['|',('group_id','!=',False),('state','=','draft')]}"/>
+                            </group>
+                            <group>
+                                <field name="time_ch" widget="odoo_timepicker"
+                                       options="{'step': 5, 'minTime': '00:00', 'maxTime': '10:00','timeFormat':'H:i'}"
+                                       required="1"/>
+                            </group>
+                        </group>
                         <notebook>
                             <page string="Paramétres d'Affectations">
                                 <group>
@@ -61,13 +76,13 @@
                                 </group>
                                 <group>
                                     <group string="Liens">
-<!--                                        <field name="link_ids" nolabel="1" readonly="0">-->
-<!--                                            <tree string="Taches" editable="bottom">-->
-                                                <!--                                                <field name="name" string="Description"/>-->
-                                                <!--                                                <field name="ftp" string="FTP"/>-->
-                                                <!--                                                <field name="flow_id" string="Flow_id" invisible="1"/>-->
-<!--                                            </tree>-->
-<!--                                        </field>-->
+                                        <!--                                        <field name="link_ids" nolabel="1" readonly="0">-->
+                                        <!--                                            <tree string="Taches" editable="bottom">-->
+                                        <!--                                                <field name="name" string="Description"/>-->
+                                        <!--                                                <field name="ftp" string="FTP"/>-->
+                                        <!--                                                <field name="flow_id" string="Flow_id" invisible="1"/>-->
+                                        <!--                                            </tree>-->
+                                        <!--                                        </field>-->
                                     </group>
                                     <group string="Commentaire">
                                         <pre>
