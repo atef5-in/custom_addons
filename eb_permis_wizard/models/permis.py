@@ -212,10 +212,10 @@ class EbMergePermis(models.Model):
     #
     #     return super(project_task, self).copy(vals)
 
-    def action_copy(self, id):
+    def action_copy(self):
 
         # your changes
-        for current in self.browse(id):
+        for current in self.browse(self.id):
             for tt in current.work_ids:
                 self.env.cr.execute(
                     'select sequence from project_task_work where task_id=%s and sequence is not Null order by sequence desc limit 1',
