@@ -1,0 +1,70 @@
+<odoo>
+
+    <record id="view_permis_merge_form" model="ir.ui.view">
+        <field name="name">permis.merge.form</field>
+        <field name="model">base.permis.merge.automatic.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Merge Tasks">
+                <!-- <h5>***If Assigned to: is empty , the user from the destination task will be  ,('product_id.default_code','ilike','-UD') assigned!</h5> -->
+                <header>
+                    <button name="action_copy" type="object" string="Valider la Création" class="oe_highlight"
+                            confirm="Confirmez-vous la création des Travaux Permis Sélectionnés?" states='draft'/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,open"
+                           statusbar_colors="{&quot;draft&quot;:&quot;blue&quot;}" readonly="1"/>
+                </header>
+                <sheet string="Project">
+                    <group string="Select Tasks" invisible="1">
+                        <field name="zone" invisible="1"
+                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}" string="Projet"/>
+                        <field name="secteur" invisible="context.get('user_invisible', False)" readonly="1"
+                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}" string="Projet"/>
+                        <field name="project_id" invisible="context.get('user_invisible', False)" readonly="1"
+                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}" string="Projet"/>
+                        <field name="product_id" invisible="context.get('user_invisible', False)" readonly="1"
+                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}" string="Projet"/>
+                        <field name="employee_id" invisible="context.get('user_invisible', False)"
+                               options="{'no_create': True, 'no_create_edit':True,'no_open':True}" string="Projet"/>
+                    </group>
+                    <group string="Types de Permis Existants">
+                        <field name="work_ids" nolabel="1"
+                               domain="[('project_id','=',project_id),('categ_id','=',6),('name','ilike','Permis'),('name','not like','Demande')]"
+                               options="{'no_open':True}">
+                            <tree colors="blue:state== 'draft';green:state== 'affect';purple:state== 'tovalid'"
+                                  edit="false" delete="false" editable="bottom" string="Liste des Permis">
+                                <field name="id" string="id" invisible="1"/>
+                                <field name="project_id" invisible="context.get('user_invisible', False)" readonly="1"
+                                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                       string="Projet"/>
+                                <field name="name" string="Nom Travaux" readonly="1"
+                                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                <field name="product_id" invisible="context.get('user_invisible', False)" readonly="1"
+                                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                       string="Type Service"/>
+                                <field name="date_start" string="Date Start" widget="date" readonly="1"/>
+                                <field name="date_end" string="Date Fin" widget="date" readonly="1"/>
+                                <field name="color" string="Durée (Jours)" sum="Total" readonly="1"/>
+                                <field name="uom_id" string="Unité" sum="Total"
+                                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                       readonly="1"/>
+                                <field name="qte" string="Qté/Unité" sum="Total" readonly="1"/>
+                                <field name="state" string="Statut" readonly="1"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!--    <record id="action_country" model="ir.actions.act_window">-->
+    <!--        <field name="name">Pays</field>-->
+    <!--        <field name="type">ir.actions.act_window</field>-->
+    <!--        <field name="res_model">res.country</field>-->
+    <!--        <field name="view_mode">tree,form</field>-->
+    <!--        <field name="context">{}</field>-->
+    <!--        <field name="view_ids" eval="[(5, 0, 0),-->
+    <!--                (0, 0, {'view_mode': 'tree', 'view_id': ref('country_custom.view_country_tree')}),-->
+    <!--                (0, 0, {'view_mode': 'form', 'view_id': ref('country_custom.view_country_form')})]"/>-->
+    <!--    </record>-->
+
+</odoo>

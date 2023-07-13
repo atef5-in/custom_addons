@@ -3,7 +3,7 @@
     'summary': "A module for managing declarations of bons.",
     'description': "A module for managing declarations of bons.",
     'author': "Mohamed Ba",
-    'sequence': -500,
+    'sequence': -680,
     'website': "",
     'category': 'Project, Tasks',
     'version': '15.0.1.0.0',
