@@ -221,8 +221,8 @@ class TaskWork(models.Model):
                 for kk in book.line_ids.ids:
                     rec_line = self.env['project.task.work.line'].browse(kk)
                     if rec_line.group_id2:
-                        if rec_line.group_id2.ids not in tt:
-                            tt.extend(rec_line.group_id2.ids)
+                        if rec_line.group_id2.id not in tt:
+                            tt.append(rec_line.group_id2.id)
                 if tt:
                     print('tt :', tt)
                     for kk in tt:
@@ -273,13 +273,13 @@ class TaskWork(models.Model):
                 for kk in book.line_ids.ids:
                     rec_line = self.env['project.task.work.line'].browse(kk)
                     if rec_line.group_id2:
-                        if rec_line.group_id2.ids not in tt:
-                            tt.append(rec_line.group_id2.ids)
+                        if rec_line.group_id2.id not in tt:
+                            tt.append(rec_line.group_id2.id)
                 if tt:
                     for kk in tt:
                         self.env.cr.execute(
-                            'update base_group_merge_automatic_wizard set create_uid= %s where id in %s',
-                            (tuple(kk)))
+                            'update base_group_merge_automatic_wizard set create_uid= %s where id = %s',
+                            (self._uid, kk))
                     test = self.env['base.group.merge.automatic.wizard'].search([('id', 'in', tt), (
                         'state2', '<>', 'draft')])
                     if test:
@@ -813,24 +813,25 @@ class TaskWork(models.Model):
 
     def action_open_group2(self):
         tt = []
-
+        view_id = self.env.ref('eb_group_wizard.retour_bons_production').id
+        print('view_id:' , view_id)
         if self.line_ids:
             for rec_line in self.line_ids:
                 if rec_line.group_id2:
-                    if rec_line.group_id2.ids not in tt:
-                        tt.append(rec_line.group_id2.ids)
+                    if rec_line.group_id2.id not in tt:
+                        tt.append(rec_line.group_id2.id)
 
         if tt:
             for kk in tt:
-                self.env['base.group.merge.automatic.wizard'].search([('id', 'in', kk)]).write(
+                self.env['base.group.merge.automatic.wizard'].search([('id', '=', kk)]).write(
                     {'create_uid': self.env.uid})
 
         return {
             'name': 'Consultation Travaux Validés',
             'type': 'ir.actions.act_window',
+            'view_type': 'tree,form',
             'view_mode': 'tree,form',
-            'views': [[self.env.ref('eb_group_wizard.retour_bons_production').id, 'tree']],
-
+            'views': [(view_id, 'tree')],
             'target': 'new',
             'res_model': 'base.group.merge.automatic.wizard',
             'context': {},
@@ -905,8 +906,8 @@ class TaskWork(models.Model):
         if self.line_ids:
             for rec_line in self.line_ids:
                 if rec_line.group_id:
-                    if rec_line.group_id.ids not in tt:
-                        tt.append(rec_line.group_id.ids)
+                    if rec_line.group_id.id not in tt:
+                        tt.append(rec_line.group_id.id)
 
         return {
             'name': 'Consultation Travaux Validés',
