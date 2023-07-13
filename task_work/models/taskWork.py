@@ -593,6 +593,21 @@ class TaskWork(models.Model):
             'domain': []
         }
 
+    def action_duplicate(self):
+
+        return {
+            'name': ('Modification Travaux Permis'),
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'target': 'new',
+            'res_model': 'base.work.merge.automatic.wizard',
+            'view_id': self.env.ref('eb_work_wizard.view_work_merge_form').id,
+            'context': {'active_ids': self.ids,
+                        'active_model': self._name},
+            'domain': []
+        }
+
     def button_write1(self):
 
         self.write({'state': 'tovalid'})
