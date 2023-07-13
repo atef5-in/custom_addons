@@ -79,7 +79,6 @@ class EbMergeWorks(models.TransientModel):
                     res['work_ids'] = vv
                 else:
                     res['work_ids'] = active_ids
-                work = self.env['project.task.work'].browse(task)
                 context = self._context
                 current_uid = context.get('uid')
                 res_user = self.env['res.users'].browse(current_uid)
@@ -89,9 +88,9 @@ class EbMergeWorks(models.TransientModel):
                     for ll in categ_ids.ids:
                         dep = self.env['hr.academic'].browse(ll)
                         jj.append(dep.categ_id.id)
-                if work.categ_id.id not in jj:
-                    raise UserError(
-                        _("Action impossible!\nVous n'êtes pas autorisé à exécuter cette action sur un département externe"))
+                # if work.categ_id.id not in jj:
+                #     raise UserError(
+                #         _("Action impossible!\nVous n'êtes pas autorisé à exécuter cette action sur un département externe"))
         return res
 
     work_ids = fields.Many2many('project.task.work', string='works')  # 'merge_tasks_rel', 'merge_id', 'task_id',)
@@ -233,6 +232,7 @@ class EbMergeWorks(models.TransientModel):
                 sequence = res[0] + 1
                 kk = self.env['project.task.work'].search([('project_id', '=', tt.project_id.id),
                                                            ('sequence', '=', sequence)])
+
                 while kk:
                     sequence = sequence + 1
                     kk = self.env['project.task.work'].search([('project_id', '=', tt.project_id.id),
@@ -247,7 +247,7 @@ class EbMergeWorks(models.TransientModel):
                     new_name = tt.name + ' - ' + current.name
                 else:
                     new_name = tt.name
-                packaging_obj.write(tt.id, {'poteau_t': qty})
+                packaging_obj.browse(tt.id).write({'poteau_t': qty})
 
                 cte = packaging_obj.create({
                     'project_id': tt.project_id.id,
@@ -298,29 +298,38 @@ class EbMergeWorks(models.TransientModel):
                 })
                 res_user = self.env['res.users'].browse(self.env.user.id)
                 wk_histo = self.env['work.histo'].search([('work_id', '=', tt.id)])
-                wk_histo_id = self.env['work.histo'].browse(wk_histo).id
-                self.env['work.histo.line'].create({
-                    'type': 'duplication',
-                    'create_by': res_user.employee_id.name,
-                    'work_histo_id': wk_histo_id,
-                    'date': datetime.now(),
-                    'coment1': current.name or False,
-                    'id_object': current.id,
-                })
-                self.env['work.histo'].create({
-                    'task_id': tt.task_id.id,
-                    'work_id': cte,
-                    'categ_id': tt.categ_id.id,
-                    'product_id': tt.product_id.id,
-                    'name': tt.name,
-                    'date': tt.date_start,
-                    'create_a': datetime.now(),
-                    'create_by': res_user.employee_id.name,
-                    'zone': tt.zone,
-                    'secteur': tt.secteur,
-                    'project_id': tt.project_id.id,
-                    'partner_id': tt.project_id.partner_id.id,
-                })
+                # wk_histo_id = self.env['work.histo'].browse(wk_histo).id
+                # self.env['work.histo.line'].create({
+                #     'type': 'duplication',
+                #     'create_by': res_user.employee_id.name,
+                #     'work_histo_id': wk_histo_id,
+                #     'date': datetime.now(),
+                #     'coment1': current.name or False,
+                #     'id_object': current.id,
+                # })
+                for histo in wk_histo:
+                    self.env['work.histo.line'].create({
+                        'type': 'duplication',
+                        'create_by': res_user.employee_id.name,
+                        'work_histo_id': histo.id,
+                        'date': datetime.now(),
+                        'coment1': current.name or False,
+                        'id_object': current.id,
+                    })
+                    self.env['work.histo'].create({
+                        'task_id': tt.task_id.id,
+                        'work_id': cte.id,
+                        'categ_id': tt.categ_id.id,
+                        'product_id': tt.product_id.id,
+                        'name': tt.name,
+                        'date': tt.date_start,
+                        'create_a': datetime.now(),
+                        'create_by': res_user.employee_id.name,
+                        'zone': tt.zone,
+                        'secteur': tt.secteur,
+                        'project_id': tt.project_id.id,
+                        'partner_id': tt.project_id.partner_id.id,
+                    })
         #         if cr.dbname == 'DEMO1111':
         #             ###################CHECK INSERT TASKS######################
         #
