@@ -58,7 +58,4 @@
                 (0, 0, {'view_mode': 'form', 'view_id': ref('country_custom.view_country_state_form')})]"/>
     </record>
 
-    <menuitem id="menu_region" name="Parcs et Municipalités" parent="menu_country_root" sequence="30"
-              action="action_region"/>
-
 </odoo>

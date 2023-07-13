@@ -292,5 +292,6 @@
     <menuitem id="menu_merge_tasks_root"
               name="Subdivision Zone Secteur"
               action="action_base_task_merge_automatic_wizard"
-              sequence="0"/>
+              parent="project_custom.menu_project"
+              sequence="5"/>
 </odoo>

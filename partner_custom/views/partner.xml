@@ -365,7 +365,5 @@
                 (0, 0, {'view_mode': 'form', 'view_id': ref('partner_custom.view_partner_form')})]"/>
         </record>
 
-        <menuitem id="menu_partner" name="Gestion des Clients" sequence="-500" action="action_partner"/>
-
     </data>
 </odoo>

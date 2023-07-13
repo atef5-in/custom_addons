@@ -187,6 +187,7 @@
         <field name="context">{}</field>
     </record>
 
-    <menuitem id="menu_merge_facture" name="Factures Clients" sequence="-300" action="action_merge_facture"/>
+    <menuitem id="menu_merge_facture" name="Factures Clients" sequence="20" parent="project_custom.menu_sale"
+              action="action_merge_facture"/>
 
 </odoo>

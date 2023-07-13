@@ -19,6 +19,4 @@
         <field name="view_ids" eval="[(5, 0, 0), (0, 0, {'view_mode': 'tree', 'view_id': ref('country_custom.view_country_group_tree')})]"/>
     </record>
 
-    <menuitem id="menu_group" name="Régions" parent="menu_country_root" sequence="20" action="action_group"/>
-
 </odoo>

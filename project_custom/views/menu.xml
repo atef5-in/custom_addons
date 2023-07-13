@@ -8,6 +8,7 @@
     <menuitem id="menu_stat" name="Analyses et Statistiques" sequence="-995"/>
     <menuitem id="menu_tab_bord" name="Tableau de Bord Admin" sequence="-994"/>
     <menuitem id="menu_discuss" name="Messagerie" sequence="-993"/>
+    <menuitem id="menu_conf" name="Configuration" sequence="-992"/>
 
     <!--    menu_gest submenus-->
 
@@ -17,16 +18,28 @@
 
     <!--    ***** menu_gest_data submenus-->
 
-    <menuitem id="menu_product_category" name="Liste de Départements" parent="menu_gest_data" sequence="0"
+    <menuitem id="menu_product_category" name="Liste de Départements" parent="menu_gest_data" sequence="10"
               action="product_custom.action_product_category"/>
-    <menuitem id="menu_kit" name="Liste des Kits" parent="menu_gest_data" sequence="10"
+    <menuitem id="menu_kit" name="Liste des Kits" parent="menu_gest_data" sequence="20"
               action="product_custom.action_kit"/>
-    <menuitem id="menu_product" name="Liste de services" parent="menu_gest_data" sequence="20"
+    <menuitem id="menu_product" name="Liste de services" parent="menu_gest_data" sequence="30"
               action="product_custom.action_product"/>
-    <menuitem id="menu_employee" name="Liste des Employés" parent="menu_gest_data" sequence="30"
+    <menuitem id="menu_project_status" name="Type de Permis" sequence="40" parent="menu_gest_data"
+              action="task_work.action_project_status"/>
+    <menuitem id="menu_employee" name="Liste des Employés" parent="menu_gest_data" sequence="50"
               action="employee_custom.action_employee"/>
-    <menuitem id="menu_remuneration_av" name="Affectation Avancée Rémunération" parent="menu_gest_data" sequence="40"
+    <menuitem id="menu_remuneration_av" name="Affectation Avancée Rémunération" parent="menu_gest_data" sequence="60"
               action="employee_custom.action_remuneration_av"/>
+    <menuitem id="menu_localisation" name="Localisation" parent="menu_gest_data" sequence="70"/>
+
+    <!--    ********* menu_localisation submenus-->
+
+    <menuitem id="menu_group" name="Régions" parent="menu_localisation" sequence="0"
+              action="country_custom.action_group"/>
+    <menuitem id="menu_region" name="Parcs et Municipalités" parent="menu_localisation" sequence="10"
+              action="country_custom.action_region"/>
+    <menuitem id="menu_country" name="Pays" parent="menu_localisation" sequence="20"
+              action="country_custom.action_country"/>
 
     <!--    menu_project submenus-->
 
@@ -37,6 +50,10 @@
     <menuitem id="menu_work" name="Tâches" parent="menu_project" sequence="20"
               action="task_work.action_task_work"/>
 
+    <!--    menu_sale submenus-->
+
+    <menuitem id="menu_partner" name="Gestion des Clients" sequence="10" parent="menu_sale"
+              action="partner_custom.action_partner"/>
 
     <!--    menu_rh submenus-->
 
@@ -49,5 +66,10 @@
 
     <!--    menu_discuss submenus-->
 
+
+    <!--    menu_conf submenus-->
+
+    <menuitem id="menu_company" name="Sociétés" sequence="0" parent="menu_conf"
+              action="company_custom.action_company"/>
 
 </odoo>

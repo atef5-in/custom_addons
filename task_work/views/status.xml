@@ -30,6 +30,4 @@
         <field name="context">{}</field>
     </record>
 
-    <menuitem id="menu_project_status" name="Status Permis" sequence="-10" action="action_project_status"/>
-
 </odoo>

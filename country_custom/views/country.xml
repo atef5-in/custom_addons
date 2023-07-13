@@ -43,6 +43,4 @@
                 (0, 0, {'view_mode': 'form', 'view_id': ref('country_custom.view_country_form')})]"/>
     </record>
 
-    <menuitem id="menu_country" name="Pays" parent="menu_country_root" sequence="0" action="action_country"/>
-
 </odoo>
