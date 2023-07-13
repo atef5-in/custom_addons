@@ -213,32 +213,26 @@ class TaskWork(models.Model):
                 book.done33 = False
 
     def _isinter(self):
-        print('_isinter')
+
         for book in self:
-            book.is_intervenant = False
-            print('-1')
+            book.is_intervenant = False  # to set to False.
             if book.line_ids:
-                print('0')
                 tt = []
                 for kk in book.line_ids.ids:
                     rec_line = self.env['project.task.work.line'].browse(kk)
-                    print('0.5')
                     if rec_line.group_id2:
                         if rec_line.group_id2.ids not in tt:
-                            print('rec_line.group_id2.ids :', rec_line.group_id2.ids)
-                            tt.append(rec_line.group_id2.ids)
-                            print('1')
+                            tt.extend(rec_line.group_id2.ids)
                 if tt:
-                    print('2:', tt)
+                    print('tt :', tt)
                     for kk in tt:
-                        print('3')
+                        print('kk :', kk)
+
                         self.env.cr.execute(
-                            'update base_group_merge_automatic_wizard set create_uid= %s where id in %s',
-                            (self._uid, tuple(kk)))
-                        print('4')
+                            'update base_group_merge_automatic_wizard set create_uid= %s where id = %s',
+                            (self._uid, kk))
                     test = self.env['base.group.merge.automatic.wizard'].search([('id', 'in', tt), (
                         'state', '<>', 'draft')])
-                    print('5')
                     if test:
                         book.is_intervenant = True
 
@@ -253,8 +247,8 @@ class TaskWork(models.Model):
                     if rec_line.group_id2:
                         if rec_line.group_id2.id not in tt:
                             tt.append(rec_line.group_id2.id)
+                            print('tt :', tt)
                 if tt:
-
                     test = self.env['base.group.merge.automatic.wizard'].search([('id', 'in', tt), (
                         'state1', '<>', 'draft')])
 
