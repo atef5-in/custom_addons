@@ -1,0 +1,63 @@
+<odoo>
+
+    <record id="view_active_merge_form" model="ir.ui.view">
+        <field name="name">active.merge.form</field>
+        <field name="model">base.active.merge.automatic.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Merge Tasks">
+                <header>
+                    <button name="action_change" type="object" string="Changer Les Statuts" class="oe_highlight"
+                            confirm="Attentions! Vous allez changer les statuts des taches. Confirmez vous le traitements?"/>
+                    <button name="action_change_state" type="object" string="Change State" class="oe_highlight"
+                            confirm="Attentions! Vous allez changer les statuts des taches. Confirmez vous le traitements?"/>
+                </header>
+                <sheet string="Project">
+                    <!-- <h5>***If Assigned to: is empty , the user from the destination task will be assigned!</h5> -->
+                    <group string="Assign tasks to" invisible="1">
+                        <field name="user_id" class="oe_inline"/>
+                        <field name="dst_project" class="oe_inline"/>
+                    </group>
+                    <group string="Options">
+                        <group>
+                            <field name="is_active" string="Statut Actif"/>
+                            <field name="is_display" string="Statut Réalisable"/>
+                            <field name="state" string="Statut " required="1"/>
+                        </group>
+                        <group>
+                        </group>
+                    </group>
+                    <group string="Destination" invisible="1">
+                        <field name="dst_work_id" class="oe_inline"/>
+                    </group>
+                    <group string="Taches Concernées">
+                        <field name="work_ids" nolabel="1" readonly="1" options="{'no_create': True}">
+                            <tree string="Tasks" create="false" edit="false" editable="bottom">
+                                <field name="sequence" string="Sequence" readonly="1"/>
+                                <field name="project_id" invisible="context.get('user_invisible', False)" readonly="1"
+                                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"
+                                       string="Projet"/>
+                                <field name="name" string="Nom Travaux" readonly="1"
+                                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                <field name="zone" string="Zone " readonly="1"/>
+                                <field name="secteur" string="Secteur " readonly="1"/>
+                                <field name="date_start" string="Date Start" widget="date" readonly="1"
+                                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                <field name="date_end" string="Date Fin" widget="date" readonly="1"
+                                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                <field name="color" string="Durée (Jours)" sum="Total" readonly="1"
+                                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                <field name="poteau_i" string="Qté Initiale" sum="Total" readonly="1"/>
+                                <field name="poteau_da" string="Qté Déja Affect." readonly="1"/>
+                                <field name="poteau_t" string="Qté A Affecter" sum="Total" readonly="1"/>
+                                <field name="gest_id" string="Superviseur" widget="selection" readonly="1"
+                                       options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                                <field name="state" string="Superviseur" invisible="1"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>
