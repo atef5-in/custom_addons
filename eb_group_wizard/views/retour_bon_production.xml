@@ -6,27 +6,29 @@
         <field name="name">base.group.merge.automatic.wizard.tree</field>
         <field name="model">base.group.merge.automatic.wizard</field>
         <field name="arch" type="xml">
-            <form>
-                <tree string="Groups" create="false"
-                      colors="blue:state== 'draft';green:state== 'affect';purple:state== 'tovalid';red:state== 'cancel'"
-                      readonly="1" default_sort="date_start_r desc">
-                    <field name="id" string="ID"/>
-                    <field name="date_start_r" string="Date"/>
-                    <field name="employee_id" string="Intervenant"/>
-                    <field name="project_id" string="Projet"/>
-                    <field name="zo" string="Zone"/>
-                    <field name="sect" string="Secteur"/>
-                    <field name="gest_id" string="Superviseur"/>
-                    <field name="coordin_id" string="Cordinateur"/>
-                    <field name="gest_id2" string="Controleur"/>
-                    <field name="emp_id2" string="Correceteur"/>
-                    <field name="state" string="Etat Bon"/>
-                    <field name="state1" string="Etat Bon Controle"/>
-                    <field name="state2" string="Etat Bon Correction"/>
-                    <button name="action_open" string="Consulter/Editer Grouppement" type="object"
-                            icon="fa-pencil"/>
-                </tree>
-            </form>
+<!--            <form>-->
+<!--            </form>-->
+<!--            <tree>-->
+
+<!--            </tree>-->
+            <tree string="Groups">
+                <field name="id" string="ID"/>
+                <field name="date_start_r" string="Date"/>
+                <field name="employee_id" string="Intervenant"/>
+                <field name="project_id" string="Projet"/>
+                <field name="zo" string="Zone"/>
+                <field name="sect" string="Secteur"/>
+                <field name="gest_id" string="Superviseur"/>
+                <field name="coordin_id" string="Cordinateur"/>
+                <field name="gest_id2" string="Controleur"/>
+                <field name="emp_id2" string="Correceteur"/>
+                <field name="state" string="Etat Bon"/>
+                <field name="state1" string="Etat Bon Controle"/>
+                <field name="state2" string="Etat Bon Correction"/>
+                <button name="action_open" string="Consulter/Editer Grouppement" type="object"
+                        icon="fa-pencil"/>
+            </tree>
+
         </field>
     </record>
 </odoo>

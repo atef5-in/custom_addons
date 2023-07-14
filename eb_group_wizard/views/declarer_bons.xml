@@ -190,13 +190,8 @@
                     <field name="b1" string="Inj." invisible="1" attrs="{'readonly':[('b1', '=', True)]}"/>
                     <field name="issue_id" string="Issue" invisible="1"/>
 
-
                 </tree>
             </field>
-
-
         </group>
-
-
     </sheet>
 </form>

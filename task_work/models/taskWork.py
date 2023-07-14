@@ -828,7 +828,7 @@ class TaskWork(models.Model):
             'name': 'Consultation Travaux Validés',
             'type': 'ir.actions.act_window',
             'view_mode': 'tree',
-            'view_id': self.env.ref('eb_group_wizard.retour_bons_production').id,
+           # 'view_id': self.env.ref('eb_group_wizard.retour_bons_production').id,
             'target': 'new',
             'res_model': 'base.group.merge.automatic.wizard',
             'context': {},
