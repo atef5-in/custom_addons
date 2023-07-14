@@ -298,131 +298,37 @@ class EbMergeWorks(models.TransientModel):
                 })
                 res_user = self.env['res.users'].browse(self.env.user.id)
                 wk_histo = self.env['work.histo'].search([('work_id', '=', tt.id)])
-                # wk_histo_id = self.env['work.histo'].browse(wk_histo).id
-                # self.env['work.histo.line'].create({
-                #     'type': 'duplication',
-                #     'create_by': res_user.employee_id.name,
-                #     'work_histo_id': wk_histo_id,
-                #     'date': datetime.now(),
-                #     'coment1': current.name or False,
-                #     'id_object': current.id,
-                # })
-                for histo in wk_histo:
-                    self.env['work.histo.line'].create({
-                        'type': 'duplication',
-                        'create_by': res_user.employee_id.name,
-                        'work_histo_id': histo.id,
-                        'date': datetime.now(),
-                        'coment1': current.name or False,
-                        'id_object': current.id,
-                    })
-                    self.env['work.histo'].create({
-                        'task_id': tt.task_id.id,
-                        'work_id': cte.id,
-                        'categ_id': tt.categ_id.id,
-                        'product_id': tt.product_id.id,
-                        'name': tt.name,
-                        'date': tt.date_start,
-                        'create_a': datetime.now(),
-                        'create_by': res_user.employee_id.name,
-                        'zone': tt.zone,
-                        'secteur': tt.secteur,
-                        'project_id': tt.project_id.id,
-                        'partner_id': tt.project_id.partner_id.id,
-                    })
-        #         if cr.dbname == 'DEMO1111':
-        #             ###################CHECK INSERT TASKS######################
-        #
-        #             cursor = connection.cursor()
-        #
-        #             task = packaging_obj.browse(cr, uid, cte, context=context)
-        #
-        #             if task.state == 'draft':
-        #                 state = '72'
-        #             elif task.state == 'affect':
-        #                 state = '73'
-        #             elif task.state == 'tovalid':
-        #                 state = '74'
-        #             elif task.state == 'tovalidcont':
-        #                 state = '74'
-        #             elif task.state == 'validcont':
-        #                 state = '74'
-        #             elif task.state == 'tovalidcorrec':
-        #                 state = '74'
-        #             elif task.state == 'validcorrec':
-        #                 state = '74'
-        #             elif task.state == 'cancel':
-        #                 state = '76'
-        #             elif task.state == 'pending':
-        #                 state = '78'
-        #             elif task.state == 'valid':
-        #                 state = '75'
-        #             sq40 = ((
-        #                         "INSERT INTO  app_entity_26  (id,date_added,date_updated,created_by,parent_item_id,field_243,field_253,field_255,field_256,field_260,field_261,field_259,field_258,field_264,field_271,field_272,field_268,field_244,field_250,field_251,field_269,field_263,field_287,field_273,field_274)  VALUES (%s,'%s','%s','%s','%s','%s',%s,'%s','%s','%s','%s','%s','%s',%s,'%s',%s,'%s','%s','%s','%s','%s','%s','%s','%s','%s')") % (
-        #                         task.id, int(time.mktime(datetime.strptime(task.date_start or task.create_date[:10],
-        #                                                                    '%Y-%m-%d').timetuple())) or '',
-        #                         int(time.mktime(datetime.strptime(task.date_start or task.create_date[:10],
-        #                                                           '%Y-%m-%d').timetuple())) or '', 1,
-        #                         task.project_id.id, task.name.encode('ascii', 'ignore').replace("'", "\\'"),
-        #                         task.project_id.id, task.sequence or '', str(task.project_id.partner_id.id) or '',
-        #                         task.product_id.name.encode('ascii', 'ignore').replace("'", "\\'") or '',
-        #                         task.categ_id.name.encode('ascii', 'ignore').replace("'", "\\'") or '',
-        #                         str(task.gest_id3.id) or '', str(task.gest_id.id) or '', task.poteau_t or 0,
-        #                         int(time.mktime(datetime.strptime(task.date_start_r or '2000-01-01',
-        #                                                           '%Y-%m-%d').timetuple())) or '', int(time.mktime(
-        #                             datetime.strptime(task.date_end_r or '2000-01-01', '%Y-%m-%d').timetuple())) or '',
-        #                         str(task.task_id.id) or '', state, int(time.mktime(
-        #                             datetime.strptime(task.date_start or task.create_date[:10],
-        #                                               '%Y-%m-%d').timetuple())) or '', int(time.mktime(
-        #                             datetime.strptime(task.date_end or '2000-01-01', '%Y-%m-%d').timetuple())) or '',
-        #                         str(task.employee_id.id if task.employee_id else '') or '',
-        #                         task.uom_id.name.encode('ascii', 'ignore').replace("'", "\\'") or '',
-        #                         str(task.job) or '', str(task.zone) or '', str(task.secteur) or ''))
-        #             sq41 = ((
-        #                         "INSERT INTO  app_entity_26_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
-        #                         task.id, 244, state))
-        #             sq42 = ((
-        #                         "INSERT INTO  app_entity_26_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
-        #                         task.id, 253, task.project_id.id))
-        #             sq43 = ((
-        #                         "INSERT INTO  app_entity_26_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
-        #                         task.id, 256, task.project_id.partner_id.id))
-        #             sq44 = ((
-        #                         "INSERT INTO  app_entity_26_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
-        #                         task.id, 268, task.task_id.id))
-        #
-        #             if task.gest_id:
-        #                 sq45 = ((
-        #                             "INSERT INTO  app_entity_26_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
-        #                             task.id, 258, task.gest_id.id))
-        #                 cursor.execute(sq45)
-        #             if task.gest_id3:
-        #                 sq46 = ((
-        #                             "INSERT INTO  app_entity_26_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
-        #                             task.id, 259, task.gest_id3.id))
-        #                 cursor.execute(sq46)
-        #             if task.employee_id:
-        #                 sq47 = ((
-        #                             "INSERT INTO  app_entity_26_values  (items_id,fields_id,value  )  VALUES ('%s','%s','%s')") % (
-        #                             task.id, 269, task.employee_id.id))
-        #                 cursor.execute(sq47)
-        #             cursor.execute(sq40)
-        #             cursor.execute(sq41)
-        #             cursor.execute(sq42)
-        #             cursor.execute(sq43)
-        #             cursor.execute(sq44)
-        #             connection.commit()
-        # ##        connection.close()
-        #
-        # ##test=self.pool.get('project.task').copy_data(cr,uid, tt.dst_task_id.id,default=default,context=context)
-        return cte
-    #
-    # @api.one
-    # def action_copy3(self):
-    #     packaging_obj = self.pool.get('project.task')
-    #     packaging_copy = packaging_obj.copy_data(self._cr, self._uid, self.dst_task_id.id)
-    #     packaging_obj.write({'name': 'dfsdf'})
-    #     return True
-    #     ### packaging_copy.write({'product_id':self.product_id})
-    #
-    #
+                wk_histo_id = self.env['work.histo'].browse(wk_histo).id
+                self.env['work.histo.line'].create({
+                    'type': 'duplication',
+                    'create_by': res_user.employee_id.name,
+                    'work_histo_id': wk_histo_id,
+                    'date': datetime.now(),
+                    'coment1': current.name or False,
+                    'id_object': current.id,
+                })
+                # for histo in wk_histo:
+                #     self.env['work.histo.line'].create({
+                #         'type': 'duplication',
+                #         'create_by': res_user.employee_id.name,
+                #         'work_histo_id': histo.id,
+                #         'date': datetime.now(),
+                #         'coment1': current.name or False,
+                #         'id_object': current.id,
+                #     })
+                self.env['work.histo'].create({
+                    'task_id': tt.task_id.id,
+                    'work_id': cte.id,
+                    'categ_id': tt.categ_id.id,
+                    'product_id': tt.product_id.id,
+                    'name': tt.name,
+                    'date': tt.date_start,
+                    'create_a': datetime.now(),
+                    'create_by': res_user.employee_id.name,
+                    'zone': tt.zone,
+                    'secteur': tt.secteur,
+                    'project_id': tt.project_id.id,
+                    'partner_id': tt.project_id.partner_id.id,
+                })
+        return True
+
