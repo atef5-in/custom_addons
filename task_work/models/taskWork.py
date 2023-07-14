@@ -220,9 +220,8 @@ class TaskWork(models.Model):
                 tt = []
                 for kk in book.line_ids.ids:
                     rec_line = self.env['project.task.work.line'].browse(kk)
-                    if rec_line.group_id2:
-                        if rec_line.group_id2.id not in tt:
-                            tt.append(rec_line.group_id2.id)
+                    if rec_line.group_id2 and rec_line.group_id2.id not in tt:
+                        tt.append(rec_line.group_id2.id)
                 if tt:
                     print('tt :', tt)
                     for kk in tt:
@@ -813,8 +812,7 @@ class TaskWork(models.Model):
 
     def action_open_group2(self):
         tt = []
-        view_id = self.env.ref('eb_group_wizard.retour_bons_production').id
-        print('view_id:' , view_id)
+        # view_id = self.env.ref('eb_group_wizard.retour_bons_production').id
         if self.line_ids:
             for rec_line in self.line_ids:
                 if rec_line.group_id2:
@@ -829,9 +827,8 @@ class TaskWork(models.Model):
         return {
             'name': 'Consultation Travaux Validés',
             'type': 'ir.actions.act_window',
-            'view_type': 'tree,form',
-            'view_mode': 'tree,form',
-            'views': [(view_id, 'tree')],
+            'view_mode': 'tree',
+            'view_id': self.env.ref('eb_group_wizard.retour_bons_production').id,
             'target': 'new',
             'res_model': 'base.group.merge.automatic.wizard',
             'context': {},

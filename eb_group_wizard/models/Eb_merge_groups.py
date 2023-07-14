@@ -321,7 +321,7 @@ class EbMergegroups(models.Model):
                     }
                     if tt:
                         list1.append((0, 0, move_line1))
-                        print('list1 :', list1)
+                        # print('list1 :', list1)
                 for task in active_ids:
                     work = self.env['project.task.work'].browse(task)
                     res_user = self.env['res.users'].browse(self.env.uid)
@@ -336,8 +336,8 @@ class EbMergegroups(models.Model):
                     #                     _('Vous n''etes pas autorisé à exécuter cette action sur un département externe'))
 
             res['work_ids'] = list1
-            print('res :', res)
-            print('work_ids :', self.work_ids)
+            # print('res :', res)
+            # print('work_ids :', self.work_ids)
         return res
 
     def _compute_done2(self):
@@ -392,10 +392,8 @@ class EbMergegroups(models.Model):
     def _disponible1(self):
         print('def _disponible1')
         user_id = self.env.user.id
-        print('self.work_ids :', self.work_ids)
         for book in self:
             # to_change_to_6_or_7 [1 is the default]
-            print("1")
             if self.work_ids:
 
                 if user_id == 1 or book.employee_id.user_id.id == user_id or str(user_id) in (
@@ -571,7 +569,7 @@ class EbMergegroups(models.Model):
             for task in self.env.context['active_ids']:
                 work = self.env['project.task.work'].browse(task)
                 user = self.env.user
-                # print('user id :', user.id)
+                print('user id :', user.id)
                 if (work.affect_cor_list != '' and (str(user.id) in (work.affect_cor_list or ' '))) and (
                         str(user.id) not in (work.affect_con_list or ' ')) and (
                         str(user.id) not in (work.affect_emp_list or ' ')):
